@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import "./DemoChatbot.css";
 
-export default function DemoChatbot() {
-  const [messages, setMessages] = useState([]);
+export default function DemoChatbot({ doctorData }) {
+  const [messages, setMessages] = useState([
+    { sender: "bot", text: `Welcome, Dr. ${doctorData?.name || "Doctor"}! How can I assist you today?` },
+  ]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
 
