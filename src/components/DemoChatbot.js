@@ -1,9 +1,15 @@
 import { useState, useRef, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
 export default function DemoChatbot({ doctorData }) {
+  // Redirect to login if doctorData is not available
+  if (!doctorData || !doctorData.name) {
+    return <Navigate to="/" replace />;
+  }
+
   const [messages, setMessages] = useState([
-    { sender: "bot", text: `Welcome, Dr. ${doctorData?.name || "Doctor"}! How can I assist you today?` },
+    { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` },
   ]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
@@ -22,13 +28,11 @@ export default function DemoChatbot({ doctorData }) {
     setInput("");
 
     try {
-      // Call the backend search API
       const response = await fetch(
         `http://localhost:8000/search?query=${encodeURIComponent(userInput)}`
       );
       const data = await response.json();
 
-      // Format bot message with clickable links
       const botText = data
         .map((pdf) =>
           pdf.link
