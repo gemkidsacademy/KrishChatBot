@@ -1,0 +1,149 @@
+/* Container */
+.report-container {
+  padding: 30px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Title */
+.report-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Filter Card */
+.filter-card {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  align-items: flex-end;
+  margin-bottom: 25px;
+}
+
+.filter-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item label {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.filter-item input,
+.filter-item select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Button */
+.fetch-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  align-self: flex-start;
+}
+
+.fetch-btn:hover:not(.disabled) {
+  background-color: #0056b3;
+}
+
+.fetch-btn.disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Status Messages */
+.status-msg {
+  text-align: center;
+  margin: 15px 0;
+  color: #555;
+}
+
+.status-msg.error {
+  color: red;
+}
+
+.status-msg.no-records {
+  color: #555;
+}
+
+/* Report Sections */
+.report-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.section-title.pending {
+  color: #dc3545;
+}
+
+/* Table Wrapper */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+thead {
+  background-color: #007bff;
+  color: #fff;
+}
+
+thead tr th {
+  padding: 12px;
+  text-align: left;
+}
+
+tbody tr {
+  background-color: #fafafa;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f0f0f0;
+}
+
+tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-card {
+    flex-direction: column;
+  }
+
+  .fetch-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
