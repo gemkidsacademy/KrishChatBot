@@ -13,7 +13,6 @@ import AddDoctor from "./components/AddDoctorPage";
 import EditDoctor from "./components/EditDoctorPage";
 import ViewDoctors from "./components/ViewDoctors";
 import DeleteDoctor from "./components/DeleteDoctor";
-import UserUsageDashboard from "./components/UserUsageDashboard";
 import DemoChatbot from "./components/DemoChatbot";
 
 // --- Login Page ---
