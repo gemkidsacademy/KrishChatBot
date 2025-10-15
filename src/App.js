@@ -155,14 +155,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/UserUsageDashboard"
-          element={
-            <PrivateRoute isLoggedIn={isLoggedIn}>
-              <UserUsageDashboard />
-            </PrivateRoute>
-          }
-        />
+        
 
         {/* Sociology Chatbot */}
         <Route
