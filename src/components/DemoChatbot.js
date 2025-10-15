@@ -3,14 +3,8 @@ import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
 export default function DemoChatbot({ doctorData }) {
-  // Redirect to login if doctorData is not available
-  if (!doctorData || !doctorData.name) {
-    return <Navigate to="/" replace />;
-  }
-
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` },
-  ]);
+  // Always initialize hooks first
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
 
@@ -18,6 +12,18 @@ export default function DemoChatbot({ doctorData }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // --- Redirect if doctorData is missing ---
+  if (!doctorData || !doctorData.name) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Initialize the welcome message after confirming doctorData exists
+  useEffect(() => {
+    setMessages([
+      { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` },
+    ]);
+  }, [doctorData.name]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
