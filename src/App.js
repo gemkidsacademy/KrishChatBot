@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
 // --- Components ---
 import AdminPanel from "./components/AdminPage";
@@ -7,24 +13,8 @@ import AddDoctor from "./components/AddDoctorPage";
 import EditDoctor from "./components/EditDoctorPage";
 import ViewDoctors from "./components/ViewDoctors";
 import DeleteDoctor from "./components/DeleteDoctor";
-import ChatbotTrainerUI_sociology from "./components/ChatbotTrainerUI_sociology";
-import Ai_Learning from "./components/Ai_Learning";
-import AiAvatar from "./components/AiAvatar";
-import StudentReport from "./components/StudentReport";
-import StudentUsageReport from "./components/StudentUsageReport";
 import UserUsageDashboard from "./components/UserUsageDashboard";
-import AiAudioLearning from "./components/AiAudioLearning";
-import ResponseAnalyzer from "./components/ResponseAnalyzer";
-
-
-
-
-
-
-
-
-
-import StudentDashboard from "./components/StudentDashboard";
+import DemoChatbot from "./components/DemoChatbot";
 
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
@@ -57,7 +47,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
         if (data?.id === 1) {
           navigate("/AdminPanel");
         } else if (data?.specialization === "sociology") {
-          navigate("/StudentDashboard");
+          navigate("/ChatBot");
         } else {
           navigate("/"); // fallback
         }
@@ -96,6 +86,11 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   );
 }
 
+// --- Private Route Wrapper ---
+const PrivateRoute = ({ isLoggedIn, children }) => {
+  return isLoggedIn ? children : <Navigate to="/" />;
+};
+
 // --- App ---
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -109,71 +104,72 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage setIsLoggedIn={setIsLoggedIn} setDoctorData={setDoctorData} setSessionToken={setSessionToken} />} />
+        <Route
+          path="/"
+          element={
+            <LoginPage
+              setIsLoggedIn={setIsLoggedIn}
+              setDoctorData={setDoctorData}
+              setSessionToken={setSessionToken}
+            />
+          }
+        />
 
         {/* Admin Routes */}
-        <Route path="/AdminPanel" element={isLoggedIn ? <AdminPanel /> : <Navigate to="/" />} />
-        <Route path="/add-doctor" element={isLoggedIn ? <AddDoctor /> : <Navigate to="/" />} />
-        <Route path="/edit-doctor" element={isLoggedIn ? <EditDoctor /> : <Navigate to="/" />} />
-        <Route path="/view-doctors" element={isLoggedIn ? <ViewDoctors /> : <Navigate to="/" />} />
-        <Route path="/delete-doctor" element={isLoggedIn ? <DeleteDoctor /> : <Navigate to="/" />} />
-        <Route path="/UserUsageDashboard" element={isLoggedIn ? <UserUsageDashboard /> : <Navigate to="/" />} />
-        
+        <Route
+          path="/AdminPanel"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <AdminPanel />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add-doctor"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <AddDoctor />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/edit-doctor"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <EditDoctor />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/view-doctors"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <ViewDoctors />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/delete-doctor"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <DeleteDoctor />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/UserUsageDashboard"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <UserUsageDashboard />
+            </PrivateRoute>
+          }
+        />
 
         {/* Sociology Chatbot */}
         <Route
-          path="/StudentDashboard/*"   // hypothetical subdomain-like namespace
-          element={
-            isLoggedIn ? (
-              <StudentDashboard doctorData={doctorData} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        >
-          <Route
-            index
-            element={
-              <div>
-                Welcome to the Student Dashboard. Choose an option from the links above.
-              </div>
-            }
-          />
-          <Route
-            path="ai_evaluator"
-            element={<ChatbotTrainerUI_sociology doctorData={doctorData} />}
-          />
-          <Route
-            path="Ai_Learning"
-            element={<Ai_Learning doctorData={doctorData} />}
-          />
-          <Route
-            path="AiAvatar"
-            element={<AiAvatar doctorData={doctorData} />}
-          />
-          <Route
-            path="StudentReport"
-            element={<StudentReport doctorData={doctorData} />}
-          />
-          <Route
-            path="StudentUsageReport"
-            element={<StudentUsageReport doctorData={doctorData} />}
-          />
-          <Route
-            path="UserUsageDashboard"
-            element={<UserUsageDashboard doctorData={doctorData} />}
-          />
-          <Route
-            path="AiAudioLearning"
-            element={<AiAudioLearning doctorData={doctorData} />}
-          />
-          <Route
-            path="ResponseAnalyzer"
-            element={<ResponseAnalyzer doctorData={doctorData} />}
-          />
-                                            
-        </Route>
-          
+          path="/ChatBot"
+          element={<DemoChatbot doctorData={doctorData} />}
+        />
       </Routes>
     </Router>
   );
@@ -181,11 +177,42 @@ function App() {
 
 // --- Styles ---
 const styles = {
-  container: { textAlign: "center", marginTop: "50px", padding: "20px", fontFamily: "Arial, sans-serif", minHeight: "100vh", backgroundColor: "#f4f4f4" },
-  loginBox: { backgroundColor: "#fff", padding: "20px", borderRadius: "8px", boxShadow: "0px 4px 10px rgba(0,0,0,0.1)", display: "inline-block" },
-  input: { padding: "10px", margin: "10px", width: "80%", borderRadius: "5px", border: "1px solid #ccc" },
-  button: { padding: "10px 20px", backgroundColor: "#0078D4", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" },
-  error: { color: "red", fontSize: "14px" },
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    background: "#f0f2f5",
+  },
+  loginBox: {
+    padding: "30px",
+    borderRadius: "8px",
+    background: "#fff",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    textAlign: "center",
+    minWidth: "300px",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+  },
+  button: {
+    padding: "10px 20px",
+    borderRadius: "4px",
+    border: "none",
+    background: "#007bff",
+    color: "#fff",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  error: {
+    color: "red",
+    marginTop: "10px",
+  },
 };
 
 export default App;
