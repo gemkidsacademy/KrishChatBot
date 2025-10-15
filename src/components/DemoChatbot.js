@@ -8,22 +8,24 @@ export default function DemoChatbot({ doctorData }) {
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
 
-  // Scroll to the latest message
+  // Set welcome message after doctorData is available
+  useEffect(() => {
+    if (doctorData?.name) {
+      setMessages([
+        { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` },
+      ]);
+    }
+  }, [doctorData?.name]);
+
+  // Scroll to latest message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // --- Redirect if doctorData is missing ---
-  if (!doctorData || !doctorData.name) {
+  // Redirect if doctorData is missing
+  if (!doctorData?.name) {
     return <Navigate to="/" replace />;
   }
-
-  // Initialize the welcome message after confirming doctorData exists
-  useEffect(() => {
-    setMessages([
-      { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` },
-    ]);
-  }, [doctorData.name]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
