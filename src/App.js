@@ -50,43 +50,50 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
   // --- Login Handler ---
   const handleLogin = async () => {
-    try {
-      setIsLoggedIn(false);
-      setDoctorData(null);
+  try {
+    setIsLoggedIn(false);
+    setDoctorData(null);
 
-      let payload;
-      if (loginMode === "password") {
-        payload = { username, password };
-      } else {
-        if (!otpSent) return setError("Please generate OTP first");
-        payload = { phone, otp };
-      }
-
-      const response = await fetch(`${server}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsLoggedIn(true);
-        setDoctorData(data);
-        setSessionToken(data.session_token || null);
-        setError(null);
-
-        if (data?.id === 1) navigate("/AdminPanel");
-        else if (data?.specialization === "sociology") navigate("/ChatBot");
-        else navigate("/"); // fallback
-      } else {
-        setError(data.error || "Invalid credentials");
-      }
-    } catch (err) {
-      setError("Failed to login");
+    // Prepare payload based on login mode
+    let payload;
+    if (loginMode === "password") {
+      payload = { username, password };
+    } else {
+      if (!otpSent) return setError("Please generate OTP first");
+      payload = { phone, otp };
     }
-  };
+
+    // Send login request
+    const response = await fetch(`${server}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // important for cookie handling
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Login successful
+      setIsLoggedIn(true);
+      setDoctorData(data); // now holds User data
+      setSessionToken(data.session_token || null);
+      setError(null);
+
+      // Navigate based on name
+      if (data?.name === "Admin") {
+        navigate("/AdminPanel"); // route for admin users
+      } else {
+        navigate("/ChatBot"); // default route for all other users
+      }
+    } else {
+      setError(data.detail || "Invalid credentials"); // backend returns 'detail' for errors
+    }
+  } catch (err) {
+    console.error(err);
+    setError("Failed to login");
+  }
+};
 
   const toggleLoginMode = () => {
     setLoginMode(loginMode === "password" ? "otp" : "password");
