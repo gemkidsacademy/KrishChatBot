@@ -37,7 +37,7 @@ export default function DemoChatbot({ doctorData }) {
 
     try {
       const response = await fetch(
-        `https://krishbackend.up.railway.app/search?query=${encodeURIComponent(userInput)}`
+        `krishbackend-production.up.railway.app/search?query=${encodeURIComponent(userInput)}`
       );
       const data = await response.json();
 
@@ -105,4 +105,5 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
