@@ -1,66 +1,77 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const AddDoctor = () => {
-    const [doctor, setDoctor] = useState({
-        id: "",
-        username: "",
-        password: "",
-        name: "",
-        specialization: "",
-    });
-    const server="https://web-production-e5ae.up.railway.app"
-    //const server = "http://localhost:3000"
-    const [message, setMessage] = useState("");
+const AddUser = () => {
+  const [user, setUser] = useState({
+    id: "",
+    username: "",
+    password: "",
+    name: "",
+    role: "doctor", // Default role (you can change this if admin adds others)
+  });
 
-    useEffect(() => {
-        const fetchNextDoctorId = async () => {
-            try {
-                const response = await axios.get(`${server}/get_next_doctor_id`);
-                setDoctor((prev) => ({ ...prev, id: response.data }));
-            } catch (error) {
-                console.error("Error fetching next doctor ID:", error);
-                setMessage("Failed to fetch next doctor ID.");
-            }
-        };
+  const server = "krishbackend-production.up.railway.app";
+  // const server = "http://localhost:8000";
 
-        fetchNextDoctorId();
-    }, []);
+  const [message, setMessage] = useState("");
 
-    const handleChange = (e) => {
-        setDoctor({ ...doctor, [e.target.name]: e.target.value });
+  // Fetch next available user ID
+  useEffect(() => {
+    const fetchNextUserId = async () => {
+      try {
+        const response = await axios.get(`${server}/get_next_user_id`);
+        setUser((prev) => ({ ...prev, id: response.data }));
+      } catch (error) {
+        console.error("Error fetching next user ID:", error);
+        setMessage("Failed to fetch next user ID.");
+      }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`${server}/add_doctor`, doctor);
-            setMessage(response.data.message);
-            setDoctor({ id: "", username: "", password: "", name: "", specialization: "" });
+    fetchNextUserId();
+  }, []);
 
-            const nextIdResponse = await axios.get(`${server}/get_next_doctor_id`);
-            setDoctor((prev) => ({ ...prev, id: nextIdResponse.data }));
-        } catch (error) {
-            setMessage(error.response?.data?.detail || "Failed to add doctor.");
-        }
-    };
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
-    return (
-        <div style={{ maxWidth: "400px", margin: "auto", padding: "20px", textAlign: "center" }}>
-            <h2>Add Doctor</h2>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Send POST request to backend
+      const response = await axios.post(`${server}/add_user`, user);
+      setMessage(response.data.message);
 
-            {message && <p style={{ color: message.includes("Failed") ? "red" : "green" }}>{message}</p>}
+      // Reset form fields after successful add
+      setUser({ id: "", username: "", password: "", name: "", role: "doctor" });
 
-            <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-                <input type="number" name="id" placeholder="Doctor ID" value={doctor.id} readOnly required /><br /><br />
-                <input type="text" name="username" placeholder="Username" value={doctor.username} onChange={handleChange} required /><br /><br />
-                <input type="password" name="password" placeholder="Password" value={doctor.password} onChange={handleChange} required /><br /><br />
-                <input type="text" name="name" placeholder="Name" value={doctor.name} onChange={handleChange} required /><br /><br />
-                <input type="text" name="specialization" placeholder="Specialization" value={doctor.specialization} onChange={handleChange} required /><br /><br />
-                <button type="submit">Add Doctor</button>
-            </form>
-        </div>
-    );
+      // Fetch next ID again for next entry
+      const nextIdResponse = await axios.get(`${server}/get_next_user_id`);
+      setUser((prev) => ({ ...prev, id: nextIdResponse.data }));
+    } catch (error) {
+      console.error("Error adding user:", error);
+      setMessage(error.response?.data?.detail || "Failed to add user.");
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: "400px", margin: "auto", padding: "20px", textAlign: "center" }}>
+      <h2>Add User</h2>
+
+      {message && <p style={{ color: message.includes("Failed") ? "red" : "green" }}>{message}</p>}
+
+      <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+        <input type="number" name="id" placeholder="User ID" value={user.id} readOnly required /><br /><br />
+        <input type="text" name="username" placeholder="Username" value={user.username} onChange={handleChange} required /><br /><br />
+        <input type="password" name="password" placeholder="Password" value={user.password} onChange={handleChange} required /><br /><br />
+        <input type="text" name="name" placeholder="Name" value={user.name} onChange={handleChange} required /><br /><br />
+        <select name="role" value={user.role} onChange={handleChange}>
+          <option value="doctor">Doctor</option>
+          <option value="admin">Admin</option>
+        </select><br /><br />
+        <button type="submit">Add User</button>
+      </form>
+    </div>
+  );
 };
 
-export default AddDoctor;
+export default AddUser;
