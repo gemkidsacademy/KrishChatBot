@@ -17,8 +17,10 @@ import DemoChatbot from "./components/DemoChatbot";
 
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
+  const [loginMode, setLoginMode] = useState("password"); // "password" or "otp"
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const server = "https://web-production-e5ae.up.railway.app";
@@ -28,11 +30,16 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       setIsLoggedIn(false);
       setDoctorData(null);
 
+      let payload =
+        loginMode === "password"
+          ? { username, password }
+          : { username, otp };
+
       const response = await fetch(`${server}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -58,10 +65,16 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     }
   };
 
+  const toggleLoginMode = () => {
+    setLoginMode(loginMode === "password" ? "otp" : "password");
+    setError("");
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        <h2>Login</h2>
+        <h2>{loginMode === "password" ? "Login with ID/Password" : "Login with OTP"}</h2>
+
         <input
           type="text"
           placeholder="Username"
@@ -69,16 +82,35 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
           onChange={(e) => setUsername(e.target.value)}
           style={styles.input}
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-        />
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "10px" }}>
-          <button onClick={handleLogin} style={styles.button}>Login</button>
-        </div>
+
+        {loginMode === "password" ? (
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={styles.input}
+          />
+        ) : (
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            style={styles.input}
+          />
+        )}
+
+        <button onClick={handleLogin} style={styles.button}>
+          Login
+        </button>
+
+        <p style={styles.toggle} onClick={toggleLoginMode}>
+          {loginMode === "password"
+            ? "Login with OTP instead"
+            : "Login with ID/Password instead"}
+        </p>
+
         {error && <p style={styles.error}>{error}</p>}
       </div>
     </div>
@@ -155,7 +187,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        
 
         {/* Sociology Chatbot */}
         <Route
@@ -193,7 +224,9 @@ const styles = {
     fontSize: "16px",
   },
   button: {
-    padding: "10px 20px",
+    width: "100%",
+    padding: "10px",
+    marginTop: "10px",
     borderRadius: "4px",
     border: "none",
     background: "#007bff",
@@ -204,6 +237,12 @@ const styles = {
   error: {
     color: "red",
     marginTop: "10px",
+  },
+  toggle: {
+    marginTop: "10px",
+    cursor: "pointer",
+    color: "#007bff",
+    textDecoration: "underline",
   },
 };
 
