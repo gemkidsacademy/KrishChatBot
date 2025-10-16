@@ -58,13 +58,14 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     // Prepare payload based on login mode
     let payload;
     if (loginMode === "password") {
-      payload = { username, password };
+      // Backend expects 'name' instead of 'username'
+      payload = { name: username, password };
     } else {
       if (!otpSent) return setError("Please generate OTP first");
       payload = { phone, otp };
     }
 
-    // Send login request
+    // Send login request to FastAPI backend
     const response = await fetch(`${server}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,7 +78,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     if (response.ok) {
       // Login successful
       setIsLoggedIn(true);
-      setDoctorData(data); // now holds User data
+      setDoctorData(data); // backend sends name, email, etc.
       setSessionToken(data.session_token || null);
       setError(null);
 
@@ -85,16 +86,17 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       if (data?.name === "Admin") {
         navigate("/AdminPanel"); // route for admin users
       } else {
-        navigate("/ChatBot"); // default route for all other users
+        navigate("/ChatBot"); // route for other users
       }
     } else {
-      setError(data.detail || "Invalid credentials"); // backend returns 'detail' for errors
+      setError(data.detail || "Invalid credentials");
     }
   } catch (err) {
     console.error(err);
     setError("Failed to login");
   }
 };
+
 
   const toggleLoginMode = () => {
     setLoginMode(loginMode === "password" ? "otp" : "password");
