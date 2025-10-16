@@ -20,20 +20,47 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [loginMode, setLoginMode] = useState("password"); // "password" or "otp"
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const server = "https://web-production-e5ae.up.railway.app";
 
+  // --- Generate OTP ---
+  const generateOtp = async () => {
+    if (!phone) return setError("Please enter phone number");
+    try {
+      const response = await fetch(`${server}/generate-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setOtpSent(true);
+        setError(null);
+      } else {
+        setError(data.error || "Failed to generate OTP");
+      }
+    } catch (err) {
+      setError("Failed to generate OTP");
+    }
+  };
+
+  // --- Login Handler ---
   const handleLogin = async () => {
     try {
       setIsLoggedIn(false);
       setDoctorData(null);
 
-      let payload =
-        loginMode === "password"
-          ? { username, password }
-          : { username, otp };
+      let payload;
+      if (loginMode === "password") {
+        payload = { username, password };
+      } else {
+        if (!otpSent) return setError("Please generate OTP first");
+        payload = { phone, otp };
+      }
 
       const response = await fetch(`${server}/login`, {
         method: "POST",
@@ -50,13 +77,9 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
         setSessionToken(data.session_token || null);
         setError(null);
 
-        if (data?.id === 1) {
-          navigate("/AdminPanel");
-        } else if (data?.specialization === "sociology") {
-          navigate("/ChatBot");
-        } else {
-          navigate("/"); // fallback
-        }
+        if (data?.id === 1) navigate("/AdminPanel");
+        else if (data?.specialization === "sociology") navigate("/ChatBot");
+        else navigate("/"); // fallback
       } else {
         setError(data.error || "Invalid credentials");
       }
@@ -67,38 +90,67 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
   const toggleLoginMode = () => {
     setLoginMode(loginMode === "password" ? "otp" : "password");
-    setError("");
+    setError(null);
+    setOtpSent(false);
+    setOtp("");
+    setUsername("");
+    setPassword("");
+    setPhone("");
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        <h2>{loginMode === "password" ? "Login with ID/Password" : "Login with OTP"}</h2>
-
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          style={styles.input}
-        />
+        <h2>
+          {loginMode === "password" ? "Login with ID/Password" : "Login with OTP"}
+        </h2>
 
         {loginMode === "password" ? (
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-          />
+          <>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+            />
+          </>
         ) : (
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            style={styles.input}
-          />
+          <>
+            <input
+              type="text"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              style={styles.input}
+              disabled={otpSent} // disable phone after OTP is sent
+            />
+            {!otpSent && (
+              <button
+                onClick={generateOtp}
+                style={{ ...styles.button, background: "#28a745", marginTop: "5px" }}
+                disabled={!phone}
+              >
+                Generate OTP
+              </button>
+            )}
+            {otpSent && (
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                style={styles.input}
+              />
+            )}
+          </>
         )}
 
         <button onClick={handleLogin} style={styles.button}>
@@ -122,7 +174,7 @@ const PrivateRoute = ({ isLoggedIn, children }) => {
   return isLoggedIn ? children : <Navigate to="/" />;
 };
 
-// --- App ---
+// --- Main App ---
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [doctorData, setDoctorData] = useState(null);
