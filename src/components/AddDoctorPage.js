@@ -4,13 +4,14 @@ import axios from "axios";
 const AddUser = () => {
   const [user, setUser] = useState({
     id: "",
-    username: "",
-    password: "",
     name: "",
-    role: "doctor", // Default role (you can change this if admin adds others)
+    email: "",
+    phone_number: "",
+    class_name: "",
+    password: "",
   });
 
-  const server = "krishbackend-production.up.railway.app";
+  const server = "https://krishbackend-production.up.railway.app";
   // const server = "http://localhost:8000";
 
   const [message, setMessage] = useState("");
@@ -42,7 +43,14 @@ const AddUser = () => {
       setMessage(response.data.message);
 
       // Reset form fields after successful add
-      setUser({ id: "", username: "", password: "", name: "", role: "doctor" });
+      setUser({
+        id: "",
+        name: "",
+        email: "",
+        phone_number: "",
+        class_name: "",
+        password: "",
+      });
 
       // Fetch next ID again for next entry
       const nextIdResponse = await axios.get(`${server}/get_next_user_id`);
@@ -61,13 +69,11 @@ const AddUser = () => {
 
       <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
         <input type="number" name="id" placeholder="User ID" value={user.id} readOnly required /><br /><br />
-        <input type="text" name="username" placeholder="Username" value={user.username} onChange={handleChange} required /><br /><br />
-        <input type="password" name="password" placeholder="Password" value={user.password} onChange={handleChange} required /><br /><br />
         <input type="text" name="name" placeholder="Name" value={user.name} onChange={handleChange} required /><br /><br />
-        <select name="role" value={user.role} onChange={handleChange}>
-          <option value="doctor">Doctor</option>
-          <option value="admin">Admin</option>
-        </select><br /><br />
+        <input type="email" name="email" placeholder="Email" value={user.email} onChange={handleChange} required /><br /><br />
+        <input type="text" name="phone_number" placeholder="Phone Number" value={user.phone_number} onChange={handleChange} /><br /><br />
+        <input type="text" name="class_name" placeholder="Class Name" value={user.class_name} onChange={handleChange} /><br /><br />
+        <input type="password" name="password" placeholder="Password" value={user.password} onChange={handleChange} required /><br /><br />
         <button type="submit">Add User</button>
       </form>
     </div>
