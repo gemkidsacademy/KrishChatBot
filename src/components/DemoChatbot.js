@@ -29,7 +29,7 @@ export default function DemoChatbot({ doctorData }) {
     return <Navigate to="/" replace />;
   }
 
-  // ✅ Fixed regex for **bold** text parsing
+  // ✅ Parse **bold** text correctly
   const parseBoldText = (text) => {
     const regex = /\*\*(.+?)\*\*/g;
     const parts = [];
@@ -74,18 +74,31 @@ export default function DemoChatbot({ doctorData }) {
         )}`
       );
 
+      if (!response.ok) {
+        throw new Error(`Backend returned status ${response.status}`);
+      }
+
       const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error("Unexpected response format");
+      }
+
       const seenLinks = new Set();
       const links = [];
 
       const botText = data
         .map((pdf) => {
-          const lines = [`${pdf.name}: ${pdf.snippet}`];
-          if (pdf.link && !seenLinks.has(pdf.link)) {
+          const lines = [];
+          const pdfName = pdf.name ? pdf.name : "Unknown Source";
+          const snippet = pdf.snippet || "No snippet available.";
+
+          lines.push(`${pdfName}: ${snippet}`);
+
+          if (pdf.link && pdf.link.trim() && !seenLinks.has(pdf.link)) {
             seenLinks.add(pdf.link);
             links.push(pdf.link);
-            lines.push(`[Open PDF](${pdf.link})`);
           }
+
           return lines.join("\n");
         })
         .join("\n\n");
@@ -122,8 +135,8 @@ export default function DemoChatbot({ doctorData }) {
               {msg.sender === "bot" ? (
                 <>
                   <div>{parseBoldText(msg.text)}</div>
-                  {msg.links?.length > 0 && (
-                    <div>
+                  {Array.isArray(msg.links) && msg.links.length > 0 && (
+                    <div className="pdf-links">
                       {msg.links.map((link, i) => (
                         <a
                           key={i}
