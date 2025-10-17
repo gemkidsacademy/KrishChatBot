@@ -30,69 +30,101 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
   // --- Generate OTP ---
   const generateOtp = async () => {
-    if (!phone) return setError("Please enter phone number");
-    try {
-      const response = await fetch(`${server}/generate-otp`, {
+  if (!phone) {
+    return setError("Please enter phone number");
+  }
+
+  try {
+    const response = await fetch(
+      "https://krishbackend-production.up.railway.app/send-otp",
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setOtpSent(true);
-        setError(null);
-      } else {
-        setError(data.error || "Failed to generate OTP");
+        body: JSON.stringify({ phone_number: phone }), // match backend expected key
       }
-    } catch (err) {
-      setError("Failed to generate OTP");
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setOtpSent(true);
+      setError(null);
+      console.log("[INFO] OTP sent successfully:", data);
+    } else {
+      setError(data.detail || "Failed to generate OTP");
+      console.warn("[WARN] OTP generation failed:", data);
     }
-  };
+  } catch (err) {
+    setError("Failed to generate OTP");
+    console.error("[ERROR] Exception while generating OTP:", err);
+  }
+};
 
   // --- Login Handler ---
   const handleLogin = async () => {
   try {
     setIsLoggedIn(false);
     setDoctorData(null);
+    setError(null);
 
-    // Prepare payload based on login mode
-    let payload;
     if (loginMode === "password") {
-      // Backend expects 'name' instead of 'username'
-      payload = { name: username, password };
-    } else {
-      if (!otpSent) return setError("Please generate OTP first");
-      payload = { phone, otp };
-    }
-
-    // Send login request to FastAPI backend
-    const response = await fetch(`${server}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // important for cookie handling
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Login successful
-      setIsLoggedIn(true);
-      setDoctorData(data); // backend sends name, email, etc.
-      setSessionToken(data.session_token || null);
-      setError(null);
-
-      // Navigate based on name
-      if (data?.name === "Admin") {
-        navigate("/AdminPanel"); // route for admin users
-      } else {
-        navigate("/ChatBot"); // route for other users
+      // ---------------- Password login ----------------
+      if (!username || !password) {
+        return setError("Please enter username and password");
       }
+
+      const response = await fetch(`${server}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name: username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("[INFO] Password login successful:", data);
+        setIsLoggedIn(true);
+        setDoctorData(data);
+        setSessionToken(data.session_token || null);
+        navigate(data.name === "Admin" ? "/AdminPanel" : "/ChatBot");
+      } else {
+        console.warn("[WARN] Password login failed:", data);
+        setError(data.detail || "Invalid credentials");
+      }
+
     } else {
-      setError(data.detail || "Invalid credentials");
+      // ---------------- OTP login ----------------
+      if (!otpSent) return setError("Please generate OTP first");
+      if (!otp) return setError("Please enter the OTP");
+
+      console.log("[INFO] Verifying OTP for phone:", phone);
+
+      // Verify OTP and get user data in one call
+      const verifyResponse = await fetch(`${server}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_number: phone, otp }),
+      });
+      const verifyData = await verifyResponse.json();
+
+      if (!verifyResponse.ok) {
+        console.warn("[WARN] OTP verification failed:", verifyData);
+        return setError(verifyData.detail || "OTP verification failed");
+      }
+
+      console.log("[INFO] OTP verified successfully, user data:", verifyData);
+
+      // Set login state
+      setIsLoggedIn(true);
+      setDoctorData(verifyData);
+      setSessionToken(verifyData.session_token || null);
+
+      // Navigate based on user role
+      navigate(verifyData.name === "Admin" ? "/AdminPanel" : "/ChatBot");
     }
   } catch (err) {
-    console.error(err);
+    console.error("[ERROR] Exception in handleLogin:", err);
     setError("Failed to login");
   }
 };
