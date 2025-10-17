@@ -103,93 +103,69 @@ const handleLogin = async () => {
 
     // ---------------- OTP Login ----------------
     else if (loginMode === "otp") {
-      console.log("[INFO] OTP login mode active");
+  console.log("[INFO] OTP login mode active");
 
-      if (!otpSent) {
-        setError("Please generate OTP first");
-        return;
-      }
+  if (!otpSent) {
+    setError("Please generate OTP first");
+    return;
+  }
 
-      if (!phone) {
-        setError("Please enter phone number");
-        return;
-      }
+  if (!phone) {
+    setError("Please enter phone number");
+    return;
+  }
 
-      if (!otp) {
-        setError("Please enter the OTP");
-        return;
-      }
+  if (!otp) {
+    setError("Please enter the OTP");
+    return;
+  }
 
-      // Validate phone number format before sending
-      const isValidE164 = /^\+92\d{10}$/.test(phone);
-      if (!isValidE164) {
-        setError("Please enter a valid phone number in +92300xxxxxxx format");
-        return;
-      }
+  // Validate phone number format before sending
+  const isValidE164 = /^\+92\d{10}$/.test(phone);
+  if (!isValidE164) {
+    setError("Please enter a valid phone number in +92300xxxxxxx format");
+    return;
+  }
 
-      console.log("[INFO] Sending verify-otp request for phone:", phone, "OTP:", otp);
+  console.log("[INFO] Sending verify-otp request for phone:", phone, "OTP:", otp);
 
-      // ---------------- Call verify-otp ----------------
-      const verifyResponse = await fetch(`${server}/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number: phone, otp }),
-      });
+  try {
+    // ---------------- Call verify-otp ----------------
+    const verifyResponse = await fetch(`${server}/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone_number: phone, otp }),
+    });
 
-      console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
+    console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
 
-      let verifyData;
-      try {
-        verifyData = await verifyResponse.json();
-        console.log("[DEBUG] verify-otp response JSON:", verifyData);
-      } catch (err) {
-        console.error("[ERROR] Failed to parse verify-otp response:", err);
-        setError("Failed to verify OTP");
-        return;
-      }
+    let verifyData;
+    try {
+      verifyData = await verifyResponse.json();
+      console.log("[DEBUG] verify-otp response JSON:", verifyData);
+    } catch (err) {
+      console.error("[ERROR] Failed to parse verify-otp response:", err);
+      setError("Failed to verify OTP");
+      return;
+    }
 
-      if (verifyResponse.ok) {
-        console.log("[INFO] OTP verified successfully, fetching user info...");
+    if (verifyResponse.ok) {
+      console.log("[INFO] OTP verified successfully");
 
-        // ---------------- Fetch user info ----------------
-        const userResponse = await fetch(`${server}/get-user-by-phone`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone_number: phone }),
-        });
-
-        console.log("[DEBUG] Raw user fetch response status:", userResponse.status);
-
-        let userData;
-        try {
-          userData = await userResponse.json();
-          console.log("[DEBUG] Fetched user data:", userData);
-        } catch (err) {
-          console.error("[ERROR] Failed to parse user data:", err);
-          setError("Failed to fetch user data");
-          return;
-        }
-
-        if (userResponse.ok) {
-          setIsLoggedIn(true);
-          setDoctorData(userData);
-          setSessionToken(userData.session_token || null);
-
-          if (userData?.name === "Admin") navigate("/AdminPanel");
-          else navigate("/ChatBot");
-        } else {
-          setError(userData.detail || "Failed to fetch user data");
-        }
-      } else {
-        console.warn("[WARN] OTP verification failed:", verifyData);
-        setError(verifyData.detail || "Invalid OTP");
-      }
+      // ---------------- Login successful ----------------
+      setIsLoggedIn(true);
+      setDoctorData({ phone_number: phone }); // optionally store phone only
+      setSessionToken(null); // or generate/manage session token here
+      navigate("/ChatBot");
+    } else {
+      console.warn("[WARN] OTP verification failed:", verifyData);
+      setError(verifyData.detail || "Invalid OTP");
     }
   } catch (err) {
-    console.error("[ERROR] Login failed unexpectedly:", err);
+    console.error("[ERROR] OTP login failed unexpectedly:", err);
     setError("Login failed. Please try again.");
   }
-};
+}
 
 
 
