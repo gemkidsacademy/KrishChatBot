@@ -64,11 +64,12 @@ export default function DemoChatbot({ doctorData }) {
   console.log("🧍 User submitted:", userInput);
 
   // Add user message
-  setMessages((prev) => [...prev, { sender: "user", text: userInput, links: [] }]);
+  setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
   setInput("");
   setIsWaiting(true);
 
   try {
+    // Backend request
     const url = `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
       userInput
     )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
@@ -78,35 +79,34 @@ export default function DemoChatbot({ doctorData }) {
 
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
-
     const data = await response.json();
+
     console.log("📦 Backend raw data:", data);
 
-    if (!Array.isArray(data)) throw new Error("Unexpected response format (expected array)");
-
     // Process each item
-    const processedMessages = [];
-    data.forEach((item, index) => {
-      console.log(`🔹 Processing item ${index}:`, item);
-      const name = item.name || "Unknown Source";
-      const snippet = item.snippet || "No snippet available.";
-      const links = Array.isArray(item.links) ? item.links : [];
+    const processedMessages = data.map((item, idx) => {
+      console.log(`🔹 Processing item ${idx}:`, item);
+      console.log("   Name   :", item.name);
+      console.log("   Snippet:", item.snippet);
+      console.log("   Links  :", item.links);
 
-      console.log(`   Name: ${name}`);
-      console.log(`   Snippet: ${snippet}`);
-      console.log(`   Links:`, links);
-
-      processedMessages.push({ sender: "bot", text: snippet, name, links });
+      return {
+        sender: "bot",
+        text: item.snippet,
+        name: item.name,
+        links: Array.isArray(item.links) ? item.links : []
+      };
     });
 
     console.log("✅ Final processed messages:", processedMessages);
 
+    // Add bot messages
     setMessages((prev) => [...prev, ...processedMessages]);
   } catch (error) {
     console.error("❌ Error fetching from backend:", error);
     setMessages((prev) => [
       ...prev,
-      { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] },
+      { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] }
     ]);
   } finally {
     setIsWaiting(false);
@@ -119,48 +119,46 @@ export default function DemoChatbot({ doctorData }) {
     <div className="chat-container">
       <div className="chat-box">
         <div className="chat-header">AI PDF Chatbot Demo</div>
-
-        <div className="chat-messages">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message ${msg.sender}`}>
-              {msg.sender === "bot" ? (
-                <>
+          <div className="chat-messages">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`message ${msg.sender}`}>
+                {msg.sender === "bot" ? (
                   <div>
-                    {msg.name && <strong>{msg.name}: </strong>}
-                    {msg.text}
+                    {msg.name && <div className="bot-name">{parseBoldText(msg.name)}</div>}
+                    <div className="bot-snippet">{parseBoldText(msg.text)}</div>
+                    {Array.isArray(msg.links) && msg.links.length > 0 && (
+                      <div className="pdf-links">
+                        {msg.links.map((link, i) => (
+                          <a
+                            key={i}
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="pdf-link"
+                          >
+                            Open PDF {i + 1}
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {Array.isArray(msg.links) && msg.links.length > 0 && (
-                    <div className="pdf-links">
-                      {msg.links.map((link, i) => (
-                        <a
-                          key={i}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="pdf-link"
-                        >
-                          {link.name} {link.page ? `(Page ${link.page})` : ""}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div>{msg.text}</div>
-              )}
-            </div>
-          ))}
+                ) : (
+                  <div>{msg.text}</div>
+                )}
+              </div>
+            ))}
+          
+            {isWaiting && (
+              <div className="message bot waiting">
+                <div className="spinner"></div>
+                <span>Waiting for response...</span>
+              </div>
+            )}
+          
+            <div ref={chatEndRef} />
+          </div>
 
-          {isWaiting && (
-            <div className="message bot waiting">
-              <div className="spinner"></div>
-              <span>Waiting for response...</span>
-            </div>
-          )}
-
-          <div ref={chatEndRef} />
-        </div>
-
+        
         <form
           onSubmit={handleSubmit}
           className="chat-input"
@@ -196,5 +194,6 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
