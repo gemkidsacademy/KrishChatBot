@@ -104,26 +104,16 @@ export default function DemoChatbot({ doctorData }) {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
               {msg.sender === "bot" ? (
-                msg.text.split("\n").map((line, i) => {
-                  // Match [Open PDF](link) anywhere in the line
-                  const match = line.match(/\[Open PDF\]\((.*?)\)/);
-                  if (match) {
-                    return (
-                      <div key={i}>
-                        <a
-                          href={match[1]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="pdf-link"
-                        >
-                          Open PDF
-                        </a>
-                      </div>
-                    );
-                  } else {
-                    return <div key={i}>{parseBoldText(line)}</div>;
-                  }
-                })
+                <>
+                  <div>{parseBoldText(msg.text)}</div>
+                  {msg.link && (
+                    <div>
+                      <a href={msg.link} target="_blank" rel="noopener noreferrer" className="pdf-link">
+                        Open PDF
+                      </a>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div>{msg.text}</div>
               )}
@@ -178,3 +168,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
