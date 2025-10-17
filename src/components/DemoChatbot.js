@@ -35,6 +35,7 @@ console.warn("⚠️ doctorData.name missing — redirecting to login");
 return <Navigate to="/" replace />;
 }
 
+// ✅ Correct bold parser regex and syntax
 const parseBoldText = (text) => {
 const regex = /**(.+?)**/g;
 const parts = [];
@@ -72,13 +73,12 @@ setIsWaiting(true);
 try {
   const url = `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
     userInput
-  )}&reasoning=${reasoningLevel}&user_id=${encodeURIComponent(
+  )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
     doctorData.name
   )}`;
 
   console.log("🌐 Fetching:", url);
   const response = await fetch(url);
-
   if (!response.ok) {
     throw new Error(`Backend returned status ${response.status}`);
   }
@@ -96,15 +96,13 @@ try {
   const botText = data
     .map((pdf, index) => {
       console.log(`🔹 Processing item ${index}:`, pdf);
-      const lines = [];
       const pdfName = pdf.name || "Unknown Source";
       const snippet = pdf.snippet || "No snippet available.";
-      lines.push(`${pdfName}: ${snippet}`);
+      const textPart = `${pdfName}: ${snippet}`;
 
-      // ✅ handle structured link objects
-      if (Array.isArray(pdf.links) && pdf.links.length > 0) {
+      if (Array.isArray(pdf.links)) {
         pdf.links.forEach((linkObj) => {
-          if (linkObj.url && !seen.has(linkObj.url)) {
+          if (linkObj?.url && !seen.has(linkObj.url)) {
             seen.add(linkObj.url);
             links.push({
               name: linkObj.name || pdfName,
@@ -114,8 +112,7 @@ try {
           }
         });
       }
-
-      return lines.join("\n");
+      return textPart;
     })
     .join("\n\n");
 
