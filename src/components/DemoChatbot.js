@@ -104,12 +104,11 @@ export default function DemoChatbot({ doctorData }) {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
               {msg.sender === "bot" ? (
-                <>
-                  <div>{parseBoldText(msg.text)}</div>
-                  {msg.link && (
-                    <div>
+                msg.text.split("\n").map((line, i) =>
+                  line.startsWith("[Open PDF]") ? (
+                    <div key={i}>
                       <a
-                        href={msg.link.split(",")[0].trim()} // use first link
+                        href={line.match(/\((.*?)\)/)[1]}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="pdf-link"
@@ -117,8 +116,10 @@ export default function DemoChatbot({ doctorData }) {
                         Open PDF
                       </a>
                     </div>
-                  )}
-                </>
+                  ) : (
+                    <div key={i}>{parseBoldText(line)}</div>
+                  )
+                )
               ) : (
                 <div>{msg.text}</div>
               )}
@@ -173,6 +174,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
