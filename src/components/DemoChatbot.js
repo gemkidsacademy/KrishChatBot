@@ -224,3 +224,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
