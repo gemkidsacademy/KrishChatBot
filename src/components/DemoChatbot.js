@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
-export default function DemoChatbot({ doctorData }) {
+export default function DemoChatbot({ doctorData }) { 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
@@ -167,5 +167,6 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
