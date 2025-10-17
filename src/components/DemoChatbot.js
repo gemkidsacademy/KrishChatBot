@@ -63,8 +63,8 @@ export default function DemoChatbot({ doctorData }) {
   const userInput = input;
   console.log("🧍 User submitted:", userInput);
 
-  // Append user message
-  setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+  // Add user message
+  setMessages((prev) => [...prev, { sender: "user", text: userInput, links: [] }]);
   setInput("");
   setIsWaiting(true);
 
@@ -74,7 +74,6 @@ export default function DemoChatbot({ doctorData }) {
     )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
       doctorData.name
     )}`;
-
     console.log("🌐 Fetching backend with URL:", url);
 
     const response = await fetch(url);
@@ -83,35 +82,35 @@ export default function DemoChatbot({ doctorData }) {
     const data = await response.json();
     console.log("📦 Backend raw data:", data);
 
-    // Here we assume data is always an array of PDF URLs
-    const links = data.map((url) => ({ name: "PDF", url }));
-    console.log("✅ Links array to render:", links);
+    if (!Array.isArray(data)) throw new Error("Unexpected response format (expected array)");
 
-    // Prepare bot text (can include snippet or a placeholder message)
-    const botText = `**Academy Answer**: Please see the PDFs below for reference.`;
+    // Process each item
+    const processedMessages = [];
+    data.forEach((item, index) => {
+      console.log(`🔹 Processing item ${index}:`, item);
+      const name = item.name || "Unknown Source";
+      const snippet = item.snippet || "No snippet available.";
+      const links = Array.isArray(item.links) ? item.links : [];
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        sender: "bot",
-        text: botText,
-        links: links,
-      },
-    ]);
+      console.log(`   Name: ${name}`);
+      console.log(`   Snippet: ${snippet}`);
+      console.log(`   Links:`, links);
 
-    console.log("⏹️ handleSubmit complete, isWaiting=false");
+      processedMessages.push({ sender: "bot", text: snippet, name, links });
+    });
+
+    console.log("✅ Final processed messages:", processedMessages);
+
+    setMessages((prev) => [...prev, ...processedMessages]);
   } catch (error) {
     console.error("❌ Error fetching from backend:", error);
     setMessages((prev) => [
       ...prev,
-      {
-        sender: "bot",
-        text: "Sorry, something went wrong while fetching results.",
-        links: [],
-      },
+      { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] },
     ]);
   } finally {
     setIsWaiting(false);
+    console.log("⏹️ handleSubmit complete, isWaiting=false");
   }
 };
 
@@ -126,8 +125,11 @@ export default function DemoChatbot({ doctorData }) {
             <div key={idx} className={`message ${msg.sender}`}>
               {msg.sender === "bot" ? (
                 <>
-                  <div>{parseBoldText(msg.text)}</div>
-                  {Array.isArray(msg.links) && msg.links.length > 0 ? (
+                  <div>
+                    {msg.name && <strong>{msg.name}: </strong>}
+                    {msg.text}
+                  </div>
+                  {Array.isArray(msg.links) && msg.links.length > 0 && (
                     <div className="pdf-links">
                       {msg.links.map((link, i) => (
                         <a
@@ -137,12 +139,10 @@ export default function DemoChatbot({ doctorData }) {
                           rel="noopener noreferrer"
                           className="pdf-link"
                         >
-                          {link.name} (Page {link.page})
+                          {link.name} {link.page ? `(Page ${link.page})` : ""}
                         </a>
                       ))}
                     </div>
-                  ) : (
-                    <div style={{ fontSize: "0.8em", color: "#777" }}>(no links found)</div>
                   )}
                 </>
               ) : (
@@ -196,4 +196,5 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
