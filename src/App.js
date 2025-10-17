@@ -67,15 +67,16 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   // --- Login Handler ---
   const handleLogin = async () => {
   try {
-    setIsLoggedIn(false);
-    setDoctorData(null);
     setError(null);
 
+    // ---------------- Password Login ----------------
     if (loginMode === "password") {
-      // ---------------- Password login ----------------
       if (!username || !password) {
-        return setError("Please enter username and password");
+        setError("Please enter username and password");
+        return;
       }
+
+      console.log("[INFO] Attempting password login:", username);
 
       const response = await fetch(`${server}/login`, {
         method: "POST",
@@ -85,51 +86,76 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       });
 
       const data = await response.json();
+      console.log("[DEBUG] Password login response:", data);
 
       if (response.ok) {
-        console.log("[INFO] Password login successful:", data);
         setIsLoggedIn(true);
         setDoctorData(data);
         setSessionToken(data.session_token || null);
-        navigate(data.name === "Admin" ? "/AdminPanel" : "/ChatBot");
+
+        if (data?.name === "Admin") navigate("/AdminPanel");
+        else navigate("/ChatBot");
       } else {
-        console.warn("[WARN] Password login failed:", data);
         setError(data.detail || "Invalid credentials");
       }
+    }
 
-    } else {
-      // ---------------- OTP login ----------------
-      if (!otpSent) return setError("Please generate OTP first");
-      if (!otp) return setError("Please enter the OTP");
+    // ---------------- OTP Login ----------------
+    else if (loginMode === "otp") {
+      if (!otpSent) {
+        setError("Please generate OTP first");
+        return;
+      }
+
+      if (!phone) {
+        setError("Please enter phone number");
+        return;
+      }
+
+      if (!otp) {
+        setError("Please enter the OTP");
+        return;
+      }
 
       console.log("[INFO] Verifying OTP for phone:", phone);
 
-      // Verify OTP and get user data in one call
       const verifyResponse = await fetch(`${server}/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone_number: phone, otp }),
       });
+
       const verifyData = await verifyResponse.json();
+      console.log("[DEBUG] OTP verification response:", verifyData);
 
-      if (!verifyResponse.ok) {
-        console.warn("[WARN] OTP verification failed:", verifyData);
-        return setError(verifyData.detail || "OTP verification failed");
+      if (verifyResponse.ok) {
+        // OTP valid, fetch user info from backend
+        const userResponse = await fetch(`${server}/get-user-by-phone`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone_number: phone }),
+        });
+
+        const userData = await userResponse.json();
+        console.log("[DEBUG] User data fetched after OTP:", userData);
+
+        if (userResponse.ok) {
+          setIsLoggedIn(true);
+          setDoctorData(userData);
+          setSessionToken(userData.session_token || null);
+
+          if (userData?.name === "Admin") navigate("/AdminPanel");
+          else navigate("/ChatBot");
+        } else {
+          setError(userData.detail || "Failed to fetch user data");
+        }
+      } else {
+        setError(verifyData.detail || "Invalid OTP");
       }
-
-      console.log("[INFO] OTP verified successfully, user data:", verifyData);
-
-      // Set login state
-      setIsLoggedIn(true);
-      setDoctorData(verifyData);
-      setSessionToken(verifyData.session_token || null);
-
-      // Navigate based on user role
-      navigate(verifyData.name === "Admin" ? "/AdminPanel" : "/ChatBot");
     }
   } catch (err) {
-    console.error("[ERROR] Exception in handleLogin:", err);
-    setError("Failed to login");
+    console.error("[ERROR] Login failed:", err);
+    setError("Login failed. Please try again.");
   }
 };
 
