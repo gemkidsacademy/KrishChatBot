@@ -11,7 +11,9 @@ export default function DemoChatbot({ doctorData }) {
 
   useEffect(() => {
     if (doctorData?.name) {
-      setMessages([{ sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` }]);
+      setMessages([
+        { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` }
+      ]);
     }
   }, [doctorData?.name]);
 
@@ -22,6 +24,28 @@ export default function DemoChatbot({ doctorData }) {
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
   }
+
+  // Function to parse **bold** text
+  const parseBoldText = (text) => {
+    const regex = /\*\*(.+?)\*\*/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(<span key={lastIndex}>{text.slice(lastIndex, match.index)}</span>);
+      }
+      parts.push(<strong key={match.index}>{match[1]}</strong>);
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(<span key={lastIndex}>{text.slice(lastIndex)}</span>);
+    }
+
+    return parts;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,7 +108,7 @@ export default function DemoChatbot({ doctorData }) {
                       </a>
                     </div>
                   ) : (
-                    <div key={i}>{line}</div>
+                    <div key={i}>{parseBoldText(line)}</div>
                   )
                 )
               ) : (
@@ -133,7 +157,9 @@ export default function DemoChatbot({ doctorData }) {
             </select>
           </div>
 
-          <button type="submit" style={{ padding: "8px 16px" }}>Send</button>
+          <button type="submit" style={{ padding: "8px 16px" }}>
+            Send
+          </button>
         </form>
       </div>
     </div>
