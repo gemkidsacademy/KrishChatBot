@@ -8,21 +8,24 @@ export default function DemoChatbot({ doctorData }) {
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
-
-  const messagesRef = useRef([]); // track messages during typing
+  const typingIntervalRef = useRef(null); // track interval
 
   // ---------------- Effects ----------------
   useEffect(() => {
     if (doctorData?.name) {
       const welcome = { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` };
       setMessages([welcome]);
-      messagesRef.current = [welcome];
     }
   }, [doctorData?.name]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  // Clear typing interval on unmount
+  useEffect(() => {
+    return () => clearInterval(typingIntervalRef.current);
+  }, []);
 
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
@@ -33,9 +36,7 @@ export default function DemoChatbot({ doctorData }) {
     if (!input.trim()) return;
 
     const userInput = input;
-    const userMsg = { sender: "user", text: userInput };
-    setMessages((prev) => [...prev, userMsg]);
-    messagesRef.current = [...messagesRef.current, userMsg];
+    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
     setInput("");
     setIsTyping(true);
 
@@ -55,31 +56,30 @@ export default function DemoChatbot({ doctorData }) {
         )
         .join("\n\n");
 
-      const botMsg = { sender: "bot", text: "" };
-      messagesRef.current = [...messagesRef.current, botMsg];
-      setMessages(messagesRef.current);
+      // Add empty bot message
+      setMessages((prev) => [...prev, { sender: "bot", text: "" }]);
 
-      // Typewriter effect using ref
       let index = 0;
-      const interval = setInterval(() => {
-        if (index < botText.length) {
-          botMsg.text += botText.charAt(index);
-          setMessages([...messagesRef.current]); // force re-render
-          index++;
-        } else {
-          clearInterval(interval);
+      typingIntervalRef.current = setInterval(() => {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          const lastMessage = newMessages[newMessages.length - 1];
+          newMessages[newMessages.length - 1] = { ...lastMessage, text: lastMessage.text + botText.charAt(index) };
+          return newMessages;
+        });
+        index++;
+        if (index >= botText.length) {
+          clearInterval(typingIntervalRef.current);
           setIsTyping(false);
         }
       }, 20);
 
-      // Clear interval if component unmounts
-      return () => clearInterval(interval);
-
     } catch (error) {
       console.error("Error fetching from backend:", error);
-      const errorMsg = { sender: "bot", text: "Sorry, something went wrong while fetching results." };
-      setMessages((prev) => [...prev, errorMsg]);
-      messagesRef.current = [...messagesRef.current, errorMsg];
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Sorry, something went wrong while fetching results." },
+      ]);
       setIsTyping(false);
     }
   };
