@@ -106,9 +106,14 @@ export default function DemoChatbot({ doctorData }) {
               {msg.sender === "bot" ? (
                 <>
                   <div>{parseBoldText(msg.text)}</div>
-                  {msg.links && msg.links.length > 0 && (
+                  {msg.link && (
                     <div>
-                      <a href={msg.links[0]} target="_blank" rel="noopener noreferrer" className="pdf-link">
+                      <a
+                        href={msg.link.split(",")[0].trim()} // use first link
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="pdf-link"
+                      >
                         Open PDF
                       </a>
                     </div>
@@ -119,6 +124,7 @@ export default function DemoChatbot({ doctorData }) {
               )}
             </div>
           ))}
+
           {isWaiting && (
             <div className="message bot waiting">
               <div className="spinner"></div>
@@ -167,6 +173,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
