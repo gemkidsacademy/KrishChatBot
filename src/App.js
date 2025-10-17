@@ -154,7 +154,8 @@ const handleLogin = async () => {
 
           // ---------------- Login successful ----------------
           setIsLoggedIn(true);
-          setDoctorData({ phone_number: phone }); // optionally store phone only
+          setDoctorData(verifyData.user);
+         // optionally store phone only
           setSessionToken(null); // or generate/manage session token here
           navigate("/ChatBot");
         } else {
