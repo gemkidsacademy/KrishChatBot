@@ -57,7 +57,6 @@ export default function DemoChatbot({ doctorData }) {
     setIsWaiting(true);
   
     try {
-      // Include doctor name in the query params
       const response = await fetch(
         `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
           userInput
@@ -66,12 +65,21 @@ export default function DemoChatbot({ doctorData }) {
   
       const data = await response.json();
   
+      // Keep track of PDFs already linked
+      const seenLinks = new Set();
+  
       const botText = data
-        .map((pdf) =>
-          pdf.link
-            ? `${pdf.name}: ${pdf.snippet}\n[Open PDF](${pdf.link})`
-            : `${pdf.name}: ${pdf.snippet}`
-        )
+        .map((pdf) => {
+          const lines = [`${pdf.name}: ${pdf.snippet}`];
+  
+          // Add Open PDF link if exists and hasn't been added yet
+          if (pdf.link && !seenLinks.has(pdf.link)) {
+            lines.push(`[Open PDF](${pdf.link})`);
+            seenLinks.add(pdf.link);
+          }
+  
+          return lines.join("\n");
+        })
         .join("\n\n");
   
       setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
@@ -167,4 +175,5 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
