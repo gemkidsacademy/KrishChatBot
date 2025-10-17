@@ -6,26 +6,18 @@ export default function DemoChatbot({ doctorData }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
-  const [isTyping, setIsTyping] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
   const chatEndRef = useRef(null);
-  const typingIntervalRef = useRef(null); // track interval
 
-  // ---------------- Effects ----------------
   useEffect(() => {
     if (doctorData?.name) {
-      const welcome = { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` };
-      setMessages([welcome]);
+      setMessages([{ sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` }]);
     }
   }, [doctorData?.name]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
-
-  // Clear typing interval on unmount
-  useEffect(() => {
-    return () => clearInterval(typingIntervalRef.current);
-  }, []);
+  }, [messages, isWaiting]);
 
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
@@ -38,7 +30,7 @@ export default function DemoChatbot({ doctorData }) {
     const userInput = input;
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
     setInput("");
-    setIsTyping(true);
+    setIsWaiting(true);
 
     try {
       const response = await fetch(
@@ -56,39 +48,25 @@ export default function DemoChatbot({ doctorData }) {
         )
         .join("\n\n");
 
-      // Add empty bot message
-      setMessages((prev) => [...prev, { sender: "bot", text: "" }]);
-
-      let index = 0;
-      typingIntervalRef.current = setInterval(() => {
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          const lastMessage = newMessages[newMessages.length - 1];
-          newMessages[newMessages.length - 1] = { ...lastMessage, text: lastMessage.text + botText.charAt(index) };
-          return newMessages;
-        });
-        index++;
-        if (index >= botText.length) {
-          clearInterval(typingIntervalRef.current);
-          setIsTyping(false);
-        }
-      }, 20);
-
+      setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
+      setIsWaiting(false);
     } catch (error) {
       console.error("Error fetching from backend:", error);
       setMessages((prev) => [
         ...prev,
         { sender: "bot", text: "Sorry, something went wrong while fetching results." },
       ]);
-      setIsTyping(false);
+      setIsWaiting(false);
     }
   };
 
   return (
     <div className="chat-container">
       <div className="chat-box">
+        {/* Header */}
         <div className="chat-header">AI PDF Chatbot Demo</div>
 
+        {/* Messages */}
         <div className="chat-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
@@ -115,14 +93,17 @@ export default function DemoChatbot({ doctorData }) {
             </div>
           ))}
 
-          {isTyping && (
-            <div className="message bot typing">
-              Bot is typing<span className="blinking-cursor">|</span>
+          {isWaiting && (
+            <div className="message bot waiting">
+              <div className="spinner"></div>
+              <span>Waiting for response...</span>
             </div>
           )}
+
           <div ref={chatEndRef} />
         </div>
 
+        {/* Input + Reasoning + Send */}
         <form
           onSubmit={handleSubmit}
           className="chat-input"
