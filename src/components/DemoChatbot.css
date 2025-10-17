@@ -202,4 +202,25 @@
 .reasoning-select option {
   padding: 4px 8px;
 }
+.message.bot.waiting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+  font-style: italic;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #555;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
