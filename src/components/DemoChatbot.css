@@ -223,4 +223,14 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.pdf-link {
+  color: blue;
+  text-decoration: underline;
+  margin-right: 8px; /* optional spacing between multiple links */
+}
+
+.pdf-link:hover {
+  color: darkblue;
+}
+
 
