@@ -6,33 +6,38 @@ export default function DemoChatbot({ doctorData }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
+  const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
+
+  const messagesRef = useRef([]); // track messages during typing
 
   // ---------------- Effects ----------------
   useEffect(() => {
     if (doctorData?.name) {
-      setMessages([
-        { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` },
-      ]);
+      const welcome = { sender: "bot", text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?` };
+      setMessages([welcome]);
+      messagesRef.current = [welcome];
     }
   }, [doctorData?.name]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
   }
 
-  // ---------------- Handlers ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     const userInput = input;
-    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+    const userMsg = { sender: "user", text: userInput };
+    setMessages((prev) => [...prev, userMsg]);
+    messagesRef.current = [...messagesRef.current, userMsg];
     setInput("");
+    setIsTyping(true);
 
     try {
       const response = await fetch(
@@ -50,36 +55,40 @@ export default function DemoChatbot({ doctorData }) {
         )
         .join("\n\n");
 
-      // Add empty bot message
-      setMessages((prev) => [...prev, { sender: "bot", text: "" }]);
+      const botMsg = { sender: "bot", text: "" };
+      messagesRef.current = [...messagesRef.current, botMsg];
+      setMessages(messagesRef.current);
 
-      // Typewriter effect
+      // Typewriter effect using ref
       let index = 0;
       const interval = setInterval(() => {
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1].text += botText.charAt(index);
-          return newMessages;
-        });
-        index++;
-        if (index >= botText.length) clearInterval(interval);
+        if (index < botText.length) {
+          botMsg.text += botText.charAt(index);
+          setMessages([...messagesRef.current]); // force re-render
+          index++;
+        } else {
+          clearInterval(interval);
+          setIsTyping(false);
+        }
       }, 20);
+
+      // Clear interval if component unmounts
+      return () => clearInterval(interval);
+
     } catch (error) {
       console.error("Error fetching from backend:", error);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "Sorry, something went wrong while fetching results." },
-      ]);
+      const errorMsg = { sender: "bot", text: "Sorry, something went wrong while fetching results." };
+      setMessages((prev) => [...prev, errorMsg]);
+      messagesRef.current = [...messagesRef.current, errorMsg];
+      setIsTyping(false);
     }
   };
 
   return (
     <div className="chat-container">
       <div className="chat-box">
-        {/* Header */}
         <div className="chat-header">AI PDF Chatbot Demo</div>
 
-        {/* Messages */}
         <div className="chat-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
@@ -105,10 +114,15 @@ export default function DemoChatbot({ doctorData }) {
               )}
             </div>
           ))}
+
+          {isTyping && (
+            <div className="message bot typing">
+              Bot is typing<span className="blinking-cursor">|</span>
+            </div>
+          )}
           <div ref={chatEndRef} />
         </div>
 
-        {/* Input + Styled Reasoning Mode + Send */}
         <form
           onSubmit={handleSubmit}
           className="chat-input"
@@ -122,7 +136,6 @@ export default function DemoChatbot({ doctorData }) {
             style={{ flex: 1, padding: "8px" }}
           />
 
-          {/* Styled reasoning container */}
           <div className="reasoning-container">
             <label htmlFor="reasoning-select" className="reasoning-label">
               Reasoning
@@ -145,4 +158,3 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
-
