@@ -175,3 +175,23 @@
     padding: 0.5rem 0.75rem;
   }
 }
+.reasoning-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  height: 40px; /* match input height */
+  font-size: 0.9rem;
+}
+
+.reasoning-container select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
