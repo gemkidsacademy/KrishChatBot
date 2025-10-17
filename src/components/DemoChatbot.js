@@ -124,10 +124,14 @@ export default function DemoChatbot({ doctorData }) {
 
           {/* Styled reasoning container */}
           <div className="reasoning-container">
-            <span>Reasoning:</span>
+            <label htmlFor="reasoning-select" className="reasoning-label">
+              Reasoning
+            </label>
             <select
+              id="reasoning-select"
               value={reasoningLevel}
               onChange={(e) => setReasoningLevel(e.target.value)}
+              className="reasoning-select"
             >
               <option value="simple">Simple</option>
               <option value="medium">Medium</option>
@@ -141,3 +145,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
