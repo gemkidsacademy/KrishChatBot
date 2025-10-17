@@ -33,7 +33,11 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   if (!phone) {
     return setError("Please enter phone number");
   }
-
+  const isValidE164 = (number) => /^\+92\d{10}$/.test(number);
+  if (!isValidE164(phone)) {
+    setError("Please enter a valid phone number in +92300xxxxxxx format");
+    return;
+  }
   try {
     const response = await fetch(
       "https://krishbackend-production.up.railway.app/send-otp",
@@ -168,7 +172,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
           <>
             <input
               type="text"
-              placeholder="Phone Number"
+              placeholder="Enter phone number in format +92300xxxxxxx"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               style={styles.input}
