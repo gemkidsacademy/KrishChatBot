@@ -50,20 +50,22 @@ export default function DemoChatbot({ doctorData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-
+  
     const userInput = input;
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
     setInput("");
     setIsWaiting(true);
-
+  
     try {
+      // Include doctor name in the query params
       const response = await fetch(
         `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
           userInput
-        )}&reasoning=${reasoningLevel}`
+        )}&reasoning=${reasoningLevel}&user_id=${encodeURIComponent(doctorData.name)}`
       );
+  
       const data = await response.json();
-
+  
       const botText = data
         .map((pdf) =>
           pdf.link
@@ -71,7 +73,7 @@ export default function DemoChatbot({ doctorData }) {
             : `${pdf.name}: ${pdf.snippet}`
         )
         .join("\n\n");
-
+  
       setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
       setIsWaiting(false);
     } catch (error) {
@@ -165,3 +167,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
