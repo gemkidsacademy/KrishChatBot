@@ -57,75 +57,64 @@ export default function DemoChatbot({ doctorData }) {
 
   // ------------------ Handle user submit ------------------
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  e.preventDefault();
+  if (!input.trim()) return;
 
-    console.log("🧍 User submitted:", input);
-    setMessages((prev) => [...prev, { sender: "user", text: input, links: [] }]);
-    setInput("");
-    setIsWaiting(true);
+  const userInput = input;
+  console.log("🧍 User submitted:", userInput);
 
-    try {
-      const url = `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
-        input
-      )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
-        doctorData.name
-      )}`;
+  // Append user message
+  setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+  setInput("");
+  setIsWaiting(true);
 
-      console.log("🌐 Fetching backend with URL:", url);
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
+  try {
+    const url = `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
+      userInput
+    )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
+      doctorData.name
+    )}`;
 
-      const data = await response.json();
-      console.log("📦 Backend raw data:", data);
+    console.log("🌐 Fetching backend with URL:", url);
 
-      // ------------------ Process backend response ------------------
-      const links = [];
-      const botTextLines = [];
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
 
-      data.forEach((item, idx) => {
-        console.log(`🔹 Processing item ${idx}:`, item);
-        const snippet = item.snippet || "No snippet available.";
-        botTextLines.push(`${item.name}: ${snippet}`);
+    const data = await response.json();
+    console.log("📦 Backend raw data:", data);
 
-        if (Array.isArray(item.links)) {
-          item.links.forEach((linkObj, linkIdx) => {
-            if (linkObj?.url) {
-              links.push({
-                name: linkObj.name || item.name,
-                url: linkObj.url,
-                page: linkObj.page || 1,
-              });
-              console.log(`   ➕ Added link #${linkIdx}:`, linkObj);
-            }
-          });
-        } else if (item.link && typeof item.link === "string") {
-          links.push({
-            name: item.name,
-            url: item.link,
-            page: item.page || 1,
-          });
-          console.log("   ➕ Added single link:", item.link);
-        }
-      });
+    // Here we assume data is always an array of PDF URLs
+    const links = data.map((url) => ({ name: "PDF", url }));
+    console.log("✅ Links array to render:", links);
 
-      console.log("✅ Final links array:", links);
+    // Prepare bot text (can include snippet or a placeholder message)
+    const botText = `**Academy Answer**: Please see the PDFs below for reference.`;
 
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: botTextLines.join("\n"), links },
-      ]);
-    } catch (error) {
-      console.error("❌ Error fetching from backend:", error);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] },
-      ]);
-    } finally {
-      setIsWaiting(false);
-      console.log("⏹️ handleSubmit complete, isWaiting=false");
-    }
-  };
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: botText,
+        links: links,
+      },
+    ]);
+
+    console.log("⏹️ handleSubmit complete, isWaiting=false");
+  } catch (error) {
+    console.error("❌ Error fetching from backend:", error);
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: "Sorry, something went wrong while fetching results.",
+        links: [],
+      },
+    ]);
+  } finally {
+    setIsWaiting(false);
+  }
+};
+
 
   return (
     <div className="chat-container">
@@ -207,3 +196,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
