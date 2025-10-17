@@ -178,20 +178,28 @@
 .reasoning-container {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 4px 8px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #f9f9f9;
-  height: 40px; /* match input height */
-  font-size: 0.9rem;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+  height: 40px; /* matches input field height */
 }
 
-.reasoning-container select {
+.reasoning-label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.reasoning-select {
   border: none;
   outline: none;
   background: transparent;
   font-size: 0.9rem;
   cursor: pointer;
+}
+.reasoning-select option {
+  padding: 4px 8px;
 }
 
