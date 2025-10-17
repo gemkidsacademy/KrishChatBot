@@ -3,11 +3,13 @@ import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
 export default function DemoChatbot({ doctorData }) {
-  // Always initialize hooks first
+  // ---------------- Hooks ----------------
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [reasoningMode, setReasoningMode] = useState(false); // Reasoning mode toggle
   const chatEndRef = useRef(null);
 
+  // ---------------- Effects ----------------
   // Set welcome message after doctorData is available
   useEffect(() => {
     if (doctorData?.name) {
@@ -22,11 +24,12 @@ export default function DemoChatbot({ doctorData }) {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Redirect if doctorData is missing
+  // ---------------- Redirect if no doctor data ----------------
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
   }
 
+  // ---------------- Handlers ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -36,8 +39,11 @@ export default function DemoChatbot({ doctorData }) {
     setInput("");
 
     try {
+      // Send reasoningMode along with the query
       const response = await fetch(
-        `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(userInput)}`
+        `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
+          userInput
+        )}&reasoning=${reasoningMode}`
       );
       const data = await response.json();
 
@@ -59,11 +65,26 @@ export default function DemoChatbot({ doctorData }) {
     }
   };
 
+  // ---------------- Render ----------------
   return (
     <div className="chat-container">
       <div className="chat-box">
-        <div className="chat-header">AI PDF Chatbot Demo</div>
+        {/* Header */}
+        <div className="chat-header">
+          AI PDF Chatbot Demo
+          <div className="reasoning-toggle">
+            <label>
+              <input
+                type="checkbox"
+                checked={reasoningMode}
+                onChange={(e) => setReasoningMode(e.target.checked)}
+              />
+              Reasoning Mode
+            </label>
+          </div>
+        </div>
 
+        {/* Messages */}
         <div className="chat-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
@@ -92,6 +113,7 @@ export default function DemoChatbot({ doctorData }) {
           <div ref={chatEndRef} />
         </div>
 
+        {/* Input */}
         <form onSubmit={handleSubmit} className="chat-input">
           <input
             type="text"
@@ -105,6 +127,3 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
-
-
-
