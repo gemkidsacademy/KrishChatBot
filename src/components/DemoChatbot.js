@@ -112,15 +112,21 @@ export default function DemoChatbot({ doctorData }) {
             onChange={(e) => setInput(e.target.value)}
             style={{ flex: 1, padding: "8px" }}
           />
-          <select
-            value={reasoningLevel}
-            onChange={(e) => setReasoningLevel(e.target.value)}
-            style={{ padding: "8px", minWidth: "120px" }}
-          >
-            <option value="simple">Simple</option>
-            <option value="medium">Medium</option>
-            <option value="advanced">Advanced</option>
-          </select>
+          
+          {/* Reasoning label + dropdown */}
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ fontSize: "0.9rem" }}>Reasoning:</span>
+            <select
+              value={reasoningLevel}
+              onChange={(e) => setReasoningLevel(e.target.value)}
+              style={{ padding: "8px", minWidth: "120px" }}
+            >
+              <option value="simple">Simple</option>
+              <option value="medium">Medium</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+
           <button type="submit" style={{ padding: "8px 16px" }}>Send</button>
         </form>
       </div>
