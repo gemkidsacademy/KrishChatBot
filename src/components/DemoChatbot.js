@@ -123,28 +123,26 @@ export default function DemoChatbot({ doctorData }) {
             {messages.map((msg, idx) => (
               <div key={idx} className={`message ${msg.sender}`}>
                 {msg.sender === "bot" ? (
-                  <div>
-                    {msg.name && <div className="bot-name">{parseBoldText(msg.name)}</div>}
-                    <div className="bot-snippet">{parseBoldText(msg.text)}</div>
+                  <>
+                    <div>{parseBoldText(msg.text)}</div>
                     {Array.isArray(msg.links) && msg.links.length > 0 && (
                       <div className="pdf-links">
-                        {msg.links.map((link, i) => (
-                          <a
-                            key={i}
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="pdf-link"
-                          >
-                            Open PDF {i + 1}
-                          </a>
-                        ))}
+                        {/* Show only the first PDF link */}
+                        <a
+                          href={msg.links[0]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="pdf-link"
+                        >
+                          Open PDF
+                        </a>
                       </div>
                     )}
-                  </div>
+                  </>
                 ) : (
                   <div>{msg.text}</div>
                 )}
+
               </div>
             ))}
           
@@ -194,6 +192,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
