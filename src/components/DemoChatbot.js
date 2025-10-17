@@ -3,10 +3,9 @@ import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
 export default function DemoChatbot({ doctorData }) {
-  // ---------------- Hooks ----------------
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [reasoningLevel, setReasoningLevel] = useState("simple"); // default reasoning mode
+  const [reasoningLevel, setReasoningLevel] = useState("simple");
   const chatEndRef = useRef(null);
 
   // ---------------- Effects ----------------
@@ -22,7 +21,6 @@ export default function DemoChatbot({ doctorData }) {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ---------------- Redirect if no doctor data ----------------
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
   }
@@ -37,7 +35,6 @@ export default function DemoChatbot({ doctorData }) {
     setInput("");
 
     try {
-      // Send reasoning level to backend
       const response = await fetch(
         `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
           userInput
@@ -53,7 +50,20 @@ export default function DemoChatbot({ doctorData }) {
         )
         .join("\n\n");
 
-      setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
+      // Add empty bot message
+      setMessages((prev) => [...prev, { sender: "bot", text: "" }]);
+
+      // Typewriter effect
+      let index = 0;
+      const interval = setInterval(() => {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].text += botText.charAt(index);
+          return newMessages;
+        });
+        index++;
+        if (index >= botText.length) clearInterval(interval);
+      }, 20);
     } catch (error) {
       console.error("Error fetching from backend:", error);
       setMessages((prev) => [
@@ -63,7 +73,6 @@ export default function DemoChatbot({ doctorData }) {
     }
   };
 
-  // ---------------- Render ----------------
   return (
     <div className="chat-container">
       <div className="chat-box">
@@ -99,7 +108,7 @@ export default function DemoChatbot({ doctorData }) {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Input + Reasoning Mode + Send */}
+        {/* Input + Styled Reasoning Mode + Send */}
         <form
           onSubmit={handleSubmit}
           className="chat-input"
@@ -112,14 +121,13 @@ export default function DemoChatbot({ doctorData }) {
             onChange={(e) => setInput(e.target.value)}
             style={{ flex: 1, padding: "8px" }}
           />
-          
-          {/* Reasoning label + dropdown */}
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <span style={{ fontSize: "0.9rem" }}>Reasoning:</span>
+
+          {/* Styled reasoning container */}
+          <div className="reasoning-container">
+            <span>Reasoning:</span>
             <select
               value={reasoningLevel}
               onChange={(e) => setReasoningLevel(e.target.value)}
-              style={{ padding: "8px", minWidth: "120px" }}
             >
               <option value="simple">Simple</option>
               <option value="medium">Medium</option>
