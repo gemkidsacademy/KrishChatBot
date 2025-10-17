@@ -50,38 +50,37 @@ export default function DemoChatbot({ doctorData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-  
+
     const userInput = input;
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
     setInput("");
     setIsWaiting(true);
-  
+
     try {
       const response = await fetch(
         `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
           userInput
         )}&reasoning=${reasoningLevel}&user_id=${encodeURIComponent(doctorData.name)}`
       );
-  
+
       const data = await response.json();
-  
+
       // Keep track of PDFs already linked
       const seenLinks = new Set();
-  
+
       const botText = data
         .map((pdf) => {
           const lines = [`${pdf.name}: ${pdf.snippet}`];
-  
-          // Add Open PDF link if exists and hasn't been added yet
+
           if (pdf.link && !seenLinks.has(pdf.link)) {
             lines.push(`[Open PDF](${pdf.link})`);
             seenLinks.add(pdf.link);
           }
-  
+
           return lines.join("\n");
         })
         .join("\n\n");
-  
+
       setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
       setIsWaiting(false);
     } catch (error) {
@@ -105,22 +104,26 @@ export default function DemoChatbot({ doctorData }) {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
               {msg.sender === "bot" ? (
-                msg.text.split("\n").map((line, i) =>
-                  line.startsWith("[Open PDF]") ? (
-                    <div key={i}>
-                      <a
-                        href={line.match(/\((.*?)\)/)[1]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="pdf-link"
-                      >
-                        Open PDF
-                      </a>
-                    </div>
-                  ) : (
-                    <div key={i}>{parseBoldText(line)}</div>
-                  )
-                )
+                msg.text.split("\n").map((line, i) => {
+                  // Match [Open PDF](link) anywhere in the line
+                  const match = line.match(/\[Open PDF\]\((.*?)\)/);
+                  if (match) {
+                    return (
+                      <div key={i}>
+                        <a
+                          href={match[1]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="pdf-link"
+                        >
+                          Open PDF
+                        </a>
+                      </div>
+                    );
+                  } else {
+                    return <div key={i}>{parseBoldText(line)}</div>;
+                  }
+                })
               ) : (
                 <div>{msg.text}</div>
               )}
@@ -175,5 +178,3 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
-
-
