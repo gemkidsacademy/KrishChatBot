@@ -1,5 +1,6 @@
+// PdfUploader.js
 import React, { useState } from "react";
-import "./PdfUploader.css";
+import "./PdfUploader.css"; // Make sure this contains the updated CSS
 
 const PdfUploader = () => {
   const [pdfFile, setPdfFile] = useState(null);
@@ -55,6 +56,7 @@ const PdfUploader = () => {
       <div className="uploader-card">
         <h2 className="uploader-title">Upload PDF Pages</h2>
 
+        {/* PDF File */}
         <label className="file-label">
           Select PDF file
           <input
@@ -66,6 +68,7 @@ const PdfUploader = () => {
         </label>
         {pdfFile && <p className="file-name">Selected: {pdfFile.name}</p>}
 
+        {/* Page Range */}
         <label className="page-range-label">
           Enter Page Range (e.g., 1-5,7-10)
           <input
@@ -77,39 +80,43 @@ const PdfUploader = () => {
           />
         </label>
 
-        <label className="text-input-label">
+        {/* Class */}
+        <label className="class-label">
           Enter Class
           <input
             type="text"
             placeholder="Class name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
-            className="text-input"
+            className="class-input"
           />
         </label>
 
-        <label className="text-input-label">
+        {/* Term */}
+        <label className="term-label">
           Enter Term
           <input
             type="text"
             placeholder="Term"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            className="text-input"
+            className="term-input"
           />
         </label>
 
-        <label className="text-input-label">
+        {/* Chapter */}
+        <label className="chapter-label">
           Enter Chapter
           <input
             type="text"
             placeholder="Chapter"
             value={chapter}
             onChange={(e) => setChapter(e.target.value)}
-            className="text-input"
+            className="chapter-input"
           />
         </label>
 
+        {/* Upload Button */}
         <button
           onClick={handleUpload}
           className="upload-button"
@@ -118,6 +125,7 @@ const PdfUploader = () => {
           {uploading ? "Uploading..." : "Upload"}
         </button>
 
+        {/* Message */}
         {message && <p className="upload-message">{message}</p>}
       </div>
     </div>
