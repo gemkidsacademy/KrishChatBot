@@ -9,6 +9,10 @@ export default function DemoChatbot({ doctorData }) {
   const [isWaiting, setIsWaiting] = useState(false);
   const chatEndRef = useRef(null);
 
+   useEffect(() => {
+    console.log("DEBUG: doctorData on first render:", doctorData);
+  }, []); // empty dependency array → runs once after first render
+  
   // ------------------ Welcome message ------------------
   useEffect(() => {
     console.log("👨‍⚕️ doctorData received:", doctorData);
@@ -192,6 +196,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
