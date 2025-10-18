@@ -17,6 +17,8 @@ const AdminPanel = () => {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showEditUser, setShowEditUser] = useState(false);
   const [showViewUser, setShowViewUser] = useState(false);
+  const [showDeleteUser, setShowDeleteUser] = useState(false);
+
   
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
@@ -39,6 +41,10 @@ const AdminPanel = () => {
   const handleViewUsage = () => {
     navigate("/usage-dashboard");
   };
+  const handleDeleteUser = () => {
+    navigate("/delete-user");
+  };
+
   const handleChatbotSetting = () => {
     navigate("/chatbot-settings");
   };
@@ -102,7 +108,19 @@ const AdminPanel = () => {
               )}
             </div>
 
-            <button className="dashboard-button">Delete User</button>
+            <div>
+              <button className="dashboard-button" onClick={() => setShowDeleteUser(true)}>
+                Delete User
+              </button>
+            
+              {showDeleteUser && (
+                <DeleteUserModal
+                  onClose={() => setShowDeleteUser(false)}
+                  onUserDeleted={handleUserDeleted}
+                />
+              )}
+            </div>
+
           </div>
         )}
 
