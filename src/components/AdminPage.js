@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import "./AdminPanel.css";
+import PdfUploader from "./PdfUploader"; // <-- import your PdfUploader component
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("doctors");
 
   const tabs = [
     { id: "doctors", label: "Chatbot User Management" },
-    { id: "chatbot", label: "Add Pdf for AI tutor" },
-    { id: "users", label: "View Openai Usage" },
+    { id: "chatbot", label: "Add PDF for AI tutor" },
+    { id: "users", label: "View OpenAI Usage" },
   ];
 
   return (
@@ -40,10 +41,7 @@ const AdminPanel = () => {
 
         {activeTab === "chatbot" && (
           <div className="tab-panel">
-            <button className="dashboard-button">View Knowledge Base</button>
-            <button className="dashboard-button">Add PDF / Documents</button>
-            <button className="dashboard-button">Update Vector Stores</button>
-            <button className="dashboard-button">Delete Entries</button>
+            <PdfUploader /> {/* <-- Render PdfUploader here */}
           </div>
         )}
 
