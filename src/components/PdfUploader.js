@@ -4,12 +4,15 @@ import "./PdfUploader.css";
 const PdfUploader = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [pageRange, setPageRange] = useState("");
+  const [className, setClassName] = useState("");
+  const [term, setTerm] = useState("");
+  const [chapter, setChapter] = useState("");
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleUpload = async () => {
-    if (!pdfFile || !pageRange) {
-      setMessage("⚠ Please select a PDF and enter a page range.");
+    if (!pdfFile || !pageRange || !className || !term || !chapter) {
+      setMessage("⚠ Please fill all fields before uploading.");
       return;
     }
 
@@ -20,6 +23,9 @@ const PdfUploader = () => {
       const formData = new FormData();
       formData.append("pdf", pdfFile);
       formData.append("page_range", pageRange);
+      formData.append("class", className);
+      formData.append("term", term);
+      formData.append("chapter", chapter);
 
       const response = await fetch("/api/upload-pdf", {
         method: "POST",
@@ -30,6 +36,9 @@ const PdfUploader = () => {
         setMessage("✅ PDF pages uploaded successfully!");
         setPdfFile(null);
         setPageRange("");
+        setClassName("");
+        setTerm("");
+        setChapter("");
       } else {
         setMessage("❌ Upload failed. Please try again.");
       }
@@ -55,7 +64,6 @@ const PdfUploader = () => {
             className="file-input"
           />
         </label>
-
         {pdfFile && <p className="file-name">Selected: {pdfFile.name}</p>}
 
         <label className="page-range-label">
@@ -66,6 +74,39 @@ const PdfUploader = () => {
             value={pageRange}
             onChange={(e) => setPageRange(e.target.value)}
             className="page-range-input"
+          />
+        </label>
+
+        <label className="text-input-label">
+          Enter Class
+          <input
+            type="text"
+            placeholder="Class name"
+            value={className}
+            onChange={(e) => setClassName(e.target.value)}
+            className="text-input"
+          />
+        </label>
+
+        <label className="text-input-label">
+          Enter Term
+          <input
+            type="text"
+            placeholder="Term"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            className="text-input"
+          />
+        </label>
+
+        <label className="text-input-label">
+          Enter Chapter
+          <input
+            type="text"
+            placeholder="Chapter"
+            value={chapter}
+            onChange={(e) => setChapter(e.target.value)}
+            className="text-input"
           />
         </label>
 
