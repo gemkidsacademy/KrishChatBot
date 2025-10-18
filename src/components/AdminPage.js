@@ -5,7 +5,7 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("doctors");
 
   const tabs = [
-    { id: "doctors", label: "Doctor Management" },
+    { id: "doctors", label: "Chatbot User Management" },
     { id: "chatbot", label: "Chatbot DB Management" },
     { id: "users", label: "User Management" },
   ];
@@ -31,10 +31,10 @@ const AdminPanel = () => {
       <div className="tab-content">
         {activeTab === "doctors" && (
           <div className="tab-panel">
-            <button className="dashboard-button">Add a Doctor</button>
-            <button className="dashboard-button">Edit a Doctor</button>
-            <button className="dashboard-button">View Doctor List</button>
-            <button className="dashboard-button">Delete a Doctor</button>
+            <button className="dashboard-button">Add User</button>
+            <button className="dashboard-button">Edit User</button>
+            <button className="dashboard-button">View User</button>
+            <button className="dashboard-button">Delete User</button>
           </div>
         )}
 
