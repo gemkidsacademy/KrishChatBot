@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from "react";
 import "./AddUserForm.css"; // reuse modal styling
 
-function DeleteUserModal({ onClose, onUserDeleted }) {
-  const [userIds, setUserIds] = useState([]); // list of user IDs
+function DeleteUserForm({ onClose, onUserDeleted }) {
+  const [userIds, setUserIds] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
 
-  // Fetch user IDs on mount
+  // Fetch user IDs (even if empty)
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
         const res = await fetch("https://your-backend-url.com/api/user-ids");
         if (!res.ok) throw new Error("Failed to fetch user IDs");
-        const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
+        const data = await res.json(); // should return [{id:1},{id:2},...]
         setUserIds(data);
       } catch (err) {
         console.error(err);
         alert("Error fetching user IDs");
       }
     };
-
     fetchUserIds();
   }, []);
 
-  // Fetch user details when a user ID is selected
+  // Update fields when a user ID is selected
   useEffect(() => {
     if (!selectedUserId) {
       setName("");
@@ -49,21 +48,22 @@ function DeleteUserModal({ onClose, onUserDeleted }) {
         setClassName(user.class_name || "");
       } catch (err) {
         console.error(err);
-        alert("Error fetching user details");
+        // Even if backend fails, still show empty fields
+        setName("");
+        setEmail("");
+        setPhoneNumber("");
+        setClassName("");
       }
     };
 
     fetchUserDetails();
   }, [selectedUserId]);
 
-  const handleDelete = async (e) => {
-    e.preventDefault();
+  const handleDelete = async () => {
     if (!selectedUserId) {
       alert("Please select a user to delete");
       return;
     }
-
-    if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
 
     try {
       const res = await fetch(
@@ -85,42 +85,42 @@ function DeleteUserModal({ onClose, onUserDeleted }) {
       <div className="modal">
         <h3>Delete User</h3>
 
-        <form onSubmit={handleDelete}>
-          {/* User selection dropdown */}
-          <select
-            value={selectedUserId}
-            onChange={(e) => setSelectedUserId(e.target.value)}
-            required
-          >
-            <option value="">Select a user</option>
-            {userIds.map((u) => (
-              <option key={u.id} value={u.id}>
-                User ID: {u.id}
-              </option>
-            ))}
-          </select>
+        <select
+          value={selectedUserId}
+          onChange={(e) => setSelectedUserId(e.target.value)}
+          required
+        >
+          <option value="">Select a user</option>
+          {userIds.map((u) => (
+            <option key={u.id} value={u.id}>
+              User ID: {u.id}
+            </option>
+          ))}
+        </select>
 
-          {selectedUserId && (
-            <div className="user-details">
-              <p><strong>Name:</strong> {name}</p>
-              <p><strong>Email:</strong> {email}</p>
-              <p><strong>Phone:</strong> {phoneNumber}</p>
-              <p><strong>Class:</strong> {className}</p>
-            </div>
-          )}
+        {/* Display fields even if empty */}
+        <input type="text" placeholder="User name" value={name} readOnly />
+        <input type="email" placeholder="User email" value={email} readOnly />
+        <input
+          type="text"
+          placeholder="Phone number (optional)"
+          value={phoneNumber}
+          readOnly
+        />
+        <input
+          type="text"
+          placeholder="Class name (optional)"
+          value={className}
+          readOnly
+        />
 
-          <div className="modal-actions">
-            <button type="submit" disabled={!selectedUserId}>
-              Delete User
-            </button>
-            <button type="button" onClick={onClose}>
-              Cancel
-            </button>
-          </div>
-        </form>
+        <div className="modal-actions">
+          <button onClick={handleDelete}>Delete User</button>
+          <button onClick={onClose}>Cancel</button>
+        </div>
       </div>
     </div>
   );
 }
 
-export default DeleteUserModal;
+export default DeleteUserForm;
