@@ -18,6 +18,10 @@ const AdminPanel = () => {
   const handleViewUsage = () => {
     navigate("/usage-dashboard");
   };
+  const handleChatbotSetting = () => {
+    navigate("/chatbot-settings");
+  };
+
 
   return (
     <div className="dashboard-container">
@@ -67,40 +71,14 @@ const AdminPanel = () => {
         )}
 
         {/* Generic Chatbot Settings */}
-        {activeTab === "Generic_chatbot" && (
-          <div className="tab-panel">
-            <h3>Generic Chatbot Settings</h3>
-            <p>
-              Configure default chatbot parameters such as reasoning mode, tone,
-              and response behavior.
-            </p>
-
-            <div className="settings-group">
-              <label>Default Reasoning Level:</label>
-              <select className="dashboard-select">
-                <option value="simple">Simple</option>
-                <option value="medium">Medium</option>
-                <option value="advanced">Advanced</option>
-              </select>
-            </div>
-
-            <div className="settings-group">
-              <label>Default Response Style:</label>
-              <select className="dashboard-select">
-                <option value="friendly">Friendly</option>
-                <option value="formal">Formal</option>
-                <option value="concise">Concise</option>
-              </select>
-            </div>
-
-            <div className="settings-group">
-              <label>Enable Reasoning Mode:</label>
-              <input type="checkbox" defaultChecked />
-            </div>
-
-            <button className="dashboard-button">Save Settings</button>
+        {activeTab === "openai" && (
+          <div className="tab-panel">           
+            <button className="dashboard-button" onClick={handleChatbotSetting}>
+              Generic Chatbot Settings
+            </button>
           </div>
         )}
+        
       </div>
     </div>
   );
