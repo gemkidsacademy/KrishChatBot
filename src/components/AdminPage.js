@@ -77,14 +77,7 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {/* Generic Chatbot Settings */}
-        {activeTab === "openai" && (
-          <div className="tab-panel">           
-            <button className="dashboard-button" onClick={handleChatbotSetting}>
-              Generic Chatbot Settings
-            </button>
-          </div>
-        )}
+        
         
       </div>
     </div>
