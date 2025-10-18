@@ -90,3 +90,24 @@
   font-weight: 500;
   color: #333;
 }
+.class-input,
+.term-input,
+.chapter-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.2s ease-in-out;
+}
+
+.class-input:focus,
+.term-input:focus,
+.chapter-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+}
