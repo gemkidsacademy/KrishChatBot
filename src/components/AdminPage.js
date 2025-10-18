@@ -46,7 +46,18 @@ const AdminPanel = () => {
         {/* Database (User Management) */}
         {activeTab === "database" && (
           <div className="tab-panel">
-            <button className="dashboard-button">Add User</button>
+            <div>
+              <button className="dashboard-button" onClick={() => setShowAddUser(true)}>
+                Add User
+              </button>
+        
+              {showAddUser && (
+                <AddUserForm
+                  onClose={() => setShowAddUser(false)}
+                  onUserAdded={handleUserAdded}
+                />
+              )}
+            </div>
             <button className="dashboard-button">Edit User</button>
             <button className="dashboard-button">View User</button>
             <button className="dashboard-button">Delete User</button>
