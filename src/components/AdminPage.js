@@ -1,44 +1,61 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import "./AdminPanel.css";
 
 const AdminPanel = () => {
-    const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("doctors");
 
-    return (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h2>Admin Panel</h2>
-            <button 
-                style={{ margin: "10px", padding: "10px 20px" }} 
-                onClick={() => navigate("/add-doctor")}
-            >
-                Add a Doctor
-            </button>
-            <button 
-                style={{ margin: "10px", padding: "10px 20px" }} 
-                onClick={() => navigate("/edit-doctor")}
-            >
-                Edit a Doctor
-            </button>
-            <button 
-                style={{ margin: "10px", padding: "10px 20px" }} 
-                onClick={() => navigate("/view-doctors")}
-            >
-                View Doctor List
-            </button>
-            <button 
-                style={{ margin: "10px", padding: "10px 20px" }} 
-                onClick={() => navigate("/delete-doctor")}
-            >
-                Delete a Doctor
-            </button>
-            <button 
-                style={{ margin: "10px", padding: "10px 20px" }} 
-                onClick={() => navigate("/UserUsageDashboard")}
-            >
-                View Openai API Usage
-            </button>
-        </div>
-    );
+  const tabs = [
+    { id: "doctors", label: "Doctor Management" },
+    { id: "chatbot", label: "Chatbot DB Management" },
+    { id: "users", label: "User Management" },
+  ];
+
+  return (
+    <div className="dashboard-container">
+      <h1 className="dashboard-title">Admin Dashboard</h1>
+
+      {/* Tab Navigation */}
+      <div className="tab-nav">
+        {tabs.map((tab) => (
+          <div
+            key={tab.id}
+            className={`tab-item ${activeTab === tab.id ? "active" : ""}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </div>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        {activeTab === "doctors" && (
+          <div className="tab-panel">
+            <button className="dashboard-button">Add a Doctor</button>
+            <button className="dashboard-button">Edit a Doctor</button>
+            <button className="dashboard-button">View Doctor List</button>
+            <button className="dashboard-button">Delete a Doctor</button>
+          </div>
+        )}
+
+        {activeTab === "chatbot" && (
+          <div className="tab-panel">
+            <button className="dashboard-button">View Knowledge Base</button>
+            <button className="dashboard-button">Add PDF / Documents</button>
+            <button className="dashboard-button">Update Vector Stores</button>
+            <button className="dashboard-button">Delete Entries</button>
+          </div>
+        )}
+
+        {activeTab === "users" && (
+          <div className="tab-panel">
+            <button className="dashboard-button">View Users</button>
+            <button className="dashboard-button">Manage Roles</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default AdminPanel;
