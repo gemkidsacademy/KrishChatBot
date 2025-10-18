@@ -7,7 +7,7 @@ import AddUserForm from "./AddUserForm";
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("database");
   const navigate = useNavigate(); // For navigation
-
+  const [showAddUser, setShowAddUser] = useState(false);
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
     { id: "AI_tutor", label: "Add PDF for AI Tutor" },
