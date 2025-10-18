@@ -16,7 +16,7 @@ const AdminPanel = () => {
   const navigate = useNavigate(); // For navigation
   const [showAddUser, setShowAddUser] = useState(false);
   const [showEditUser, setShowEditUser] = useState(false);
-
+  const [showViewUser, setShowViewUser] = useState(false);
   
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
