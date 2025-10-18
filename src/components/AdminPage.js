@@ -47,6 +47,10 @@ const AdminPanel = () => {
   const handleDeleteUser = () => {
     navigate("/delete-user");
   };
+  const handleUserDeleted = () => {
+    // Optional: refetch users, show notification, or just log
+    console.log("User deleted successfully");
+  };
 
   const handleChatbotSetting = () => {
     navigate("/chatbot-settings");
