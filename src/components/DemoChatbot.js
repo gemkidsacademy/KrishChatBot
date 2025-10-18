@@ -71,10 +71,10 @@ export default function DemoChatbot({ doctorData }) {
   try {
     // Backend request
     const url = `https://krishbackend-production.up.railway.app/search?query=${encodeURIComponent(
-      userInput
+        userInput
     )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
-      doctorData.name
-    )}`;
+        doctorData.name
+    )}&class_name=${encodeURIComponent(doctorData.class_name)}`;
     console.log("🌐 Fetching backend with URL:", url);
 
     const response = await fetch(url);
@@ -192,6 +192,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
