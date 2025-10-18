@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import "./AdminPanel.css";
-import PdfUploader from "./PdfUploader"; // <-- import your PdfUploader component
+import PdfUploader from "./PdfUploader";
 
 const AdminPanel = () => {
-  const [activeTab, setActiveTab] = useState("doctors");
+  const [activeTab, setActiveTab] = useState("database");
 
   const tabs = [
-    { id: "doctors", label: "Chatbot User Management" },
-    { id: "chatbot", label: "Add PDF for AI tutor" },
-    { id: "users", label: "View OpenAI Usage" },
+    { id: "database", label: "Chatbot User Management" },
+    { id: "AI_tutor", label: "Add PDF for AI Tutor" },
+    { id: "openai", label: "View OpenAI Usage" },
+    { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
   ];
 
   return (
     <div className="dashboard-container">
       <h1 className="dashboard-title">Admin Dashboard</h1>
 
-      {/* Tab Navigation */}
+      {/* -------------------- Tab Navigation -------------------- */}
       <div className="tab-nav">
         {tabs.map((tab) => (
           <div
@@ -28,9 +29,10 @@ const AdminPanel = () => {
         ))}
       </div>
 
-      {/* Tab Content */}
+      {/* -------------------- Tab Content -------------------- */}
       <div className="tab-content">
-        {activeTab === "doctors" && (
+        {/* Database (User Management) */}
+        {activeTab === "database" && (
           <div className="tab-panel">
             <button className="dashboard-button">Add User</button>
             <button className="dashboard-button">Edit User</button>
@@ -39,16 +41,54 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {activeTab === "chatbot" && (
+        {/* AI Tutor (PDF Upload) */}
+        {activeTab === "AI_tutor" && (
           <div className="tab-panel">
-            <PdfUploader /> {/* <-- Render PdfUploader here */}
+            <PdfUploader />
           </div>
         )}
 
-        {activeTab === "users" && (
+        {/* OpenAI Usage */}
+        {activeTab === "openai" && (
           <div className="tab-panel">
             <button className="dashboard-button">View Users</button>
             <button className="dashboard-button">Manage Roles</button>
+          </div>
+        )}
+
+        {/* Generic Chatbot Settings */}
+        {activeTab === "Generic_chatbot" && (
+          <div className="tab-panel">
+            <h3>Generic Chatbot Settings</h3>
+            <p>
+              Configure default chatbot parameters such as reasoning mode, tone,
+              and response behavior.
+            </p>
+
+            <div className="settings-group">
+              <label>Default Reasoning Level:</label>
+              <select className="dashboard-select">
+                <option value="simple">Simple</option>
+                <option value="medium">Medium</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+
+            <div className="settings-group">
+              <label>Default Response Style:</label>
+              <select className="dashboard-select">
+                <option value="friendly">Friendly</option>
+                <option value="formal">Formal</option>
+                <option value="concise">Concise</option>
+              </select>
+            </div>
+
+            <div className="settings-group">
+              <label>Enable Reasoning Mode:</label>
+              <input type="checkbox" defaultChecked />
+            </div>
+
+            <button className="dashboard-button">Save Settings</button>
           </div>
         )}
       </div>
