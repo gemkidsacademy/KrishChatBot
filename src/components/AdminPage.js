@@ -6,8 +6,8 @@ const AdminPanel = () => {
 
   const tabs = [
     { id: "doctors", label: "Chatbot User Management" },
-    { id: "chatbot", label: "Chatbot DB Management" },
-    { id: "users", label: "User Management" },
+    { id: "chatbot", label: "Add Sllabus to AI tutor" },
+    { id: "users", label: "View Openai Usage" },
   ];
 
   return (
