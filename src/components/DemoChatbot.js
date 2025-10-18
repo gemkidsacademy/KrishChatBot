@@ -128,10 +128,14 @@ export default function DemoChatbot({ doctorData }) {
               <div key={idx} className={`message ${msg.sender}`}>
                 {msg.sender === "bot" ? (
                   <>
+                    {msg.name && (
+                      <div className="bot-label">
+                        {parseBoldText(msg.name)} {/* render name with bold parsing */}
+                      </div>
+                    )}
                     <div>{parseBoldText(msg.text)}</div>
                     {Array.isArray(msg.links) && msg.links.length > 0 && (
                       <div className="pdf-links">
-                        {/* Show only the first PDF link */}
                         <a
                           href={msg.links[0]}
                           target="_blank"
@@ -196,6 +200,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
