@@ -341,7 +341,15 @@ function App() {
               <UsageDashboard />
             </PrivateRoute>
           }
-        />    
+        /> 
+        <Route
+          path="/chatbot-settings"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <ChatbotSettings />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </Router>
   );
