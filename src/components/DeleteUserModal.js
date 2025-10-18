@@ -1,48 +1,68 @@
 import React, { useState, useEffect } from "react";
-import "./AddUserForm.css";
+import "./AddUserForm.css"; // reuse modal styling
 
 function DeleteUserModal({ onClose, onUserDeleted }) {
-  const [users, setUsers] = useState([]);
+  const [userIds, setUserIds] = useState([]); // list of user IDs
   const [selectedUserId, setSelectedUserId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
 
+  // Fetch user IDs on mount
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://your-backend-url.com/api/users");
-        if (!res.ok) throw new Error("Failed to fetch users");
-        const data = await res.json();
-        setUsers(data);
+        const res = await fetch("https://your-backend-url.com/api/user-ids");
+        if (!res.ok) throw new Error("Failed to fetch user IDs");
+        const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
+        setUserIds(data);
       } catch (err) {
         console.error(err);
-        alert("Error fetching users");
+        alert("Error fetching user IDs");
       }
     };
 
-    fetchUsers();
+    fetchUserIds();
   }, []);
 
+  // Fetch user details when a user ID is selected
   useEffect(() => {
-    const user = users.find((u) => u.id === parseInt(selectedUserId));
-    if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setPhoneNumber(user.phone_number || "");
-      setClassName(user.class_name || "");
-    } else {
+    if (!selectedUserId) {
       setName("");
       setEmail("");
       setPhoneNumber("");
       setClassName("");
+      return;
     }
-  }, [selectedUserId, users]);
 
-  const handleSubmit = async (e) => {
+    const fetchUserDetails = async () => {
+      try {
+        const res = await fetch(
+          `https://your-backend-url.com/api/user/${selectedUserId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch user details");
+        const user = await res.json();
+        setName(user.name || "");
+        setEmail(user.email || "");
+        setPhoneNumber(user.phone_number || "");
+        setClassName(user.class_name || "");
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching user details");
+      }
+    };
+
+    fetchUserDetails();
+  }, [selectedUserId]);
+
+  const handleDelete = async (e) => {
     e.preventDefault();
-    if (!selectedUserId) return alert("Please select a user to delete");
+    if (!selectedUserId) {
+      alert("Please select a user to delete");
+      return;
+    }
+
     if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
 
     try {
@@ -65,16 +85,17 @@ function DeleteUserModal({ onClose, onUserDeleted }) {
       <div className="modal">
         <h3>Delete User</h3>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleDelete}>
+          {/* User selection dropdown */}
           <select
             value={selectedUserId}
             onChange={(e) => setSelectedUserId(e.target.value)}
             required
           >
             <option value="">Select a user</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name} ({user.email})
+            {userIds.map((u) => (
+              <option key={u.id} value={u.id}>
+                User ID: {u.id}
               </option>
             ))}
           </select>
@@ -89,8 +110,12 @@ function DeleteUserModal({ onClose, onUserDeleted }) {
           )}
 
           <div className="modal-actions">
-            <button type="submit" disabled={!selectedUserId}>Delete</button>
-            <button type="button" onClick={onClose}>Cancel</button>
+            <button type="submit" disabled={!selectedUserId}>
+              Delete User
+            </button>
+            <button type="button" onClick={onClose}>
+              Cancel
+            </button>
           </div>
         </form>
       </div>
