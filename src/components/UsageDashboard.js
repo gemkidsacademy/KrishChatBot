@@ -9,7 +9,7 @@ const UsageDashboard = () => {
   useEffect(() => {
     const fetchUsage = async () => {
       try {
-        const response = await fetch("/api/usage?days=30");
+        const response = await fetch("https://krishbackend-production.up.railway.app/api/usage?days=10000");
         if (!response.ok) throw new Error("Failed to fetch usage data");
         const data = await response.json();
         setUsageData(data);
