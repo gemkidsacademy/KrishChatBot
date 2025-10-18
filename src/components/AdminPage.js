@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminPanel.css";
 import PdfUploader from "./PdfUploader";
+import ChatbotSettings from "./ChatbotSettings";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("database");
