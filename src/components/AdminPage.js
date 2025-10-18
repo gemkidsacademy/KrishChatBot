@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./AdminPanel.css";
 import PdfUploader from "./PdfUploader";
 import ChatbotSettings from "./ChatbotSettings";
-
+import AddUserForm from "./AddUserForm";
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("database");
   const navigate = useNavigate(); // For navigation
