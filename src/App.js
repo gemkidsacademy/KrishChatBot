@@ -17,7 +17,7 @@ import DemoChatbot from "./components/DemoChatbot";
 
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
-  const [loginMode, setLoginMode] = useState("password"); // "password" or "otp"
+  const [loginMode, setLoginMode] = useState("otp"); // "password" or "otp"
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
