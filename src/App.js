@@ -14,6 +14,8 @@ import EditDoctor from "./components/EditDoctorPage";
 import ViewDoctors from "./components/ViewDoctors";
 import DeleteDoctor from "./components/DeleteDoctor";
 import DemoChatbot from "./components/DemoChatbot";
+import UsageDashboard from "./components/UsageDashboard";
+
 
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
@@ -332,6 +334,14 @@ function App() {
           path="/ChatBot"
           element={<DemoChatbot doctorData={doctorData} />}
         />
+        <Route
+          path="/usage-dashboard"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <UsageDashboard />
+            </PrivateRoute>
+          }
+        />    
       </Routes>
     </Router>
   );
