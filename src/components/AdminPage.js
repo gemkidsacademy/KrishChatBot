@@ -58,6 +58,13 @@ const AdminPanel = () => {
             <PdfUploader />
           </div>
         )}
+        {/* Generic Chatbot) */}
+        {activeTab === "Generic_chatbot" && (
+          <div className="tab-panel">
+            <ChatbotSettings />
+          </div>
+        )}
+        
 
         {/* OpenAI Usage */}
         {activeTab === "openai" && (
