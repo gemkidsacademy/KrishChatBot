@@ -9,14 +9,14 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
 
-  // Fetch user IDs (even if empty)
+  // Fetch user IDs on mount
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
         const res = await fetch("https://your-backend-url.com/api/user-ids");
         if (!res.ok) throw new Error("Failed to fetch user IDs");
-        const data = await res.json(); // should return [{id:1},{id:2},...]
-        setUserIds(data);
+        const data = await res.json();
+        setUserIds(data); // [{id:1},{id:2},...]
       } catch (err) {
         console.error(err);
         alert("Error fetching user IDs");
@@ -25,7 +25,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
     fetchUserIds();
   }, []);
 
-  // Update fields when a user ID is selected
+  // Fetch user details when a user ID is selected
   useEffect(() => {
     if (!selectedUserId) {
       setName("");
@@ -48,7 +48,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
         setClassName(user.class_name || "");
       } catch (err) {
         console.error(err);
-        // Even if backend fails, still show empty fields
+        // Keep fields empty if backend fails
         setName("");
         setEmail("");
         setPhoneNumber("");
@@ -85,6 +85,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
       <div className="modal">
         <h3>Delete User</h3>
 
+        {/* Dropdown to select user ID */}
         <select
           value={selectedUserId}
           onChange={(e) => setSelectedUserId(e.target.value)}
@@ -98,7 +99,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
           ))}
         </select>
 
-        {/* Display fields even if empty */}
+        {/* Display user details read-only */}
         <input type="text" placeholder="User name" value={name} readOnly />
         <input type="email" placeholder="User email" value={email} readOnly />
         <input
@@ -115,8 +116,12 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
         />
 
         <div className="modal-actions">
-          <button onClick={handleDelete}>Delete User</button>
-          <button onClick={onClose}>Cancel</button>
+          <button type="button" onClick={handleDelete}>
+            Delete User
+          </button>
+          <button type="button" onClick={onClose}>
+            Cancel
+          </button>
         </div>
       </div>
     </div>
