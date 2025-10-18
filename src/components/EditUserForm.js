@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./AddUserForm.css"; // reuse the same modal styling
 
 function EditUserForm({ onClose, onUserUpdated }) {
-  const [users, setUsers] = useState([]); // list of users to select
+  const [userIds, setUserIds] = useState([]); // list of user IDs
   const [selectedUserId, setSelectedUserId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -10,34 +10,47 @@ function EditUserForm({ onClose, onUserUpdated }) {
   const [className, setClassName] = useState("");
   const [password, setPassword] = useState("");
 
-  // Fetch existing users for dropdown
+  // Fetch user IDs on mount
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://your-backend-url.com/api/users");
-        if (!res.ok) throw new Error("Failed to fetch users");
-        const data = await res.json();
-        setUsers(data);
+        const res = await fetch("https://your-backend-url.com/api/user-ids");
+        if (!res.ok) throw new Error("Failed to fetch user IDs");
+        const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
+        setUserIds(data);
       } catch (err) {
         console.error(err);
-        alert("Error fetching users");
+        alert("Error fetching user IDs");
       }
     };
 
-    fetchUsers();
+    fetchUserIds();
   }, []);
 
-  // Update form fields when a user is selected
+  // Fetch user details when a user ID is selected
   useEffect(() => {
-    const user = users.find((u) => u.id === parseInt(selectedUserId));
-    if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setPhoneNumber(user.phone_number || "");
-      setClassName(user.class_name || "");
-      setPassword(""); // leave password empty; admin can reset
-    }
-  }, [selectedUserId, users]);
+    if (!selectedUserId) return;
+
+    const fetchUserDetails = async () => {
+      try {
+        const res = await fetch(
+          `https://your-backend-url.com/api/user/${selectedUserId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch user details");
+        const user = await res.json();
+        setName(user.name || "");
+        setEmail(user.email || "");
+        setPhoneNumber(user.phone_number || "");
+        setClassName(user.class_name || "");
+        setPassword(""); // leave empty unless admin wants to reset
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching user details");
+      }
+    };
+
+    fetchUserDetails();
+  }, [selectedUserId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,9 +97,9 @@ function EditUserForm({ onClose, onUserUpdated }) {
             required
           >
             <option value="">Select a user</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name} ({user.email})
+            {userIds.map((u) => (
+              <option key={u.id} value={u.id}>
+                User ID: {u.id}
               </option>
             ))}
           </select>
