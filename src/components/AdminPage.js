@@ -4,16 +4,29 @@ import "./AdminPanel.css";
 import PdfUploader from "./PdfUploader";
 import ChatbotSettings from "./ChatbotSettings";
 import AddUserForm from "./AddUserForm";
+import EditUserForm from "./EditUserForm";
+
+
+
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("database");
   const navigate = useNavigate(); // For navigation
   const [showAddUser, setShowAddUser] = useState(false);
+  const [showEditUser, setShowEditUser] = useState(false);
+
+  
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
     { id: "AI_tutor", label: "Add PDF for AI Tutor" },
     { id: "openai", label: "View OpenAI Usage" },
     { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
   ];
+
+  const handleUserUpdated = () => {
+    setShowEditUser(false);
+    alert("User updated successfully!");
+    // optionally refresh the user list
+  };
   const handleUserAdded = () => {
     setShowAddUser(false); // close the modal
     alert("User added successfully!");
@@ -62,7 +75,18 @@ const AdminPanel = () => {
                 />
               )}
             </div>
-            <button className="dashboard-button">Edit User</button>
+            <div>
+              <button className="dashboard-button" onClick={() => setShowEditUser(true)}>
+                Edit User
+              </button>
+            
+              {showEditUser && (
+                <EditUserForm
+                  onClose={() => setShowEditUser(false)}
+                  onUserUpdated={handleUserUpdated}
+                />
+              )}
+            </div>
             <button className="dashboard-button">View User</button>
             <button className="dashboard-button">Delete User</button>
           </div>
