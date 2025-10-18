@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AdminPanel.css";
 import PdfUploader from "./PdfUploader";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("database");
+  const navigate = useNavigate(); // For navigation
 
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
@@ -11,6 +13,11 @@ const AdminPanel = () => {
     { id: "openai", label: "View OpenAI Usage" },
     { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
   ];
+
+  // Navigate to Usage Dashboard
+  const handleViewUsage = () => {
+    navigate("/usage-dashboard");
+  };
 
   return (
     <div className="dashboard-container">
@@ -51,8 +58,11 @@ const AdminPanel = () => {
         {/* OpenAI Usage */}
         {activeTab === "openai" && (
           <div className="tab-panel">
-            <button className="dashboard-button">View Users</button>
-            <button className="dashboard-button">Manage Roles</button>
+            <h3>OpenAI API Usage</h3>
+            <p>Click below to view detailed usage statistics.</p>
+            <button className="dashboard-button" onClick={handleViewUsage}>
+              View OpenAI Usage
+            </button>
           </div>
         )}
 
