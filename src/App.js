@@ -15,6 +15,8 @@ import ViewDoctors from "./components/ViewDoctors";
 import DeleteDoctor from "./components/DeleteDoctor";
 import DemoChatbot from "./components/DemoChatbot";
 import UsageDashboard from "./components/UsageDashboard";
+import ChatbotSettings from "./components/ChatbotSettings";
+
 
 
 // --- Login Page ---
