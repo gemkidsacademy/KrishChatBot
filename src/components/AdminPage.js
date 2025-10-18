@@ -5,6 +5,9 @@ import PdfUploader from "./PdfUploader";
 import ChatbotSettings from "./ChatbotSettings";
 import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm";
+import ViewUserModal from "./ViewUserModal";
+
+
 
 
 
@@ -87,7 +90,18 @@ const AdminPanel = () => {
                 />
               )}
             </div>
-            <button className="dashboard-button">View User</button>
+            <div>
+              <button className="dashboard-button" onClick={() => setShowViewUser(true)}>
+                View User
+              </button>
+            
+              {showViewUser && (
+                <ViewUserModal
+                  onClose={() => setShowViewUser(false)}
+                />
+              )}
+            </div>
+
             <button className="dashboard-button">Delete User</button>
           </div>
         )}
