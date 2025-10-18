@@ -14,7 +14,11 @@ const AdminPanel = () => {
     { id: "openai", label: "View OpenAI Usage" },
     { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
   ];
-
+  const handleUserAdded = () => {
+    setShowAddUser(false); // close the modal
+    alert("User added successfully!");
+    // Optionally refresh your user list here
+  };
   // Navigate to Usage Dashboard
   const handleViewUsage = () => {
     navigate("/usage-dashboard");
