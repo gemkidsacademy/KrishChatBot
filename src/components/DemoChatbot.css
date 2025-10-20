@@ -1,27 +1,28 @@
-/* 🌟 Full Responsive & Modern Gradient Chat UI 🌟 */
+/* 🌟 Fixed Full-Height Mobile Responsive Gradient Chat UI 🌟 */
 
 /* Base Container */
 .chat-container {
   width: 100%;
   height: 100vh;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(to bottom right, #e0c3fc, #8ec5fc);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
-  padding: 1rem;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 /* Chat Box */
 .chat-box {
-  width: 95%;
+  width: 100%;
   max-width: 800px;
   min-width: 280px;
-  height: 85vh;
+  height: 100vh; /* fills entire mobile view height */
   background-color: #ffffff;
-  border-radius: 2rem;
+  border-radius: 0; /* full screen on mobile */
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -37,6 +38,7 @@
   font-size: 1.25rem;
   padding: 1rem;
   letter-spacing: 0.5px;
+  flex-shrink: 0; /* Prevents collapsing */
 }
 
 /* Message Area */
@@ -48,20 +50,16 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-height: calc(100vh - 220px);
   scrollbar-width: thin;
   scrollbar-color: #888 #f3f4f6;
+  box-sizing: border-box;
 }
 
 .chat-messages::-webkit-scrollbar {
   width: 6px;
 }
-.chat-messages::-webkit-scrollbar-track {
-  background: #f3f4f6;
-  border-radius: 3px;
-}
 .chat-messages::-webkit-scrollbar-thumb {
-  background-color: #888;
+  background-color: #aaa;
   border-radius: 3px;
 }
 
@@ -76,7 +74,6 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* User Messages */
 .message.user {
   background: linear-gradient(to right, #3b82f6, #2563eb);
   color: white;
@@ -85,7 +82,6 @@
   animation: slideInRight 0.3s ease;
 }
 
-/* Bot Messages */
 .message.bot {
   background: linear-gradient(to right, #f3f4f6, #e5e7eb);
   color: #1f2937;
@@ -101,7 +97,7 @@
   padding: 0.75rem 1rem;
   background-color: #ffffff;
   border-top: 1px solid #d1d5db;
-  align-items: center;
+  flex-shrink: 0; /* Keeps visible on small screens */
 }
 
 .chat-input input {
@@ -135,65 +131,6 @@
   transform: scale(1.05);
 }
 
-/* Reasoning Container */
-.reasoning-container {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f7f7f7;
-  height: 40px;
-}
-
-.reasoning-label {
-  font-size: 0.85rem;
-  color: #555;
-  font-weight: 500;
-}
-
-.reasoning-select {
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.reasoning-select option {
-  padding: 4px 8px;
-}
-
-/* Bot Typing State */
-.message.bot.waiting {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #555;
-  font-style: italic;
-}
-
-.spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #555;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-/* PDF Links */
-.pdf-link {
-  color: blue;
-  text-decoration: underline;
-  margin-right: 8px;
-}
-
-.pdf-link:hover {
-  color: darkblue;
-}
-
 /* Animations */
 @keyframes slideInRight {
   from { transform: translateX(50px); opacity: 0; }
@@ -205,18 +142,26 @@
   to { transform: translateX(0); opacity: 1; }
 }
 
+/* Spinner */
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #555;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* 🌈 Responsive Design */
+/* Responsive Adjustments */
 @media (max-width: 600px) {
   .chat-box {
-    width: 100%;
     height: 100vh;
-    border-radius: 1.5rem;
-    box-shadow: none;
+    border-radius: 0;
   }
 
   .chat-header {
@@ -226,7 +171,6 @@
 
   .chat-messages {
     padding: 0.5rem;
-    max-height: 55vh;
   }
 
   .message {
@@ -235,27 +179,25 @@
   }
 
   .chat-input {
-    flex-wrap: wrap;
-    gap: 6px;
     padding: 0.5rem;
+    gap: 6px;
   }
 
   .chat-input input {
-    flex: 1 1 100%;
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem;
   }
 
   .chat-input button {
-    flex: 1 1 100%;
     padding: 0.5rem 0.75rem;
   }
 }
 
-/* Prevent scroll bounce */
+/* Prevent mobile scroll bounce */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
+  background: linear-gradient(to bottom right, #e0c3fc, #8ec5fc);
 }
