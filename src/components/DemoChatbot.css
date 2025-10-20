@@ -158,19 +158,26 @@
 }
 
 /* Responsive Adjustments */
+/* --- 🧠 FIX: Keep header visible on mobile --- */
 @media (max-width: 600px) {
   .chat-box {
-    height: 100vh;
-    border-radius: 0;
+    height: 100vh; /* use full screen height */
+    display: flex;
+    flex-direction: column;
+    border-radius: 0; /* optional: flat edges on mobile */
   }
 
   .chat-header {
+    flex-shrink: 0; /* never shrink or hide */
     font-size: 1rem;
     padding: 0.75rem;
   }
 
   .chat-messages {
+    flex: 1; /* take remaining height */
     padding: 0.5rem;
+    overflow-y: auto; /* scroll messages */
+    max-height: none; /* let flexbox control height */
   }
 
   .message {
@@ -179,6 +186,7 @@
   }
 
   .chat-input {
+    flex-shrink: 0; /* keep input visible at bottom */
     padding: 0.5rem;
     gap: 6px;
   }
@@ -192,6 +200,7 @@
     padding: 0.5rem 0.75rem;
   }
 }
+
 
 /* Prevent mobile scroll bounce */
 html, body {
@@ -211,4 +220,5 @@ html, body {
 .message a:hover {
   color: #1e40af; /* darker blue */
 }
+
 
