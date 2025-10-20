@@ -7,43 +7,46 @@ function AddUserForm({ onClose, onUserAdded }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!email.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      newErrors.email = "Enter a valid email address";
+
+    if (!phoneNumber.trim()) newErrors.phoneNumber = "Phone number is required";
+    else if (!/^04\d{8}$/.test(phoneNumber))
+      newErrors.phoneNumber = "Enter a valid Australian phone number (e.g. 0412345678)";
+
+    if (!className.trim()) newErrors.className = "Class name is required";
+    if (!password.trim()) newErrors.password = "Password is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
 
-    // ----------------- Validation -----------------
-    if (!name || !email || !phoneNumber || !className || !password) {
-      alert("All fields are required");
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address");
-      return;
-    }
-
-    // Validate phone number format: exactly 10 digits starting with 04
-    const phoneRegex = /^04\d{8}$/;
-    if (!phoneRegex.test(phoneNumber)) {
-      alert("Please enter a valid Australian phone number (e.g. 0412345678)");
-      return;
-    }
-
-    // ----------------- Submit -----------------
     try {
-      const response = await fetch("https://krishbackend-production.up.railway.app/api/add-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          phone_number: phoneNumber,
-          class_name: className,
-          password, // backend should hash it
-        }),
-      });
+      const response = await fetch(
+        "https://krishbackend-production.up.railway.app/api/add-user",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            phone_number: phoneNumber,
+            class_name: className,
+            password,
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to add user");
       await response.json();
@@ -64,36 +67,40 @@ function AddUserForm({ onClose, onUserAdded }) {
             placeholder="User name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
           />
+          {errors.name && <div className="error">{errors.name}</div>}
+
           <input
             type="email"
             placeholder="User email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
+          {errors.email && <div className="error">{errors.email}</div>}
+
           <input
             type="text"
             placeholder="Phone number (e.g. 0412345678)"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            required
           />
+          {errors.phoneNumber && <div className="error">{errors.phoneNumber}</div>}
+
           <input
             type="text"
             placeholder="Class name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
-            required
           />
+          {errors.className && <div className="error">{errors.className}</div>}
+
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
+          {errors.password && <div className="error">{errors.password}</div>}
 
           <div className="modal-actions">
             <button type="submit">Add User</button>
