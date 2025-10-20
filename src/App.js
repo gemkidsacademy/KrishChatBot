@@ -35,20 +35,29 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   // --- Generate OTP ---
   const generateOtp = async () => {
   if (!phone) {
-    return setError("Please enter phone number");
+    return setError("Please enter a phone number");
   }
+
+  // --- Convert local Australian number to E.164 format ---
+  let formattedPhone = phone.trim();
+  if (/^0\d{9}$/.test(formattedPhone)) {
+    formattedPhone = "+61" + formattedPhone.slice(1);
+  }
+
+  // --- Validate final E.164 format ---
   const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
-  if (!isValidE164(phone)) {
-    setError("Please enter a valid phone number in +614xxxxxxxx format");
+  if (!isValidE164(formattedPhone)) {
+    setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
     return;
   }
+
   try {
     const response = await fetch(
       "https://krishbackend-production.up.railway.app/send-otp",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number: phone }), // match backend expected key
+        body: JSON.stringify({ phone_number: formattedPhone }), // send formatted phone
       }
     );
 
@@ -124,21 +133,26 @@ const handleLogin = async () => {
         return;
       }
 
-      // Validate phone number format before sending
-      const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
-if (!isValidE164(phone)) {
-  setError("Please enter a valid phone number in +614xxxxxxxx format");
-  return;
-}
+      // --- Normalize phone number to E.164 format ---
+      let formattedPhone = phone.trim();
+      if (/^0\d{9}$/.test(formattedPhone)) {
+        formattedPhone = "+61" + formattedPhone.slice(1);
+      }
 
-      console.log("[INFO] Sending verify-otp request for phone:", phone, "OTP:", otp);
+      // --- Validate final format ---
+      const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
+      if (!isValidE164(formattedPhone)) {
+        setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
+        return;
+      }
+
+      console.log("[INFO] Sending verify-otp request for phone:", formattedPhone, "OTP:", otp);
 
       try {
-        // ---------------- Call verify-otp ----------------
         const verifyResponse = await fetch(`${server}/verify-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone_number: phone, otp }),
+          body: JSON.stringify({ phone_number: formattedPhone, otp }), // send formatted phone
         });
 
         console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
@@ -156,10 +170,8 @@ if (!isValidE164(phone)) {
         if (verifyResponse.ok) {
           console.log("[INFO] OTP verified successfully");
 
-          // ---------------- Login successful ----------------
           setIsLoggedIn(true);
           setDoctorData(verifyData.user);
-         // optionally store phone only
           setSessionToken(null); // or generate/manage session token here
           navigate("/ChatBot");
         } else {
