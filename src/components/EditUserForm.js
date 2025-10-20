@@ -61,7 +61,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
 
     try {
       const res = await fetch(
-        `https://your-backend-url.com/api/edit-user/${selectedUserId}`,
+        `krishbackend-production.up.railway.app/edit-user/${selectedUserId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
