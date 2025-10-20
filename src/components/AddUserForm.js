@@ -18,7 +18,7 @@ function AddUserForm({ onClose, onUserAdded }) {
     }
 
     try {
-      const response = await fetch("https://your-backend-url.com/api/add-user", {
+      const response = await fetch("krishbackend-production.up.railway.app/api/add-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
