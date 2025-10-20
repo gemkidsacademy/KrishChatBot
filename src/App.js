@@ -37,9 +37,9 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   if (!phone) {
     return setError("Please enter phone number");
   }
-  const isValidE164 = (number) => /^\+92\d{10}$/.test(number);
+  const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
   if (!isValidE164(phone)) {
-    setError("Please enter a valid phone number in +92300xxxxxxx format");
+    setError("Please enter a valid phone number in +614xxxxxxxx format");
     return;
   }
   try {
