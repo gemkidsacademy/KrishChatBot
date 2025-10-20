@@ -58,6 +58,16 @@ export default function DemoChatbot({ doctorData }) {
 
     return parts;
   };
+  // ------------------ Parse URLs in text ------------------
+  const formatMessageWithLinks = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(
+      urlRegex,
+      (url) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+    );
+  };
+
 
   // ------------------ Handle user submit ------------------
   const handleSubmit = async (e) => {
@@ -133,7 +143,12 @@ export default function DemoChatbot({ doctorData }) {
                         {parseBoldText(msg.name)} {/* render name with bold parsing */}
                       </div>
                     )}
-                    <div>{parseBoldText(msg.text)}</div>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: formatMessageWithLinks(msg.text),
+                      }}
+                    ></div>
+
                     {Array.isArray(msg.links) && msg.links.length > 0 && (
                       <div className="pdf-links">
                         <a
@@ -200,6 +215,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
