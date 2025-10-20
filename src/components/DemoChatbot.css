@@ -19,12 +19,13 @@
   width: 100%;
   max-width: 800px;
   min-width: 280px;
-  min-height: 100vh;
+  height: 100vh; /* exact viewport height */
   background-color: #ffffff;
   border-radius: 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* make header & input stick, messages flex */
   overflow: hidden;
 }
 
@@ -94,12 +95,15 @@
 
 /* Input Section */
 .chat-input {
+  position: sticky;          /* 🧲 stays visible at bottom */
+  bottom: 0;                 /* sticks to bottom of chat box */
   display: flex;
   gap: 8px;
   padding: 0.75rem 1rem;
   background-color: #ffffff;
   border-top: 1px solid #d1d5db;
   flex-shrink: 0;
+  z-index: 5;                /* keeps it above message scroll area */
 }
 
 .chat-input input {
@@ -126,12 +130,15 @@
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
+  flex-shrink: 0;            /* prevents button from shrinking */
 }
 
 .chat-input button:hover {
   background-color: #2563eb;
   transform: scale(1.05);
 }
+
+
 
 /* Animations */
 @keyframes slideInRight {
@@ -222,3 +229,4 @@ html, body {
 .message a:hover {
   color: #1e40af;
 }
+
