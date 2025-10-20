@@ -9,125 +9,81 @@ function AddUserForm({ onClose, onUserAdded }) {
   const [password, setPassword] = useState("");
 
   const validate = () => {
-    // Check all fields
-    if (!name || !email || !phoneNumber || !className || !password) {
+    // ----------------- Trim fields -----------------
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phoneNumber.trim();
+    const trimmedClass = className.trim();
+    const trimmedPassword = password.trim();
+
+    // ----------------- Validation -----------------
+    if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedClass || !trimmedPassword) {
       alert("All fields are required");
       return false;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(trimmedEmail)) {
       alert("Please enter a valid email address");
       return false;
     }
 
-    // Phone number validation: must start with 04 and have 10 digits
+    // Phone number validation: exactly 10 digits starting with 04
     const phoneRegex = /^04\d{8}$/;
-    if (!phoneRegex.test(phoneNumber)) {
+    if (!phoneRegex.test(trimmedPhone)) {
       alert("Please enter a valid Australian phone number (e.g. 0412345678)");
       return false;
     }
 
-    return true;
+    return {
+      trimmedName,
+      trimmedEmail,
+      trimmedPhone,
+      trimmedClass,
+      trimmedPassword,
+    };
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // ----------------- Trim all fields -----------------
-  const trimmedName = name.trim();
-  const trimmedEmail = email.trim();
-  const trimmedPhone = phoneNumber.trim();
-  const trimmedClass = className.trim();
-  const trimmedPassword = password.trim();
+    const validated = validate();
+    if (!validated) return;
 
-  // ----------------- Validation -----------------
-  if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedClass || !trimmedPassword) {
-    alert("All fields are required");
-    return;
-  }
+    const { trimmedName, trimmedEmail, trimmedPhone, trimmedClass, trimmedPassword } = validated;
 
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(trimmedEmail)) {
-    alert("Please enter a valid email address");
-    return;
-  }
+    try {
+      const response = await fetch(
+        "https://krishbackend-production.up.railway.app/api/add-user",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: trimmedName,
+            email: trimmedEmail,
+            phone_number: trimmedPhone,
+            class_name: trimmedClass,
+            password: trimmedPassword,
+          }),
+        }
+      );
 
-  // Validate phone number format: exactly 10 digits starting with 04
-  const phoneRegex = /^04\d{8}$/;
-  if (!phoneRegex.test(trimmedPhone)) {
-    alert("Please enter a valid Australian phone number (e.g. 0412345678)");
-    return;
-  }
+      const responseData = await response.json();
+      console.log("[DEBUG] Add user response:", responseData);
 
-  // ----------------- Submit to backend -----------------
-  try {
-    const response = await fetch(
-      "https://krishbackend-production.up.railway.app/api/add-user",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: trimmedName,
-          email: trimmedEmail,
-          phone_number: trimmedPhone,
-          class_name: trimmedClass,
-          password: trimmedPassword,
-        }),
+      if (!response.ok) {
+        alert(responseData.detail || "Failed to add user");
+        return;
       }
-    );
 
-    const responseData = await response.json();
-    console.log("[DEBUG] Add user response:", responseData);
-
-    if (!response.ok) {
-      alert(`Error adding user: ${JSON.stringify(responseData, null, 2)}`);
-      return;
+      alert("User added successfully");
+      onUserAdded();
+    } catch (err) {
+      console.error("[ERROR] Failed to add user:", err);
+      alert("An unexpected error occurred while adding the user");
     }
-
-    alert("User added successfully");
-    onUserAdded();
-  } catch (err) {
-    console.error("[ERROR] Failed to add user:", err);
-    alert("An unexpected error occurred while adding the user");
-  }
-};
-
-
-  try {
-    const response = await fetch(
-      "https://krishbackend-production.up.railway.app/api/add-user",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: trimmedName,
-          email: trimmedEmail,
-          phone_number: trimmedPhone,
-          class_name: trimmedClass,
-          password: trimmedPassword,
-        }),
-      }
-    );
-
-    // Debug: log raw response
-    const responseData = await response.json();
-    console.log("[DEBUG] Add user response:", responseData);
-
-    if (!response.ok) {
-      alert(responseData.detail || "Failed to add user");
-      return;
-    }
-
-    // Successfully added user
-    onUserAdded();
-  } catch (err) {
-    console.error("[ERROR] Add user failed:", err);
-    alert("Error adding user");
-  }
-};
+  };
 
   return (
     <div className="modal-overlay">
