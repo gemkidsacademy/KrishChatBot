@@ -1,9 +1,9 @@
-/* 🌟 Fixed Full-Height Mobile Responsive Gradient Chat UI 🌟 */
+/* 🌟 Fixed Full-Height, Fully Responsive Gradient Chat UI 🌟 */
 
 /* Base Container */
 .chat-container {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,7 +12,6 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  overflow: hidden;
 }
 
 /* Chat Box */
@@ -20,9 +19,9 @@
   width: 100%;
   max-width: 800px;
   min-width: 280px;
-  height: 100vh; /* fills entire mobile view height */
+  min-height: 100vh;
   background-color: #ffffff;
-  border-radius: 0; /* full screen on mobile */
+  border-radius: 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -38,7 +37,10 @@
   font-size: 1.25rem;
   padding: 1rem;
   letter-spacing: 0.5px;
-  flex-shrink: 0; /* Prevents collapsing */
+  position: sticky; /* 👈 keeps it visible while scrolling */
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 /* Message Area */
@@ -97,7 +99,7 @@
   padding: 0.75rem 1rem;
   background-color: #ffffff;
   border-top: 1px solid #d1d5db;
-  flex-shrink: 0; /* Keeps visible on small screens */
+  flex-shrink: 0;
 }
 
 .chat-input input {
@@ -157,27 +159,26 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive Adjustments */
-/* --- 🧠 FIX: Keep header visible on mobile --- */
+/* Responsive Fixes */
 @media (max-width: 600px) {
   .chat-box {
-    height: 100vh; /* use full screen height */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    border-radius: 0; /* optional: flat edges on mobile */
+    border-radius: 0;
   }
 
   .chat-header {
-    flex-shrink: 0; /* never shrink or hide */
+    flex-shrink: 0;
     font-size: 1rem;
     padding: 0.75rem;
   }
 
   .chat-messages {
-    flex: 1; /* take remaining height */
+    flex: 1;
     padding: 0.5rem;
-    overflow-y: auto; /* scroll messages */
-    max-height: none; /* let flexbox control height */
+    overflow-y: auto;
+    max-height: none;
   }
 
   .message {
@@ -186,7 +187,7 @@
   }
 
   .chat-input {
-    flex-shrink: 0; /* keep input visible at bottom */
+    flex-shrink: 0;
     padding: 0.5rem;
     gap: 6px;
   }
@@ -201,24 +202,23 @@
   }
 }
 
-
-/* Prevent mobile scroll bounce */
+/* Prevent cut-off or scroll blocking */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  overflow: auto; /* 👈 allow scrolling */
   background: linear-gradient(to bottom right, #e0c3fc, #8ec5fc);
 }
+
+/* PDF Link Styling */
 .message a {
-  color: #2563eb; /* bright blue */
+  color: #2563eb;
   text-decoration: underline;
   font-weight: 500;
   word-break: break-all;
 }
 
 .message a:hover {
-  color: #1e40af; /* darker blue */
+  color: #1e40af;
 }
-
-
