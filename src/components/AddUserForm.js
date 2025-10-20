@@ -33,34 +33,67 @@ function AddUserForm({ onClose, onUserAdded }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  e.preventDefault();
 
-    try {
-      const response = await fetch(
-        "https://krishbackend-production.up.railway.app/api/add-user",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name.trim(),
-            email: email.trim(),
-            phone_number: phoneNumber.trim(),
-            class_name: className.trim(),
-            password: password.trim(),
-          }),
-        }
-      );
+  // Trim all fields
+  const trimmedName = name.trim();
+  const trimmedEmail = email.trim();
+  const trimmedPhone = phoneNumber.trim();
+  const trimmedClass = className.trim();
+  const trimmedPassword = password.trim();
 
-      if (!response.ok) throw new Error("Failed to add user");
-      await response.json();
-      alert("User added successfully");
-      onUserAdded();
-    } catch (err) {
-      console.error(err);
-      alert("Error adding user");
+  // ----------------- Validation -----------------
+  if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedClass || !trimmedPassword) {
+    alert("All fields are required");
+    return;
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(trimmedEmail)) {
+    alert("Please enter a valid email address");
+    return;
+  }
+
+  // Validate phone number format: exactly 10 digits starting with 04
+  const phoneRegex = /^04\d{8}$/;
+  if (!phoneRegex.test(trimmedPhone)) {
+    alert("Please enter a valid Australian phone number (e.g. 0412345678)");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://krishbackend-production.up.railway.app/api/add-user",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail,
+          phone_number: trimmedPhone,
+          class_name: trimmedClass,
+          password: trimmedPassword,
+        }),
+      }
+    );
+
+    // Debug: log raw response
+    const responseData = await response.json();
+    console.log("[DEBUG] Add user response:", responseData);
+
+    if (!response.ok) {
+      alert(responseData.detail || "Failed to add user");
+      return;
     }
-  };
+
+    // Successfully added user
+    onUserAdded();
+  } catch (err) {
+    console.error("[ERROR] Add user failed:", err);
+    alert("Error adding user");
+  }
+};
 
   return (
     <div className="modal-overlay">
