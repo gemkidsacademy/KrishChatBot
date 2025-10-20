@@ -59,7 +59,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
 
     try {
       const res = await fetch(
-        `krishbackend-production.up.railway.app/edit-user/${selectedUserId}`,
+        `https://krishbackend-production.up.railway.app/edit-user/${selectedUserId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
