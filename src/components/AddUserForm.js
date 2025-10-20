@@ -7,25 +7,29 @@ function AddUserForm({ onClose, onUserAdded }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
 
   const validate = () => {
-    const newErrors = {};
+    // Check all fields
+    if (!name || !email || !phoneNumber || !className || !password) {
+      alert("All fields are required");
+      return false;
+    }
 
-    if (!name.trim()) newErrors.name = "Name is required";
-    if (!email.trim()) newErrors.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      newErrors.email = "Enter a valid email address";
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address");
+      return false;
+    }
 
-    if (!phoneNumber.trim()) newErrors.phoneNumber = "Phone number is required";
-    else if (!/^04\d{8}$/.test(phoneNumber))
-      newErrors.phoneNumber = "Enter a valid Australian phone number (e.g. 0412345678)";
+    // Phone number validation: must start with 04 and have 10 digits
+    const phoneRegex = /^04\d{8}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      alert("Please enter a valid Australian phone number (e.g. 0412345678)");
+      return false;
+    }
 
-    if (!className.trim()) newErrors.className = "Class name is required";
-    if (!password.trim()) newErrors.password = "Password is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -50,6 +54,7 @@ function AddUserForm({ onClose, onUserAdded }) {
 
       if (!response.ok) throw new Error("Failed to add user");
       await response.json();
+      alert("User added successfully");
       onUserAdded();
     } catch (err) {
       console.error(err);
@@ -67,41 +72,36 @@ function AddUserForm({ onClose, onUserAdded }) {
             placeholder="User name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
           />
-          {errors.name && <div className="error">{errors.name}</div>}
-
           <input
             type="email"
             placeholder="User email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
-          {errors.email && <div className="error">{errors.email}</div>}
-
           <input
             type="text"
             placeholder="Phone number (e.g. 0412345678)"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
+            required
           />
-          {errors.phoneNumber && <div className="error">{errors.phoneNumber}</div>}
-
           <input
             type="text"
             placeholder="Class name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
+            required
           />
-          {errors.className && <div className="error">{errors.className}</div>}
-
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          {errors.password && <div className="error">{errors.password}</div>}
-
           <div className="modal-actions">
             <button type="submit">Add User</button>
             <button type="button" onClick={onClose}>
