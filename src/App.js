@@ -125,11 +125,11 @@ const handleLogin = async () => {
       }
 
       // Validate phone number format before sending
-      const isValidE164 = /^\+614\d{8}$/.test(number);
-      if (!isValidE164) {
-        setError("Please enter a valid phone number in +614xxxxxxxx format");
-        return;
-      }
+      const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
+if (!isValidE164(phone)) {
+  setError("Please enter a valid phone number in +614xxxxxxxx format");
+  return;
+}
 
       console.log("[INFO] Sending verify-otp request for phone:", phone, "OTP:", otp);
 
