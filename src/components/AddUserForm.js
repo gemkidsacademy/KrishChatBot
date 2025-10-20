@@ -49,7 +49,7 @@ function AddUserForm({ onClose, onUserAdded }) {
 
     try {
       const response = await fetch(
-        "https://krishbackend-production.up.railway.app/api/add-user",
+        "https://krishbackend-production.up.railway.app/add_user",
         {
           method: "POST",
           headers: {
