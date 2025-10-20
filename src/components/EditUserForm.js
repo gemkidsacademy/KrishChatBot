@@ -14,7 +14,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://your-backend-url.com/api/user-ids");
+        const res = await fetch("https://krishbackend-production.up.railway.app/user_ids");
         if (!res.ok) throw new Error("Failed to fetch user IDs");
         const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
         setUserIds(data);
