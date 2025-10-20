@@ -35,7 +35,7 @@ function AddUserForm({ onClose, onUserAdded }) {
   const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // Trim all fields
+  // ----------------- Trim all fields -----------------
   const trimmedName = name.trim();
   const trimmedEmail = email.trim();
   const trimmedPhone = phoneNumber.trim();
@@ -61,6 +61,40 @@ function AddUserForm({ onClose, onUserAdded }) {
     alert("Please enter a valid Australian phone number (e.g. 0412345678)");
     return;
   }
+
+  // ----------------- Submit to backend -----------------
+  try {
+    const response = await fetch(
+      "https://krishbackend-production.up.railway.app/api/add-user",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail,
+          phone_number: trimmedPhone,
+          class_name: trimmedClass,
+          password: trimmedPassword,
+        }),
+      }
+    );
+
+    const responseData = await response.json();
+    console.log("[DEBUG] Add user response:", responseData);
+
+    if (!response.ok) {
+      alert(`Error adding user: ${JSON.stringify(responseData, null, 2)}`);
+      return;
+    }
+
+    alert("User added successfully");
+    onUserAdded();
+  } catch (err) {
+    console.error("[ERROR] Failed to add user:", err);
+    alert("An unexpected error occurred while adding the user");
+  }
+};
+
 
   try {
     const response = await fetch(
