@@ -201,3 +201,14 @@ html, body {
   overflow: hidden;
   background: linear-gradient(to bottom right, #e0c3fc, #8ec5fc);
 }
+.message a {
+  color: #2563eb; /* bright blue */
+  text-decoration: underline;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.message a:hover {
+  color: #1e40af; /* darker blue */
+}
+
