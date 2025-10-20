@@ -33,9 +33,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
 
     const fetchUserDetails = async () => {
       try {
-        const res = await fetch(
-          `https://your-backend-url.com/api/user/${selectedUserId}`
-        );
+        const res = await fetch(`https://krishbackend-production.up.railway.app/user/${selectedUserId}`);
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
         setName(user.name || "");
