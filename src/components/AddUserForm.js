@@ -11,14 +11,29 @@ function AddUserForm({ onClose, onUserAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!name || !email || !password) {
-      alert("Name, email, and password are required");
+    // ----------------- Validation -----------------
+    if (!name || !email || !phoneNumber || !className || !password) {
+      alert("All fields are required");
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    // Validate phone number format: exactly 10 digits starting with 04
+    const phoneRegex = /^04\d{8}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      alert("Please enter a valid Australian phone number (e.g. 0412345678)");
+      return;
+    }
+
+    // ----------------- Submit -----------------
     try {
-      const response = await fetch("krishbackend-production.up.railway.app/api/add-user", {
+      const response = await fetch("https://krishbackend-production.up.railway.app/api/add-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,15 +75,17 @@ function AddUserForm({ onClose, onUserAdded }) {
           />
           <input
             type="text"
-            placeholder="Phone number (optional)"
+            placeholder="Phone number (e.g. 0412345678)"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
+            required
           />
           <input
             type="text"
-            placeholder="Class name (optional)"
+            placeholder="Class name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
+            required
           />
           <input
             type="password"
