@@ -1,4 +1,4 @@
-/* 🌟 Perfect Full-Height Mobile Responsive Chat UI 🌟 */
+/* 🌟 Fixed Full-Height Chat UI for Mobile and Desktop 🌟 */
 
 /* Base Container */
 .chat-container {
@@ -6,7 +6,7 @@
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: stretch; /* ensures full height */
+  align-items: stretch;
   background: linear-gradient(to bottom right, #e0c3fc, #8ec5fc);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
@@ -19,14 +19,13 @@
 .chat-box {
   width: 100%;
   max-width: 800px;
-  height: 100vh;
+  height: 100%;
   background-color: #ffffff;
   border-radius: 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden;
 }
 
 /* Header */
@@ -41,7 +40,7 @@
   flex-shrink: 0;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
 }
 
 /* Message Area */
@@ -56,6 +55,7 @@
   scrollbar-width: thin;
   scrollbar-color: #888 #f3f4f6;
   box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* mobile scroll fix */
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -66,7 +66,7 @@
   border-radius: 3px;
 }
 
-/* Message Bubbles */
+/* Messages */
 .message {
   padding: 0.75rem 1rem;
   border-radius: 1rem;
@@ -103,7 +103,7 @@
   flex-shrink: 0;
   position: sticky;
   bottom: 0;
-  z-index: 10;
+  z-index: 100;
 }
 
 .chat-input input {
@@ -137,16 +137,16 @@
   transform: scale(1.05);
 }
 
-/* Link styling inside messages */
+/* Links in messages */
 .message a {
-  color: #2563eb; /* bright blue */
+  color: #2563eb;
   text-decoration: underline;
   font-weight: 500;
   word-break: break-all;
 }
 
 .message a:hover {
-  color: #1e40af; /* darker blue */
+  color: #1e40af;
 }
 
 /* Animations */
@@ -175,13 +175,12 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive Adjustments */
+/* Responsive (Mobile) */
 @media (max-width: 600px) {
   .chat-box {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    border-radius: 0;
   }
 
   .chat-header {
