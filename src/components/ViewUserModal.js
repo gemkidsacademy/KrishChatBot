@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AddUserForm.css"; // reuse modal styling
-  
+
 function ViewUserModal({ onClose }) {
   const [users, setUsers] = useState([]);
 
@@ -24,14 +24,35 @@ function ViewUserModal({ onClose }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal" style={{ width: "500px" }}>
-        <h3>All Users</h3>
+      <div
+        className="modal large-modal"
+        style={{
+          width: "90%",
+          maxWidth: "1200px",
+          maxHeight: "85vh",
+          overflowY: "auto",
+        }}
+      >
+        <h3 style={{ textAlign: "center", marginBottom: "15px" }}>All Users</h3>
+
         {users.length === 0 ? (
-          <p>No users found.</p>
+          <p style={{ textAlign: "center" }}>No users found.</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
+          <div
+            style={{
+              overflowX: "auto",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                minWidth: "800px",
+              }}
+            >
+              <thead style={{ backgroundColor: "#f0f0f0" }}>
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
@@ -60,8 +81,26 @@ function ViewUserModal({ onClose }) {
             </table>
           </div>
         )}
-        <div className="modal-actions" style={{ marginTop: "10px" }}>
-          <button type="button" onClick={onClose}>
+
+        <div
+          className="modal-actions"
+          style={{
+            marginTop: "15px",
+            textAlign: "center",
+          }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: "8px 16px",
+              border: "none",
+              borderRadius: "5px",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
             Close
           </button>
         </div>
