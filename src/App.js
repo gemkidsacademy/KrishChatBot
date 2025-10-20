@@ -229,7 +229,7 @@ const handleLogin = async () => {
           <>
             <input
               type="text"
-              placeholder="Enter phone number in format +92300xxxxxxx"
+              placeholder="Enter phone number in the format 0412345678"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               style={styles.input}
