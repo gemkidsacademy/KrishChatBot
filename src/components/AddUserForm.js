@@ -43,11 +43,11 @@ function AddUserForm({ onClose, onUserAdded }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name,
-            email,
-            phone_number: phoneNumber,
-            class_name: className,
-            password,
+            name: name.trim(),
+            email: email.trim(),
+            phone_number: phoneNumber.trim(),
+            class_name: className.trim(),
+            password: password.trim(),
           }),
         }
       );
