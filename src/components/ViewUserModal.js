@@ -7,7 +7,9 @@ function ViewUserModal({ onClose }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("https://krishbackend-production.up.railway.app/api/users");
+        const res = await fetch(
+          "https://krishbackend-production.up.railway.app/api/users"
+        );
         if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
         setUsers(data);
@@ -27,32 +29,38 @@ function ViewUserModal({ onClose }) {
         {users.length === 0 ? (
           <p>No users found.</p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Class</th>
-                <th>Created At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phone_number || "-"}</td>
-                  <td>{user.class_name || "-"}</td>
-                  <td>{new Date(user.created_at).toLocaleString()}</td>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Class</th>
+                  <th>Created At</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.phone_number || "-"}</td>
+                    <td>{user.class_name || "-"}</td>
+                    <td>
+                      {user.created_at
+                        ? new Date(user.created_at).toLocaleString()
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-        <div className="modal-actions">
+        <div className="modal-actions" style={{ marginTop: "10px" }}>
           <button type="button" onClick={onClose}>
             Close
           </button>
