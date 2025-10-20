@@ -125,9 +125,9 @@ const handleLogin = async () => {
       }
 
       // Validate phone number format before sending
-      const isValidE164 = /^\+92\d{10}$/.test(phone);
+      const isValidE164 = /^\+614\d{8}$/.test(number);
       if (!isValidE164) {
-        setError("Please enter a valid phone number in +92300xxxxxxx format");
+        setError("Please enter a valid phone number in +614xxxxxxxx format");
         return;
       }
 
