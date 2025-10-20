@@ -46,44 +46,75 @@ function AddUserForm({ onClose, onUserAdded }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const validated = validate();
-    if (!validated) return;
+  // Trim all fields
+  const trimmedName = name.trim();
+  const trimmedEmail = email.trim();
+  const trimmedPhone = phoneNumber.trim();
+  const trimmedClass = className.trim();
+  const trimmedPassword = password.trim();
 
-    const { trimmedName, trimmedEmail, trimmedPhone, trimmedClass, trimmedPassword } = validated;
+  // ----------------- Validation -----------------
+  if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedClass || !trimmedPassword) {
+    alert("All fields are required");
+    return;
+  }
 
-    try {
-      const response = await fetch(
-        "https://krishbackend-production.up.railway.app/api/add-user",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: trimmedName,
-            email: trimmedEmail,
-            phone_number: trimmedPhone,
-            class_name: trimmedClass,
-            password: trimmedPassword,
-          }),
-        }
-      );
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(trimmedEmail)) {
+    alert("Please enter a valid email address");
+    return;
+  }
 
-      const responseData = await response.json();
-      console.log("[DEBUG] Add user response:", responseData);
+  const phoneRegex = /^04\d{8}$/;
+  if (!phoneRegex.test(trimmedPhone)) {
+    alert("Please enter a valid Australian phone number (e.g. 0412345678)");
+    return;
+  }
 
-      if (!response.ok) {
-        alert(responseData.detail || "Failed to add user");
-        return;
-      }
-
-      alert("User added successfully");
-      onUserAdded();
-    } catch (err) {
-      console.error("[ERROR] Failed to add user:", err);
-      alert("An unexpected error occurred while adding the user");
-    }
+  // ----------------- Debug log -----------------
+  const payload = {
+    name: trimmedName,
+    email: trimmedEmail,
+    phone_number: trimmedPhone,
+    class_name: trimmedClass,
+    password: trimmedPassword,
   };
+
+  console.log("[DEBUG] Sending payload to backend:", payload);
+
+  try {
+    const response = await fetch(
+      "https://krishbackend-production.up.railway.app/api/add-user",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const responseData = await response.json();
+    console.log("[DEBUG] Add user response:", responseData);
+
+    if (!response.ok) {
+      alert(responseData.detail || "Failed to add user");
+      return;
+    }
+
+    alert("User added successfully");
+    onUserAdded();
+    // Optionally reset the form
+    setName("");
+    setEmail("");
+    setPhoneNumber("");
+    setClassName("");
+    setPassword("");
+  } catch (err) {
+    console.error("[ERROR] Failed to add user:", err);
+    alert("An unexpected error occurred while adding the user");
+  }
+};
 
   return (
     <div className="modal-overlay">
