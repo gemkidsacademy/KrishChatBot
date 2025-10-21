@@ -17,8 +17,13 @@ import DemoChatbot from "./components/DemoChatbot";
 import UsageDashboard from "./components/UsageDashboard";
 import ChatbotSettings from "./components/ChatbotSettings";
 
+
+
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
+  const [loginMode, setLoginMode] = useState("otp"); // "password" or "otp"
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -26,66 +31,20 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const navigate = useNavigate();
   const server = "https://krishbackend-production.up.railway.app";
 
+
   // --- Generate OTP ---
   const generateOtp = async () => {
-    if (!phone) return setError("Please enter a phone number");
-
-    let formattedPhone = phone.trim();
-    if (/^0\d{9}$/.test(formattedPhone)) {
-      formattedPhone = "+61" + formattedPhone.slice(1);
-    }
-
-    const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
-    if (!isValidE164(formattedPhone)) {
-      setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${server}/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number: formattedPhone }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setOtpSent(true);
-        setError(null);
-        console.log("[INFO] OTP sent successfully:", data);
-      } else {
-        setError(data.detail || "Failed to generate OTP");
-        console.warn("[WARN] OTP generation failed:", data);
-      }
-    } catch (err) {
-      setError("Failed to generate OTP");
-      console.error("[ERROR] Exception while generating OTP:", err);
-    }
-  };
-
-  // --- OTP Login Handler ---
-  const handleLogin = async () => {
-  if (!otpSent) {
-    setError("Please generate OTP first");
-    return;
-  }
-
   if (!phone) {
-    setError("Please enter phone number");
-    return;
+    return setError("Please enter a phone number");
   }
 
-  if (!otp) {
-    setError("Please enter the OTP");
-    return;
-  }
-
+  // --- Convert local Australian number to E.164 format ---
   let formattedPhone = phone.trim();
   if (/^0\d{9}$/.test(formattedPhone)) {
     formattedPhone = "+61" + formattedPhone.slice(1);
   }
 
+  // --- Validate final E.164 format ---
   const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
   if (!isValidE164(formattedPhone)) {
     setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
@@ -93,74 +52,220 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   }
 
   try {
-    const verifyResponse = await fetch(`${server}/verify-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone_number: formattedPhone, otp }),
-    });
-
-    let verifyData;
-    try {
-      verifyData = await verifyResponse.json();
-    } catch {
-      setError("Failed to verify OTP");
-      return;
-    }
-
-    if (verifyResponse.ok) {
-      setIsLoggedIn(true);
-      setDoctorData(verifyData.user);
-      setSessionToken(null);
-
-      // --- Admin vs Regular User Navigation ---
-      if (verifyData.user?.name === "Admin") {
-        navigate("/AdminPanel");
-      } else {
-        navigate("/ChatBot");
+    const response = await fetch(
+      "https://krishbackend-production.up.railway.app/send-otp",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_number: formattedPhone }), // send formatted phone
       }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setOtpSent(true);
+      setError(null);
+      console.log("[INFO] OTP sent successfully:", data);
     } else {
-      setError(verifyData.detail || "Invalid OTP");
+      setError(data.detail || "Failed to generate OTP");
+      console.warn("[WARN] OTP generation failed:", data);
     }
   } catch (err) {
+    setError("Failed to generate OTP");
+    console.error("[ERROR] Exception while generating OTP:", err);
+  }
+};
+
+  // --- Login Handler ---
+  // ------------------ Handle Password Login Only ------------------
+const handleLogin = async () => {
+  try {
+    setError(null);
+
+    // ---------------- Password Login ----------------
+    if (loginMode === "password") {
+      if (!username || !password) {
+        setError("Please enter username and password");
+        return;
+      }
+
+      console.log("[INFO] Attempting password login:", username);
+
+      const response = await fetch(`${server}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name: username, password }),
+      });
+
+      const data = await response.json();
+      console.log("[DEBUG] Password login response:", data);
+
+      if (response.ok) {
+        setIsLoggedIn(true);
+        setDoctorData(data);
+        setSessionToken(data.session_token || null);
+
+        if (data?.name === "Admin") navigate("/AdminPanel");
+        else navigate("/ChatBot");
+      } else {
+        setError(data.detail || "Invalid credentials");
+      }
+    } 
+
+    // ---------------- OTP Login ----------------
+    else if (loginMode === "otp") {
+      console.log("[INFO] OTP login mode active");
+
+      if (!otpSent) {
+        setError("Please generate OTP first");
+        return;
+      }
+
+      if (!phone) {
+        setError("Please enter phone number");
+        return;
+      }
+
+      if (!otp) {
+        setError("Please enter the OTP");
+        return;
+      }
+
+      // --- Normalize phone number to E.164 format ---
+      let formattedPhone = phone.trim();
+      if (/^0\d{9}$/.test(formattedPhone)) {
+        formattedPhone = "+61" + formattedPhone.slice(1);
+      }
+
+      // --- Validate final format ---
+      const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
+      if (!isValidE164(formattedPhone)) {
+        setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
+        return;
+      }
+
+      console.log("[INFO] Sending verify-otp request for phone:", formattedPhone, "OTP:", otp);
+
+      try {
+        const verifyResponse = await fetch(`${server}/verify-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone_number: formattedPhone, otp }), // send formatted phone
+        });
+
+        console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
+
+        let verifyData;
+        try {
+          verifyData = await verifyResponse.json();
+          console.log("[DEBUG] verify-otp response JSON:", verifyData);
+        } catch (err) {
+          console.error("[ERROR] Failed to parse verify-otp response:", err);
+          setError("Failed to verify OTP");
+          return;
+        }
+
+        if (verifyResponse.ok) {
+          console.log("[INFO] OTP verified successfully");
+
+          setIsLoggedIn(true);
+          setDoctorData(verifyData.user);
+          setSessionToken(null); // or generate/manage session token here
+          navigate("/ChatBot");
+        } else {
+          console.warn("[WARN] OTP verification failed:", verifyData);
+          setError(verifyData.detail || "Invalid OTP");
+        }
+      } catch (err) {
+        console.error("[ERROR] OTP login failed unexpectedly:", err);
+        setError("Login failed. Please try again.");
+      }
+    }
+  } catch (err) {
+    console.error("[ERROR] Login failed unexpectedly:", err);
     setError("Login failed. Please try again.");
-    console.error("[ERROR] OTP login failed:", err);
   }
 };
 
 
+
+  const toggleLoginMode = () => {
+    setLoginMode(loginMode === "password" ? "otp" : "password");
+    setError(null);
+    setOtpSent(false);
+    setOtp("");
+    setUsername("");
+    setPassword("");
+    setPhone("");
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        <h2>Login with OTP</h2>
-        <input
-          type="text"
-          placeholder="Enter phone number (0412345678)"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          style={styles.input}
-          disabled={otpSent}
-        />
-        {!otpSent && (
-          <button
-            onClick={generateOtp}
-            style={{ ...styles.button, background: "#28a745", marginTop: "5px" }}
-            disabled={!phone}
-          >
-            Generate OTP
-          </button>
+        <h2>
+          {loginMode === "password" ? "Login with ID/Password" : "Login with OTP"}
+        </h2>
+
+        {loginMode === "password" ? (
+          <>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+            />
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              placeholder="Enter phone number in the format 0412345678"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              style={styles.input}
+              disabled={otpSent} // disable phone after OTP is sent
+            />
+            {!otpSent && (
+              <button
+                onClick={generateOtp}
+                style={{ ...styles.button, background: "#28a745", marginTop: "5px" }}
+                disabled={!phone}
+              >
+                Generate OTP
+              </button>
+            )}
+            {otpSent && (
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                style={styles.input}
+              />
+            )}
+          </>
         )}
-        {otpSent && (
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            style={styles.input}
-          />
-        )}
+
         <button onClick={handleLogin} style={styles.button}>
           Login
         </button>
+
+        <p style={styles.toggle} onClick={toggleLoginMode}>
+          {loginMode === "password"
+            ? "Login with OTP instead"
+            : "Login with ID/Password instead"}
+        </p>
+
         {error && <p style={styles.error}>{error}</p>}
       </div>
     </div>
@@ -196,6 +301,7 @@ function App() {
           }
         />
 
+        {/* Admin Routes */}
         <Route
           path="/AdminPanel"
           element={
@@ -236,6 +342,8 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* Sociology Chatbot */}
         <Route
           path="/ChatBot"
           element={<DemoChatbot doctorData={doctorData} />}
@@ -247,7 +355,7 @@ function App() {
               <UsageDashboard />
             </PrivateRoute>
           }
-        />
+        /> 
         <Route
           path="/chatbot-settings"
           element={
@@ -300,6 +408,12 @@ const styles = {
   error: {
     color: "red",
     marginTop: "10px",
+  },
+  toggle: {
+    marginTop: "10px",
+    cursor: "pointer",
+    color: "#007bff",
+    textDecoration: "underline",
   },
 };
 
