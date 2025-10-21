@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./AddUserForm.css"; // reuse the same modal styling
 
-function EditUserForm({ onClose, onUserUpdated }) {
+function DeleteUserForm({ onClose, onUserUpdated }) {
   const [userIds, setUserIds] = useState([]); // list of user IDs
   const [selectedUserId, setSelectedUserId] = useState("");
   const [name, setName] = useState("");
@@ -53,7 +53,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedUserId) {
-      alert("Please select a user to edit");
+      alert("Please select a user to delete");
       return;
     }
 
@@ -85,7 +85,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h3>Edit User</h3>
+        <h3>Delete User</h3>
 
         <form onSubmit={handleSubmit}>
           {/* User selection dropdown */}
@@ -147,4 +147,4 @@ function EditUserForm({ onClose, onUserUpdated }) {
   );
 }
 
-export default EditUserForm;
+export default DeleteUserForm;
