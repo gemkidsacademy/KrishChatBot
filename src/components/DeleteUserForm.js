@@ -13,9 +13,11 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://krishbackend-production.up.railway.app/user_ids");
+        const res = await fetch(
+          "https://krishbackend-production.up.railway.app/user_ids"
+        );
         if (!res.ok) throw new Error("Failed to fetch user IDs");
-        const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
+        const data = await res.json();
         setUserIds(data);
       } catch (err) {
         console.error(err);
@@ -32,7 +34,9 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
 
     const fetchUserDetails = async () => {
       try {
-        const res = await fetch(`https://krishbackend-production.up.railway.app/users/info/${selectedUserId}`);
+        const res = await fetch(
+          `https://krishbackend-production.up.railway.app/users/info/${selectedUserId}`
+        );
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
         setName(user.name || "");
@@ -50,6 +54,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!selectedUserId) {
       alert("Please select a user to delete");
       return;
@@ -62,20 +67,20 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
           method: "DELETE",
         }
       );
-    
+
       if (!res.ok) throw new Error("Failed to delete user");
-    
-      // Optionally, parse response if backend returns JSON message
+
       const data = await res.json();
-      console.log(data.message);
-    
-      // Notify parent component about successful deletion
-      onUserUpdated();
+      alert(data.message || "User deleted successfully!");
+
+      // Notify parent component if provided
+      if (onUserUpdated && typeof onUserUpdated === "function") {
+        onUserUpdated();
+      }
     } catch (err) {
       console.error(err);
       alert("Error deleting user");
     }
-
   };
 
   return (
