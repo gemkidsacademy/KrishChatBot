@@ -59,24 +59,23 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
       const res = await fetch(
         `https://krishbackend-production.up.railway.app/delete-user/${selectedUserId}`,
         {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            email,
-            phone_number: phoneNumber,
-            class_name: className,
-          }),
+          method: "DELETE",
         }
       );
-
+    
       if (!res.ok) throw new Error("Failed to delete user");
-      await res.json();
+    
+      // Optionally, parse response if backend returns JSON message
+      const data = await res.json();
+      console.log(data.message);
+    
+      // Notify parent component about successful deletion
       onUserUpdated();
     } catch (err) {
       console.error(err);
-      alert("Error updating user");
+      alert("Error deleting user");
     }
+
   };
 
   return (
