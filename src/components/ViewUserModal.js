@@ -59,7 +59,7 @@ function ViewUserModal({ onClose }) {
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Class</th>
-                  <th>Created At</th>
+                  {/* Removed Created At */}
                 </tr>
               </thead>
               <tbody>
@@ -70,11 +70,7 @@ function ViewUserModal({ onClose }) {
                     <td>{user.email}</td>
                     <td>{user.phone_number || "-"}</td>
                     <td>{user.class_name || "-"}</td>
-                    <td>
-                      {user.created_at
-                        ? new Date(user.created_at).toLocaleString()
-                        : "-"}
-                    </td>
+                    {/* Removed Created At */}
                   </tr>
                 ))}
               </tbody>
