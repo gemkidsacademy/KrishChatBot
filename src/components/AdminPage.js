@@ -121,7 +121,7 @@ const AdminPanel = () => {
               </button>
             
               {showDeleteUser && (
-                <DeleteUserModal
+                <DeleteUserForm
                   onClose={() => setShowDeleteUser(false)}
                   onUserDeleted={handleUserDeleted}
                 />
