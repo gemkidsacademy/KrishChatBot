@@ -86,13 +86,12 @@
 }
 
 .message.bot {
-  background: linear-gradient(to right, #f3f4f6, #e5e7eb);
-  color: #1f2937;
+  background: linear-gradient(to right, #fff2ec, #ffe6d9); /* 🌤 soft orange tint */
+  color: #1f1f1f; /* keep text readable */
   align-self: flex-start;
   border-bottom-left-radius: 0.25rem;
   animation: slideInLeft 0.3s ease;
 }
-
 /* Input Section */
 .chat-input {
   display: flex;
@@ -221,3 +220,4 @@ html, body {
   overflow: hidden;
   background: linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
 }
+
