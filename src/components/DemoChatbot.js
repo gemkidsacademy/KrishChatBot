@@ -132,7 +132,7 @@ export default function DemoChatbot({ doctorData }) {
   return (
     <div className="chat-container">
       <div className="chat-box">
-        <div className="chat-header">AI PDF Chatbot Demo</div>
+        <div className="chat-header">Gem AI</div>
           <div className="chat-messages">
             {messages.map((msg, idx) => (
               <div key={idx} className={`message ${msg.sender}`}>
@@ -215,6 +215,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
