@@ -7,6 +7,9 @@ import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm";
 import ViewUserModal from "./ViewUserModal";
 import DeleteUserForm from "./DeleteUserForm";
+import UsageDashboard from "./UsageDashboard";
+
+
 
 
 
@@ -153,12 +156,14 @@ const AdminPanel = () => {
 
         {/* OpenAI Usage */}
         {activeTab === "openai" && (
-          <div className="tab-panel">
-            <h3>OpenAI API Usage</h3>
-            <p>Click below to view detailed usage statistics.</p>
-            <button className="dashboard-button" onClick={handleViewUsage}>
-              View OpenAI Usage
-            </button>
+          <div
+            className="tab-panel"
+            style={{
+              height: "100vh", // or a specific height
+              overflowY: "auto",
+            }}
+          >
+            <UsageDashboard />
           </div>
         )}
 
