@@ -11,7 +11,7 @@
 
   display: flex;
   flex-direction: column;
-  max-height: 80vh;          /* fit in viewport */
+  max-height: 70vh;          /* fit in viewport */
   overflow-y: auto;          /* scroll if content is taller */
 }
 
