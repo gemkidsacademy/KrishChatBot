@@ -22,6 +22,7 @@ import ChatbotSettings from "./components/ChatbotSettings";
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [loginMode, setLoginMode] = useState("otp"); // "password" or "otp"
+  const [isDisabled, setIsDisabled] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -66,6 +67,8 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     if (response.ok) {
       setOtpSent(true);
       setError(null);
+      setIsDisabled(false)
+
       console.log("[INFO] OTP sent successfully:", data);
     } else {
       setError(data.detail || "Failed to generate OTP");
@@ -256,7 +259,11 @@ const handleLogin = async () => {
           </>
         )}
 
-        <button onClick={handleLogin} style={styles.button}>
+         <button
+          onClick={handleLogin}
+          style={styles.button}
+          disabled={isDisabled} // 👈 disables the button
+        >
           Login
         </button>
 
