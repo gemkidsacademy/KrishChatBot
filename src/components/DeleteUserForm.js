@@ -8,7 +8,6 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
-  const [password, setPassword] = useState("");
 
   // Fetch user IDs on mount
   useEffect(() => {
@@ -40,7 +39,6 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
         setEmail(user.email || "");
         setPhoneNumber(user.phone_number || "");
         setClassName(user.class_name || "");
-        setPassword(""); // leave empty unless admin wants to reset
       } catch (err) {
         console.error(err);
         alert("Error fetching user details");
@@ -68,7 +66,6 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
             email,
             phone_number: phoneNumber,
             class_name: className,
-            password, // send only if admin wants to update
           }),
         }
       );
@@ -127,12 +124,6 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
             placeholder="Class name (optional)"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password (leave blank to keep unchanged)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
           />
 
           <div className="modal-actions">
