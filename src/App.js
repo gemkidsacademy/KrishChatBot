@@ -261,8 +261,12 @@ const handleLogin = async () => {
 
          <button
           onClick={handleLogin}
-          style={styles.button}
-          disabled={isDisabled} // 👈 disables the button
+          style={{
+            ...styles.button,
+            opacity: isDisabled ? 0.5 : 1,
+            cursor: isDisabled ? "not-allowed" : "pointer"
+          }}
+          disabled={isDisabled}
         >
           Login
         </button>
