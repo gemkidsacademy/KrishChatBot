@@ -6,7 +6,7 @@ import ChatbotSettings from "./ChatbotSettings";
 import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm";
 import ViewUserModal from "./ViewUserModal";
-import DeleteUserModal from "./ViewUserModal";
+import DeleteUserForm from "./DeleteUserForm";
 
 
 
