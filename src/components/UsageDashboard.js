@@ -8,14 +8,14 @@ const UsageDashboard = () => {
   useEffect(() => {
     // Dummy customer usage data for last 30 days
     const dummyData = [
-      { user: "Alice", model: "GPT-3.5 Turbo", amount_usd: 12.50 },
-      { user: "Bob", model: "GPT-4", amount_usd: 25.00 },
-      { user: "Charlie", model: "GPT-3.5 Turbo", amount_usd: 8.75 },
-      { user: "Diana", model: "GPT-4", amount_usd: 30.00 },
-      { user: "Ethan", model: "GPT-3.5 Turbo", amount_usd: 5.50 },
-      { user: "Fiona", model: "GPT-4", amount_usd: 18.25 },
-      { user: "George", model: "GPT-3.5 Turbo", amount_usd: 9.10 },
-      { user: "Hannah", model: "GPT-4", amount_usd: 22.00 }
+      { user: "Alice", amount_usd: 1.00 },
+      { user: "Bob", amount_usd: 1.00 },
+      { user: "Charlie", amount_usd: 1.00 },
+      { user: "Diana", amount_usd: 1.00 },
+      { user: "Ethan", amount_usd: 1.00 },
+      { user: "Fiona", amount_usd: 1.00 },
+      { user: "George", amount_usd: 1.00 },
+      { user: "Hannah", amount_usd: 1.00 }
     ];
 
     // Simulate loading delay
@@ -37,7 +37,6 @@ const UsageDashboard = () => {
         <thead>
           <tr>
             <th>Customer</th>
-            <th>Model</th>
             <th>Amount (USD)</th>
           </tr>
         </thead>
@@ -45,7 +44,6 @@ const UsageDashboard = () => {
           {usageData.map((item, index) => (
             <tr key={index}>
               <td>{item.user}</td>
-              <td>{item.model}</td>
               <td>${item.amount_usd.toFixed(2)}</td>
             </tr>
           ))}
