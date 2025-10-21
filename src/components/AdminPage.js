@@ -139,7 +139,13 @@ const AdminPanel = () => {
         )}
         {/* Generic Chatbot) */}
         {activeTab === "Generic_chatbot" && (
-          <div className="tab-panel">
+          <div
+            className="tab-panel"
+            style={{
+              height: "100vh", // or a specific height
+              overflowY: "auto",
+            }}
+          >
             <ChatbotSettings />
           </div>
         )}
