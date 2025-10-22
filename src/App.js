@@ -266,7 +266,8 @@ const handleLogin = async () => {
             opacity: isDisabled ? 0.5 : 1,
             cursor: isDisabled ? "not-allowed" : "pointer"
           }}
-          disabled={isDisabled}
+          {/* disabled={isDisabled} */}
+
         >
           Login
         </button>
