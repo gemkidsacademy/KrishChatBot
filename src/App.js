@@ -263,14 +263,13 @@ const handleLogin = async () => {
           onClick={handleLogin}
           style={{
             ...styles.button,
-            opacity: isDisabled ? 0.5 : 1,
-            cursor: isDisabled ? "not-allowed" : "pointer"
+            opacity: 1,
+            cursor: "pointer",
           }}
-          {/* disabled={isDisabled} */}
-
         >
           Login
         </button>
+
 
         <p style={styles.toggle} onClick={toggleLoginMode}>
           {loginMode === "password"
