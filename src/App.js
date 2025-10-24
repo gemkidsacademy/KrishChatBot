@@ -106,7 +106,7 @@ const handleLogin = async () => {
       } else {
         setError(data.detail || "Invalid credentials");
       }
-    } 
+    }
 
     // ---------------- OTP Login ----------------
     else if (loginMode === "otp") {
@@ -127,18 +127,7 @@ const handleLogin = async () => {
         return;
       }
 
-      // --- Normalize phone number to E.164 format ---
-      let formattedPhone = phone.trim();
-      if (/^0\d{9}$/.test(formattedPhone)) {
-        formattedPhone = "+61" + formattedPhone.slice(1);
-      }
-
-      // --- Validate final format ---
-      const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
-      if (!isValidE164(formattedPhone)) {
-        setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
-        return;
-      }
+      const formattedPhone = phone.trim(); // just trim whitespace
 
       console.log("[INFO] Sending verify-otp request for phone:", formattedPhone, "OTP:", otp);
 
@@ -146,7 +135,7 @@ const handleLogin = async () => {
         const verifyResponse = await fetch(`${server}/verify-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone_number: formattedPhone, otp }), // send formatted phone
+          body: JSON.stringify({ phone_number: formattedPhone, otp }),
         });
 
         console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
