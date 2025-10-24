@@ -131,11 +131,7 @@ export default function DemoChatbot({ doctorData }) {
 
   return (
     <div className="chat-container">
-      {/* Background Images */}
-    <div className="bg-img bg-img-1"></div>
-    <div className="bg-img bg-img-2"></div>
-    <div className="bg-img bg-img-3"></div>
-    <div className="bg-img bg-img-4"></div>
+      
       <div className="chat-box">
         <div className="chat-header" style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
           <img 
@@ -231,6 +227,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
