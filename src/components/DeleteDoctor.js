@@ -12,7 +12,7 @@ const DeleteDoctor = () => {
             return;
         }
         try {
-            const response = await axios.get(`https://web-production-e5ae.up.railway.app/view_doctors/${doctorId}`); 
+            const response = await axios.get(`https://krishbackend-production-9603.up.railway.app/view_doctors/${doctorId}`); 
             if (response.data && response.data.name) {
                 setDoctor(response.data);
                 setMessage("");
@@ -36,7 +36,7 @@ const DeleteDoctor = () => {
             return;
         }
         try {
-            await axios.delete(`https://web-production-e5ae.up.railway.app/delete_doctor/${doctorId}`);
+            await axios.delete(`https://krishbackend-production-9603.up.railway.app/delete_doctor/${doctorId}`);
             setMessage("Doctor deleted successfully.");
             setDoctorId("");
             setDoctor(null);
