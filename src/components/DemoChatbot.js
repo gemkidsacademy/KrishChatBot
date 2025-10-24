@@ -132,7 +132,14 @@ export default function DemoChatbot({ doctorData }) {
   return (
     <div className="chat-container">
       <div className="chat-box">
-        <div className="chat-header">Gem AI</div>
+        <div className="chat-header" style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
+          <img 
+            src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg" 
+            alt="Gem Kids Logo" 
+            style={{ width: "24px", height: "24px" }} 
+          />
+          <span>Gem AI</span>
+        </div>
           <div className="chat-messages">
             {messages.map((msg, idx) => (
               <div key={idx} className={`message ${msg.sender}`}>
@@ -219,6 +226,7 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
 
 
