@@ -5,25 +5,46 @@
   width: 100%;
   height: 100dvh;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* center chat-box */
   align-items: stretch;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   overflow: hidden;
+  position: relative;
 
-  /* Background with scattered images */
+  /* fallback background */
   background-color: #ffe3d4;
+}
+
+/* Left/Right Scattered Images */
+.chat-container::before,
+.chat-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 20%; /* side width for images */
+  height: 100%;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.chat-container::before {
+  left: 0;
   background-image: 
     url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png"),
-    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png"),
+    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png");
+  background-position: 10% 10%, 20% 70%;
+}
+
+.chat-container::after {
+  right: 0;
+  background-image: 
     url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/banner_4.png"),
-    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/feature_5.png"),
-    linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-  background-position: 5% 10%, 80% 20%, 50% 70%, 20% 80%, center;
-  background-size: 50px auto, 80px auto, 200px auto, 60px auto, cover;
+    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/feature_5.png");
+  background-position: 80% 20%, 70% 80%;
 }
 
 /* Chat Box */
@@ -31,12 +52,13 @@
   width: 100%;
   max-width: 800px;
   height: 100dvh;
-  background-color: rgba(255, 255, 255, 0.95); /* slight transparency to show background images */
+  background-color: #ffffff; /* fully opaque */
   border-radius: 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   position: relative;
+  z-index: 1; /* above background images */
 }
 
 /* Header */
