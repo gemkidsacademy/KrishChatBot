@@ -5,59 +5,29 @@
   width: 100%;
   height: 100dvh;
   display: flex;
-  justify-content: center; /* center chat-box */
+  justify-content: center;
   align-items: stretch;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
   position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
   background-color: #ffe3d4;
 }
 
-/* Background images as separate elements */
+/* Background images */
 .bg-img {
   position: absolute;
   background-repeat: no-repeat;
-  background-size: auto; /* keep original size */
-  opacity: 0.05; /* subtle */
+  background-size: auto;   /* keeps original image size */
+  opacity: 0.05;
   z-index: 0;
-  pointer-events: none; /* images do not block UI */
+  pointer-events: none;    /* images do not block UI */
 }
 
 /* Individual Images */
-.bg-img-1 {
-  top: 50px;
-  left: 20px;
-  width: 50px; /* adjust if needed */
-  height: 50px;
-  background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png");
-}
-
-.bg-img-2 {
-  top: 200px;
-  right: 30px;
-  width: 117px; /* use natural width of original image */
-  height: 150px;
-  background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png");
-}
-
-.bg-img-3 {
-  bottom: 100px;
-  left: 60px;
-  width: 200px; /* match natural size */
-  height: 100px;
-  background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/banner_4.png");
-}
-
-.bg-img-4 {
-  bottom: 50px;
-  right: 50px;
-  width: 60px;
-  height: 60px;
-  background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/feature_5.png");
-}
+.bg-img-1 { top: 50px; left: 20px; width: 50px; height: 50px; background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png"); }
+.bg-img-2 { top: 200px; right: 30px; width: 117px; height: 150px; background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png"); }
+.bg-img-3 { bottom: 100px; left: 60px; width: 200px; height: 100px; background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/banner_4.png"); }
+.bg-img-4 { bottom: 50px; right: 50px; width: 60px; height: 60px; background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/feature_5.png"); }
 
 /* Chat Box */
 .chat-box {
@@ -65,19 +35,17 @@
   max-width: 800px;
   height: 100dvh;
   background-color: rgba(255, 255, 255, 0.95); /* slight transparency to show images */
-  border-radius: 0;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 1; /* above background images */
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
 /* Header */
 .chat-header {
   background: linear-gradient(to right, #EC5125, #f97316);
   color: white;
-  text-align: left;
   font-weight: bold;
   font-size: 1.25rem;
   padding: 1rem;
@@ -91,7 +59,7 @@
   gap: 8px;
 }
 
-/* Message Area */
+/* Messages Area */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -102,7 +70,6 @@
   gap: 0.5rem;
   scrollbar-width: thin;
   scrollbar-color: #bbb #f9fafb;
-  box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -114,7 +81,7 @@
   border-radius: 3px;
 }
 
-/* Messages */
+/* Individual Messages */
 .message {
   padding: 0.75rem 1rem;
   border-radius: 1rem;
@@ -122,7 +89,7 @@
   word-wrap: break-word;
   white-space: pre-wrap;
   font-size: 0.95rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .message.user {
@@ -148,7 +115,6 @@
   padding: 0.75rem 1rem;
   background-color: #ffffff;
   border-top: 1px solid #e5e7eb;
-  flex-shrink: 0;
   position: sticky;
   bottom: 0;
   z-index: 100;
@@ -166,7 +132,7 @@
 
 .chat-input input:focus {
   border-color: #EC5125;
-  box-shadow: 0 0 0 2px rgba(236, 81, 37, 0.2);
+  box-shadow: 0 0 0 2px rgba(236,81,37,0.2);
 }
 
 .chat-input button {
@@ -185,12 +151,12 @@
   transform: scale(1.05);
 }
 
-/* Links in messages */
+/* Links */
 .message a {
   color: #EC5125;
   text-decoration: underline;
   font-weight: 500;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .message a:hover {
@@ -202,7 +168,6 @@
   from { transform: translateX(50px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
-
 @keyframes slideInLeft {
   from { transform: translateX(-50px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -217,48 +182,20 @@
   height: 16px;
   animation: spin 1s linear infinite;
 }
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive (Mobile) */
+/* Responsive */
 @media (max-width: 600px) {
-  .chat-box {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .chat-header {
-    font-size: 1rem;
-    padding: 0.75rem;
-  }
-
-  .chat-messages {
-    flex: 1;
-    padding: 0.5rem;
-  }
-
-  .message {
-    font-size: 0.9rem;
-    max-width: 85%;
-  }
-
-  .chat-input {
-    padding: 0.5rem;
-    gap: 6px;
-  }
-
-  .chat-input input {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-  }
-
-  .chat-input button {
-    padding: 0.5rem 0.75rem;
-  }
+  .chat-box { height: 100dvh; flex-direction: column; }
+  .chat-header { font-size: 1rem; padding: 0.75rem; }
+  .chat-messages { padding: 0.5rem; }
+  .message { font-size: 0.9rem; max-width: 85%; }
+  .chat-input { padding: 0.5rem; gap: 6px; }
+  .chat-input input { font-size: 0.9rem; padding: 0.5rem 0.75rem; }
+  .chat-input button { padding: 0.5rem 0.75rem; }
 }
 
 /* Prevent mobile scroll bounce */
