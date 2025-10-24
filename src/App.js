@@ -30,7 +30,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const server = "https://krishbackend-production.up.railway.app";
+  const server = "krishbackend-production-9603.up.railway.app";
 
 
   // --- Generate OTP ---
