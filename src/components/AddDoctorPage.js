@@ -11,7 +11,7 @@ const AddUser = () => {
     password: "",
   });
 
-  const server = "https://krishbackend-production.up.railway.app";
+  const server = "https://krishbackend-production-9603.up.railway.app";
   // const server = "http://localhost:8000";
 
   const [message, setMessage] = useState("");
