@@ -217,15 +217,16 @@ export default function DemoChatbot({ doctorData }) {
           <button
             type="submit"
             style={{ padding: "8px 16px" }}
-            disabled={isWaiting || !input.trim()} // disables send button while waiting or if input is empty
+            disabled={isWaiting || !input.trim()} 
           >
-            {isWaiting ? "Sending..." : "Send"}  // shows feedback while waiting
+            {isWaiting ? "Sending..." : "Send"}  
           </button>
         </form>
       </div>
     </div>
   );
 }
+
 
 
 
