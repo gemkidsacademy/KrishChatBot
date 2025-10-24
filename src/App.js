@@ -36,21 +36,11 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   // --- Generate OTP ---
   const generateOtp = async () => {
   if (!phone) {
-    return setError("Please enter a phone number");
-  }
-
-  // --- Convert local Australian number to E.164 format ---
-  let formattedPhone = phone.trim();
-  if (/^0\d{9}$/.test(formattedPhone)) {
-    formattedPhone = "+61" + formattedPhone.slice(1);
-  }
-
-  // --- Validate final E.164 format ---
-  const isValidE164 = (number) => /^\+614\d{8}$/.test(number);
-  if (!isValidE164(formattedPhone)) {
-    setError("Please enter a valid 10-digit Australian mobile number (e.g. 0412345678)");
+    setError("Please enter a phone number");
     return;
   }
+
+  const formattedPhone = phone.trim(); // just trim whitespace
 
   try {
     const response = await fetch(
@@ -58,7 +48,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number: formattedPhone }), // send formatted phone
+        body: JSON.stringify({ phone_number: formattedPhone }),
       }
     );
 
@@ -67,7 +57,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     if (response.ok) {
       setOtpSent(true);
       setError(null);
-      setIsDisabled(false)
+      setIsDisabled(false);
 
       console.log("[INFO] OTP sent successfully:", data);
     } else {
@@ -79,6 +69,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     console.error("[ERROR] Exception while generating OTP:", err);
   }
 };
+
 
   // --- Login Handler ---
   // ------------------ Handle Password Login Only ------------------
