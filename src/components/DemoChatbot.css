@@ -1,4 +1,4 @@
-/* 🌟 Fixed Full-Height Chat UI for Mobile and Desktop (Reddish-Orange Theme) 🌟 */
+/* 🌟 Full-Height Chat UI with Scattered Background Images 🌟 */
 
 /* Base Container */
 .chat-container {
@@ -7,12 +7,23 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  background: linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   overflow: hidden;
+
+  /* Background with scattered images */
+  background-color: #ffe3d4;
+  background-image: 
+    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png"),
+    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png"),
+    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/banner_4.png"),
+    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/feature_5.png"),
+    linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-position: 5% 10%, 80% 20%, 50% 70%, 20% 80%, center;
+  background-size: 50px auto, 80px auto, 200px auto, 60px auto, cover;
 }
 
 /* Chat Box */
@@ -20,7 +31,7 @@
   width: 100%;
   max-width: 800px;
   height: 100dvh;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.95); /* slight transparency to show background images */
   border-radius: 0;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
   display: flex;
@@ -32,7 +43,7 @@
 .chat-header {
   background: linear-gradient(to right, #EC5125, #f97316);
   color: white;
-  text-align: center;
+  text-align: left; /* aligned left */
   font-weight: bold;
   font-size: 1.25rem;
   padding: 1rem;
@@ -41,6 +52,9 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Message Area */
@@ -86,12 +100,13 @@
 }
 
 .message.bot {
-  background: linear-gradient(to right, #fff2ec, #ffe6d9); /* 🌤 soft orange tint */
-  color: #1f1f1f; /* keep text readable */
+  background: linear-gradient(to right, #fff2ec, #ffe6d9);
+  color: #1f1f1f;
   align-self: flex-start;
   border-bottom-left-radius: 0.25rem;
   animation: slideInLeft 0.3s ease;
 }
+
 /* Input Section */
 .chat-input {
   display: flex;
@@ -220,4 +235,3 @@ html, body {
   overflow: hidden;
   background: linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
 }
-
