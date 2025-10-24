@@ -32,11 +32,17 @@
   opacity: 0.1; /* make images faint */
 }
 .chat-container::before {
-  left: 0;
-  background-image: 
-    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png"),
-    url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png");
-  background-position: 10% 10%, 20% 70%;
+  content: "";
+  position: absolute;
+  top: 50px;  /* adjust vertical position */
+  left: 20px; /* adjust horizontal position */
+  width: 50px; /* image natural width */
+  height: 50px; /* image natural height */
+  background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png");
+  background-size: 100% 100%; /* fill pseudo-element exactly */
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: 0;
 }
 
 .chat-container::after {
@@ -257,4 +263,5 @@ html, body {
   overflow: hidden;
   background: linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
 }
+
 
