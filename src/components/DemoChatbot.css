@@ -5,7 +5,7 @@
   width: 100%;
   height: 100dvh;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* centers chat box horizontally */
   align-items: stretch;
   position: relative;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,21 +13,21 @@
   background-color: #ffe3d4;
 }
 
-/* Background images using pseudo-elements */
+/* Background images positioned around chat box */
 .chat-container::before,
 .chat-container::after,
-.chat-container::nth-child(1)::before,
-.chat-container::nth-child(1)::after {
+.chat-container .chat-box::before,
+.chat-container .chat-box::after {
   content: "";
   position: absolute;
   background-repeat: no-repeat;
-  background-size: auto;
+  background-size: contain;
   opacity: 0.05;
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; /* do not block interaction */
+  z-index: 0; /* behind chat-box */
 }
 
-/* Individual Background Images */
+/* Left-top */
 .chat-container::before {
   top: 50px;
   left: 20px;
@@ -36,6 +36,7 @@
   background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/icon_5.png");
 }
 
+/* Right-top */
 .chat-container::after {
   top: 200px;
   right: 30px;
@@ -44,34 +45,22 @@
   background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/program_list_shape_02-117x150.png");
 }
 
+/* Left-bottom */
 .chat-container .chat-box::before {
   bottom: 100px;
-  left: 60px;
+  left: -80px; /* outside chat box */
   width: 200px;
   height: 100px;
   background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/banner_4.png");
-  content: "";
-  position: absolute;
-  background-repeat: no-repeat;
-  background-size: auto;
-  opacity: 0.05;
-  pointer-events: none;
-  z-index: 0;
 }
 
+/* Right-bottom */
 .chat-container .chat-box::after {
   bottom: 50px;
-  right: 50px;
+  right: -70px; /* outside chat box */
   width: 60px;
   height: 60px;
   background-image: url("https://gemkidsacademy.com.au/wp-content/uploads/2024/10/feature_5.png");
-  content: "";
-  position: absolute;
-  background-repeat: no-repeat;
-  background-size: auto;
-  opacity: 0.05;
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* Chat Box */
