@@ -14,7 +14,7 @@ function AddUserForm({ onClose, onUserAdded }) {
     const fetchNextId = async () => {
       try {
         const response = await fetch(
-          "https://krishbackend-production.up.railway.app/get_next_user_id"
+          "https://krishbackend-production-9603.up.railway.app/get_next_user_id"
         );
         const id = await response.json();
         setNextId(id);
@@ -73,7 +73,7 @@ function AddUserForm({ onClose, onUserAdded }) {
 
     try {
       const response = await fetch(
-        "https://krishbackend-production.up.railway.app/add_user",
+        "https://krishbackend-production-9603.up.railway.app/add_user",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -101,7 +101,7 @@ function AddUserForm({ onClose, onUserAdded }) {
 
       // ----------------- Fetch next ID again -----------------
       const newId = await fetch(
-        "https://krishbackend-production.up.railway.app/get_next_user_id"
+        "https://krishbackend-production-9603.up.railway.app/get_next_user_id"
       ).then((res) => res.json());
       setNextId(newId);
     } catch (err) {
