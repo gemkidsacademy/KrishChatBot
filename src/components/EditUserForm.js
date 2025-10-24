@@ -14,7 +14,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://krishbackend-production.up.railway.app/user_ids");
+        const res = await fetch("https://krishbackend-production-9603.up.railway.app/user_ids");
         if (!res.ok) throw new Error("Failed to fetch user IDs");
         const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
         setUserIds(data);
@@ -33,7 +33,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
 
     const fetchUserDetails = async () => {
       try {
-        const res = await fetch(`https://krishbackend-production.up.railway.app/users/info/${selectedUserId}`);
+        const res = await fetch(`https://krishbackend-production-9603.up.railway.app/users/info/${selectedUserId}`);
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
         setName(user.name || "");
@@ -59,7 +59,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
 
     try {
       const res = await fetch(
-        `https://krishbackend-production.up.railway.app/edit-user/${selectedUserId}`,
+        `https://krishbackend-production-9603.up.railway.app/edit-user/${selectedUserId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
