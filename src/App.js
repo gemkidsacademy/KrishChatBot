@@ -101,8 +101,15 @@ const handleLogin = async () => {
         setDoctorData(data);
         setSessionToken(data.session_token || null);
 
-        if (data?.name === "Admin") navigate("/AdminPanel");
-        else navigate("/ChatBot");
+       console.log("📝 data.name:", data?.name); // prints the user's name
+
+      if (data?.name === "Admin") {
+          console.log("🚀 User is Admin. Redirecting to AdminPanel");
+          navigate("/AdminPanel");
+      } else {
+          console.log("👤 User is not Admin. Redirecting to ChatBot");
+          navigate("/ChatBot");
+      }
       } else {
         setError(data.detail || "Invalid credentials");
       }
