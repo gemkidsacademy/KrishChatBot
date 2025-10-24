@@ -9,7 +9,7 @@ const ChatbotSettings = () => {
   useEffect(() => {
     const fetchKnowledgeBase = async () => {
       try {
-        const response = await fetch("https://krishbackend-production.up.railway.app/api/knowledge-base");
+        const response = await fetch("https://krishbackend-production-9603.up.railway.app/api/knowledge-base");
         if (response.ok) {
           const data = await response.json();
           setKnowledgeBase(data.knowledge_base || "");
@@ -32,7 +32,7 @@ const ChatbotSettings = () => {
 
     try {
       setStatus("Updating knowledge base...");
-      const response = await fetch("https://krishbackend-production.up.railway.app/api/update-knowledge-base", {
+      const response = await fetch("https://krishbackend-production-9603.up.railway.app/api/update-knowledge-base", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ knowledge_base: knowledgeBase }),
