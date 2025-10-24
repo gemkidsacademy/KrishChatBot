@@ -163,9 +163,9 @@ const handleLogin = async () => {
           setIsLoggedIn(true);
           setDoctorData(verifyData.user);
           setSessionToken(null); // or generate/manage session token here
-          console.log("📝 data.name:", data?.name);
+          console.log("📝 data.name:", verifyData.name);
 
-          if (data?.name === "Admin") {
+          if (verifyData?.name === "Admin") {
               console.log("🚀 User is Admin. Redirecting to AdminPanel");
               navigate("/AdminPanel");
           } else {
