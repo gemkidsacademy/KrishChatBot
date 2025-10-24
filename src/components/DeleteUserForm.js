@@ -14,7 +14,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
     const fetchUserIds = async () => {
       try {
         const res = await fetch(
-          "https://krishbackend-production.up.railway.app/user_ids"
+          "https://krishbackend-production-9603.up.railway.app/user_ids"
         );
         if (!res.ok) throw new Error("Failed to fetch user IDs");
         const data = await res.json();
@@ -35,7 +35,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
     const fetchUserDetails = async () => {
       try {
         const res = await fetch(
-          `https://krishbackend-production.up.railway.app/users/info/${selectedUserId}`
+          `https://krishbackend-production-9603.up.railway.app/users/info/${selectedUserId}`
         );
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
@@ -62,7 +62,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
 
     try {
       const res = await fetch(
-        `https://krishbackend-production.up.railway.app/delete-user/${selectedUserId}`,
+        `https://krishbackend-production-9603.up.railway.app/delete-user/${selectedUserId}`,
         {
           method: "DELETE",
         }
