@@ -1,4 +1,4 @@
-/* 🌟 Full-Height Chat UI with Left/Right Scattered Background Images 🌟 */
+/* 🌟 Full-Height Chat UI with Scattered Background Images 🌟 */
 
 /* Base Container */
 .chat-container {
@@ -13,7 +13,9 @@
   margin: 0;
   overflow: hidden;
   position: relative;
-  background-color: #ffe3d4; /* fallback background */
+
+  /* fallback background */
+  background-color: #ffe3d4;
 }
 
 /* Left/Right Scattered Images */
@@ -22,14 +24,13 @@
   content: "";
   position: absolute;
   top: 0;
-  width: 20%; /* side width for images */
+  width: 20%;
   height: 100%;
   z-index: 0;
   background-repeat: no-repeat;
-  background-size: auto; /* preserve original size */
+  background-size: contain;
+  opacity: 0.1; /* make images faint */
 }
-
-/* Left-side images */
 .chat-container::before {
   left: 0;
   background-image: 
@@ -38,7 +39,6 @@
   background-position: 10% 10%, 20% 70%;
 }
 
-/* Right-side images */
 .chat-container::after {
   right: 0;
   background-image: 
@@ -65,7 +65,7 @@
 .chat-header {
   background: linear-gradient(to right, #EC5125, #f97316);
   color: white;
-  text-align: left;
+  text-align: left; /* aligned left */
   font-weight: bold;
   font-size: 1.25rem;
   padding: 1rem;
@@ -257,3 +257,4 @@ html, body {
   overflow: hidden;
   background: linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
 }
+
