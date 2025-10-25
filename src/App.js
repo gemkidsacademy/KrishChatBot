@@ -163,14 +163,15 @@ const handleLogin = async () => {
           setIsLoggedIn(true);
           setDoctorData(verifyData.user);
           setSessionToken(null); // or generate/manage session token here
-          console.log("📝 data.name:", verifyData.name);
+          console.log("📝 data.name:", verifyData.user.name);
 
-          if (verifyData?.name === "Admin") {
+          if (verifyData?.user?.name === "Admin") {
               console.log("🚀 User is Admin. Redirecting to AdminPanel");
               navigate("/AdminPanel");
           } else {
               console.log("👤 User is not Admin. Redirecting to ChatBot");
               navigate("/ChatBot");
+          }
           }
         } else {
           console.warn("[WARN] OTP verification failed:", verifyData);
