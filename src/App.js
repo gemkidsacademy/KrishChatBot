@@ -172,8 +172,8 @@ const handleLogin = async () => {
               console.log("👤 User is not Admin. Redirecting to ChatBot");
               navigate("/ChatBot");
           }
-          }
-        } else {
+        }
+        else {
           console.warn("[WARN] OTP verification failed:", verifyData);
           setError(verifyData.detail || "Invalid OTP");
         }
