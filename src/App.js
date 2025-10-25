@@ -217,7 +217,7 @@ const handleLogin = async () => {
           </button>
 
 
-        toggleloginmode
+        
 
         {error && <p style={styles.error}>{error}</p>}
       </div>
