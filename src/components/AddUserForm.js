@@ -13,8 +13,8 @@ function AddUserForm({ onClose, onUserAdded }) {
   useEffect(() => {
     const fetchNextId = async () => {
       try {
-        const res = await fetch(
-          "https://krishbackend-production-9603.up.railway.app/api/users"
+         const response = await fetch(
+          "https://krishbackend-production.up.railway.app/get_next_user_id"
         );
 
         const id = await response.json();
