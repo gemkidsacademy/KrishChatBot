@@ -7,7 +7,7 @@ function ViewUserModal({ onClose }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-         const response = await fetch(
+         const res= await fetch(
           "https://krishbackend-production.up.railway.app/api/users"
         );
 
