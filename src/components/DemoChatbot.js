@@ -120,14 +120,29 @@ const formatMessageWithLinks = (text) => {
       <div className="bg-img bg-img-4"></div>
 
       <div className="chat-box">
-        <div className="chat-header">
+        <div
+          className="chat-header"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: "8px",
+            background: "linear-gradient(to right, #EC5125, #f97316)",
+            padding: "0.75rem 1rem",
+          }}
+        >
           <img
             src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
             alt="Gem Kids Logo"
-            style={{ width: "24px", height: "24px" }}
+            style={{
+              width: "24px",
+              height: "24px",
+              filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))", // subtle shadow for contrast
+            }}
           />
-          <span>Gem AI</span>
+          <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI</span>
         </div>
+
 
         <div className="chat-messages">
           {messages.map((msg, idx) => (
@@ -185,4 +200,5 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
+
 
