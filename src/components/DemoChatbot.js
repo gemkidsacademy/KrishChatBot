@@ -127,7 +127,7 @@ const formatMessageWithLinks = (text) => {
             alignItems: "center",
             justifyContent: "flex-start",
             gap: "8px",
-            background: "linear-gradient(to right, #EC5125, #f97316)",
+            background: "#5798FE",
             padding: "0.75rem 1rem",
           }}
         >
@@ -200,5 +200,6 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
+
 
 
