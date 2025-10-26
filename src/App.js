@@ -205,16 +205,17 @@ const handleLogin = async () => {
         )}
 
          <button
-            onClick={handleLogin}
-            style={{
-              ...styles.button,
-              opacity: isDisabled ? 0.5 : 1,
-              cursor: isDisabled ? "not-allowed" : "pointer",
-            }}
-            disabled={isDisabled} // controlled by state
-          >
-            Login
-          </button>
+          onClick={handleLogin}
+          style={{
+            ...styles.button,
+            backgroundColor: "#EC5125", // added your main orange color
+            opacity: isDisabled ? 0.5 : 1,
+            cursor: isDisabled ? "not-allowed" : "pointer",
+          }}
+          disabled={isDisabled} // controlled by state
+        >
+          Login
+        </button>
 
 
         
