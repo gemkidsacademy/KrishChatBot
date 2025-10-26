@@ -7,9 +7,10 @@ function ViewUserModal({ onClose }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(
-          "https://krishbackend-production-9603.up.railway.app/api/users"
+         const response = await fetch(
+          "https://krishbackend-production.up.railway.app/api/users"
         );
+
         if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
         setUsers(data);
