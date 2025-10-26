@@ -127,19 +127,31 @@ const formatMessageWithLinks = (text) => {
             alignItems: "center",
             justifyContent: "flex-start",
             gap: "8px",
-            background: "#5798FE",
+            background: "linear-gradient(to right, #EC5125, #f97316)", // original orange gradient
             padding: "0.75rem 1rem",
           }}
         >
-          <img
-            src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
-            alt="Gem Kids Logo"
+          {/* White circular background for logo */}
+          <div
             style={{
-              width: "24px",
-              height: "24px",
-              filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))", // subtle shadow for contrast
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              padding: "4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
+          >
+            <img
+              src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
+              alt="Gem Kids Logo"
+              style={{
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </div>
+        
           <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI</span>
         </div>
 
@@ -200,6 +212,7 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
+
 
 
 
