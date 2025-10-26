@@ -13,7 +13,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://your-backend-url.com/api/user-ids");
+        const res = await fetch("https://krishbackend-production-9603.up.railway.app/api/user-ids");
         if (!res.ok) throw new Error("Failed to fetch user IDs");
         const data = await res.json();
         setUserIds(data); // [{id:1},{id:2},...]
@@ -38,7 +38,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
     const fetchUserDetails = async () => {
       try {
         const res = await fetch(
-          `https://your-backend-url.com/api/user/${selectedUserId}`
+          `https://krishbackend-production-9603.up.railway.app/api/user/${selectedUserId}`
         );
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
@@ -67,7 +67,7 @@ function DeleteUserForm({ onClose, onUserDeleted }) {
 
     try {
       const res = await fetch(
-        `https://your-backend-url.com/api/delete-user/${selectedUserId}`,
+        `https://krishbackend-production-9603.up.railway.app/api/delete-user/${selectedUserId}`,
         { method: "DELETE" }
       );
       if (!res.ok) throw new Error("Failed to delete user");
