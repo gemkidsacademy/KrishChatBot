@@ -8,7 +8,7 @@ function ViewUserModal({ onClose }) {
     const fetchUsers = async () => {
       try {
         const res = await fetch(
-          "krishbackend-production-9603.up.railway.app/api/users"
+          "https://krishbackend-production-9603.up.railway.app/api/users"
         );
         if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
