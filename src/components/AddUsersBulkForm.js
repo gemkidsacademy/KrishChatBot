@@ -52,12 +52,21 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
       };
   
       // ✅ Dynamic feedback to user
-      let message = `${summary.added} user${summary.added !== 1 ? "s" : ""} added successfully.`;
-      if (summary.skipped > 0) {
-        message += ` ${summary.skipped} skipped (duplicates or invalid data).`;
+      // ✅ Fixed unified notification
+      let message = "";
+      
+      if (summary.added > 0 && summary.skipped > 0) {
+        message = `${summary.added} user${summary.added !== 1 ? "s" : ""} added successfully and ${summary.skipped} user${summary.skipped !== 1 ? "s" : ""} were not added (duplicates or invalid data).`;
+      } else if (summary.added > 0) {
+        message = `${summary.added} user${summary.added !== 1 ? "s" : ""} added successfully!`;
+      } else if (summary.skipped > 0) {
+        message = `No users were added. ${summary.skipped} user${summary.skipped !== 1 ? "s" : ""} were skipped (already existed or invalid).`;
+      } else {
+        message = "No valid data found in the uploaded CSV.";
       }
-  
+      
       alert(message);
+
   
       if (skippedUsers.length > 0) {
         console.table(skippedUsers); // Log skipped users for debugging
