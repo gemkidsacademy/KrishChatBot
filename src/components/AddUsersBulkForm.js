@@ -12,21 +12,21 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
   };
 
   const handleUpload = async () => {
-    // ✅ Prevent double submission
+  // ✅ Prevent double submission
     if (loading) return;
-
+  
     if (!file) {
       setError("Please select a CSV file.");
       return;
     }
-
+  
     try {
       setLoading(true);
       setError("");
-
+  
       const formData = new FormData();
       formData.append("file", file);
-
+  
       const response = await fetch(
         "https://krishbackend-production-9603.up.railway.app/api/users/bulk",
         {
@@ -34,23 +34,36 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
           body: formData,
         }
       );
-
+  
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || "Failed to add users.");
       }
-
+  
       const result = await response.json();
-
-      // ✅ Show dynamic feedback
-      const addedCount = result.users?.length || 0;
-      if (addedCount > 0) {
-        alert(`${addedCount} user${addedCount > 1 ? "s" : ""} added successfully!`);
-      } else {
-        alert("No new users were added (all may already exist).");
+  
+      // ✅ Handle both old and new backend response formats
+      const addedUsers = result.added_users || result.users || [];
+      const skippedUsers = result.skipped_users || [];
+      const summary = result.summary || {
+        added: addedUsers.length,
+        skipped: skippedUsers.length,
+        total_rows: addedUsers.length + skippedUsers.length,
+      };
+  
+      // ✅ Dynamic feedback to user
+      let message = `${summary.added} user${summary.added !== 1 ? "s" : ""} added successfully.`;
+      if (summary.skipped > 0) {
+        message += ` ${summary.skipped} skipped (duplicates or invalid data).`;
       }
-
-      onUsersAdded(result.users || []);
+  
+      alert(message);
+  
+      if (skippedUsers.length > 0) {
+        console.table(skippedUsers); // Log skipped users for debugging
+      }
+  
+      onUsersAdded(addedUsers);
       onClose();
     } catch (err) {
       console.error("Upload error:", err);
