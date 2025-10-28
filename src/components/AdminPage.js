@@ -8,6 +8,7 @@ import EditUserForm from "./EditUserForm";
 import ViewUserModal from "./ViewUserModal";
 import DeleteUserForm from "./DeleteUserForm";
 import UsageDashboard from "./UsageDashboard";
+import AddUsersBulkForm from "./AddUsersBulkForm";
 
 
 
@@ -24,7 +25,7 @@ const AdminPanel = () => {
   const [showEditUser, setShowEditUser] = useState(false);
   const [showViewUser, setShowViewUser] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
-
+  const [showAddUsers, setShowAddUsers] = useState(false);
   
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
@@ -37,6 +38,11 @@ const AdminPanel = () => {
     setShowEditUser(false);
     alert("User updated successfully!");
     // optionally refresh the user list
+  };
+  const handleUsersAdded = (users) => {
+    setShowAddUsersBulk(false);
+    alert(`${users.length} users added successfully!`);
+    // optionally refresh the user list or update state
   };
   const handleUserAdded = () => {
     setShowAddUser(false); // close the modal
@@ -82,6 +88,19 @@ const AdminPanel = () => {
         {/* Database (User Management) */}
         {activeTab === "database" && (
           <div className="tab-panel">
+            <div>
+              <button className="dashboard-button" onClick={() => setShowAddUsersBulk(true)}>
+                Add Users in Bulk
+              </button>
+            
+              {showAddUsersBulk && (
+                <AddUsersBulkForm
+                  onClose={() => setShowAddUsersBulk(false)}
+                  onUsersAdded={handleUsersAdded}
+                />
+              )}
+            </div>
+
             <div>
               <button className="dashboard-button" onClick={() => setShowAddUser(true)}>
                 Add User
