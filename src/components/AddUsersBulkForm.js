@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import * as XLSX from "xlsx";
 
 function AddUsersBulkForm({ onClose, onUsersAdded }) {
   const [file, setFile] = useState(null);
@@ -20,26 +19,14 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
     try {
       setLoading(true);
 
-      // Read Excel file
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const users = XLSX.utils.sheet_to_json(worksheet); // Array of user objects
-
-      if (users.length === 0) {
-        setError("Excel file is empty or invalid.");
-        setLoading(false);
-        return;
-      }
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("file", file);
 
       // Backend call
       const response = await fetch("https://your-backend.com/api/users/bulk", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ users }),
+        body: formData, // Send file directly
       });
 
       if (!response.ok) {
@@ -47,8 +34,8 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
       }
 
       const result = await response.json();
-      onUsersAdded(users); // Callback to update parent
-      alert(`${users.length} users added successfully!`);
+      onUsersAdded(result.users || []); // Backend returns added users
+      alert(`${result.users.length} users added successfully!`);
       onClose();
     } catch (err) {
       console.error(err);
