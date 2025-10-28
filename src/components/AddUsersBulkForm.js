@@ -23,7 +23,7 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("https://your-backend.com/api/users/bulk", {
+      const response = await fetch("https://krishbackend-production-9603.up.railway.app/api/users/bulk", {
         method: "POST",
         body: formData,
       });
