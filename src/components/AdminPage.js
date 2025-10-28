@@ -26,7 +26,8 @@ const AdminPanel = () => {
   const [showViewUser, setShowViewUser] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
   const [showAddUsers, setShowAddUsers] = useState(false);
-  const [ShowAddUsersBulk, setShowAddUsersBulk] = useState(false);
+  const [showAddUsersBulk, setShowAddUsersBulk] = useState(false);
+
   
   
   const tabs = [
