@@ -6,39 +6,39 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
     setError("");
   };
 
   const handleUpload = async () => {
     if (!file) {
-      setError("Please select an Excel file.");
+      setError("Please select a CSV file.");
       return;
     }
 
     try {
       setLoading(true);
 
-      // Prepare form data
       const formData = new FormData();
       formData.append("file", file);
 
-      // Backend call
       const response = await fetch("https://your-backend.com/api/users/bulk", {
         method: "POST",
-        body: formData, // Send file directly
+        body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add users. Please try again.");
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to add users.");
       }
 
       const result = await response.json();
-      onUsersAdded(result.users || []); // Backend returns added users
+      onUsersAdded(result.users || []);
       alert(`${result.users.length} users added successfully!`);
       onClose();
     } catch (err) {
-      console.error(err);
+      console.error("Upload error:", err);
       setError(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
@@ -48,14 +48,23 @@ function AddUsersBulkForm({ onClose, onUsersAdded }) {
   return (
     <div className="modal">
       <h2>Add Users in Bulk</h2>
-      <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+
+      <input
+        type="file"
+        accept=".csv"
+        onChange={handleFileChange}
+      />
+      {file && <p>Selected file: {file.name}</p>}
+
       {error && <p className="error">{error}</p>}
 
       <div className="modal-actions">
         <button onClick={handleUpload} disabled={loading}>
           {loading ? "Uploading..." : "Upload"}
         </button>
-        <button onClick={onClose} disabled={loading}>Cancel</button>
+        <button onClick={onClose} disabled={loading}>
+          Cancel
+        </button>
       </div>
     </div>
   );
