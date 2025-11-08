@@ -16,6 +16,8 @@ import DeleteDoctor from "./components/DeleteDoctor";
 import DemoChatbot from "./components/DemoChatbot";
 import UsageDashboard from "./components/UsageDashboard";
 import ChatbotSettings from "./components/ChatbotSettings";
+import GuestChatbot from "./components/GuestChatbot";
+
 
 
 
@@ -217,6 +219,18 @@ const handleLogin = async () => {
           Login
         </button>
 
+        {/* Guest Login Button */}
+        <button
+            onClick={() => window.location.href = "/guest-chatbot"}
+            style={{
+            ...styles.button,
+            backgroundColor: "#007bff", // blue color for guest login
+            marginTop: "10px"
+            }}
+        >
+            Continue as Guest
+        </button>
+
 
         
 
@@ -309,7 +323,12 @@ function App() {
               <UsageDashboard />
             </PrivateRoute>
           }
-        /> 
+        />
+        <Route
+        path="/guest-chatbot"
+        element={<GuestChatbot />}
+        />
+ 
         <Route
           path="/chatbot-settings"
           element={
