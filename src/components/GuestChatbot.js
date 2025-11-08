@@ -59,24 +59,50 @@ export default function GuestChatbot() {
   };
 
   // Handle submit (guest chatbot just echoes user input)
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!input.trim()) return;
 
-    const userInput = input;
-    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
-    setInput("");
-    setIsWaiting(true);
+  const userInput = input;
+  setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+  setInput("");
+  setIsWaiting(true);
 
-    // Simulate bot response after a short delay
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: `You asked: "${userInput}". (Guest mode does not fetch data.)`, links: [] }
-      ]);
-      setIsWaiting(false);
-    }, 800);
-  };
+  try {
+    const response = await fetch(
+      `https://krishbackend-production-9603.up.railway.app/guest-chatbot?query=${encodeURIComponent(
+        userInput
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
+    const data = await response.json();
+
+    // Map backend response to frontend message format
+    const botMessages = data.map((item) => ({
+      sender: "bot",
+      text: item.snippet || "No response",
+      links: Array.isArray(item.links) ? item.links : [],
+    }));
+
+    setMessages((prev) => [...prev, ...botMessages]);
+  } catch (error) {
+    console.error(error);
+    setMessages((prev) => [
+      ...prev,
+      { sender: "bot", text: "Sorry, something went wrong while fetching the response.", links: [] },
+    ]);
+  } finally {
+    setIsWaiting(false);
+  }
+};
+
 
   return (
     <div className="chat-container">
