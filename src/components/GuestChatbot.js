@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
 export default function GuestChatbot() {
@@ -9,31 +8,20 @@ export default function GuestChatbot() {
   const [isWaiting, setIsWaiting] = useState(false);
   const chatEndRef = useRef(null);
 
-  // Debug doctorData
+  // Welcome message on first render
   useEffect(() => {
-    console.log("DEBUG: doctorData on first render:", doctorData);
+    const welcomeMsg = {
+      sender: "bot",
+      text: "Welcome! You are now in the Guest Chatbot. How can I assist you today?",
+      links: [],
+    };
+    setMessages([welcomeMsg]);
   }, []);
-
-  // Welcome message
-  useEffect(() => {
-    if (doctorData?.name) {
-      const welcomeMsg = {
-        sender: "bot",
-        text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?`,
-        links: [],
-      };
-      setMessages([welcomeMsg]);
-    }
-  }, [doctorData?.name]);
 
   // Auto-scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isWaiting]);
-
-  if (!doctorData?.name) {
-    return <Navigate to="/" replace />;
-  }
 
   // Parse **bold** text
   const parseBoldText = (text) => {
@@ -55,24 +43,23 @@ export default function GuestChatbot() {
   };
 
   // Parse bold text and URLs
-const formatMessageWithLinks = (text) => {
-  if (!text) return "";
+  const formatMessageWithLinks = (text) => {
+    if (!text) return "";
 
-  // convert **bold** to <strong>...</strong>
-  let formatted = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    // convert **bold** to <strong>...</strong>
+    let formatted = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 
-  // convert URLs to clickable links
-  formatted = formatted.replace(
-    /(https?:\/\/[^\s]+)/g,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-  );
+    // convert URLs to clickable links
+    formatted = formatted.replace(
+      /(https?:\/\/[^\s]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
 
-  return formatted;
-};
+    return formatted;
+  };
 
-
-  // Handle submit
-  const handleSubmit = async (e) => {
+  // Handle submit (guest chatbot just echoes user input)
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -81,39 +68,19 @@ const formatMessageWithLinks = (text) => {
     setInput("");
     setIsWaiting(true);
 
-    try {
-      const url = `https://krishbackend-production-9603.up.railway.app/search?query=${encodeURIComponent(
-        userInput
-      )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
-        doctorData.name
-      )}&class_name=${encodeURIComponent(doctorData.class_name)}`;
-
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
-      const data = await response.json();
-
-      const processedMessages = data.map((item) => ({
-        sender: "bot",
-        text: item.snippet,
-        name: item.name,
-        links: Array.isArray(item.links) ? item.links : []
-      }));
-
-      setMessages((prev) => [...prev, ...processedMessages]);
-    } catch (error) {
-      console.error(error);
+    // Simulate bot response after a short delay
+    setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] }
+        { sender: "bot", text: `You asked: "${userInput}". (Guest mode does not fetch data.)`, links: [] }
       ]);
-    } finally {
       setIsWaiting(false);
-    }
+    }, 800);
   };
 
   return (
     <div className="chat-container">
-      {/* 🌟 Background images 🌟 */}
+      {/* Background images */}
       <div className="bg-img bg-img-1"></div>
       <div className="bg-img bg-img-2"></div>
       <div className="bg-img bg-img-3"></div>
@@ -127,11 +94,10 @@ const formatMessageWithLinks = (text) => {
             alignItems: "center",
             justifyContent: "flex-start",
             gap: "8px",
-            background: "linear-gradient(to right, #EC5125, #f97316)", // original orange gradient
+            background: "linear-gradient(to right, #EC5125, #f97316)",
             padding: "0.75rem 1rem",
           }}
         >
-          {/* White circular background for logo */}
           <div
             style={{
               backgroundColor: "#fff",
@@ -145,32 +111,17 @@ const formatMessageWithLinks = (text) => {
             <img
               src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
               alt="Gem Kids Logo"
-              style={{
-                width: "24px",
-                height: "24px",
-              }}
+              style={{ width: "24px", height: "24px" }}
             />
           </div>
-        
           <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI</span>
         </div>
-
 
         <div className="chat-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sender}`}>
               {msg.sender === "bot" ? (
-                <>
-                  {msg.name && <div className="bot-label">{parseBoldText(msg.name)}</div>}
-                  <div dangerouslySetInnerHTML={{ __html: formatMessageWithLinks(msg.text) }} />
-                  {msg.links.length > 0 && (
-                    <div className="pdf-links">
-                      <a href={msg.links[0]} target="_blank" rel="noopener noreferrer" className="pdf-link">
-                        Open PDF
-                      </a>
-                    </div>
-                  )}
-                </>
+                <div dangerouslySetInnerHTML={{ __html: formatMessageWithLinks(msg.text) }} />
               ) : (
                 <div>{msg.text}</div>
               )}
@@ -212,8 +163,3 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
-
-
-
-
-
