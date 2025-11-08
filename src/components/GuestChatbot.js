@@ -61,45 +61,88 @@ export default function GuestChatbot() {
   // Handle submit (guest chatbot just echoes user input)
   const handleSubmit = async (e) => {
   e.preventDefault();
-  if (!input.trim()) return;
+  if (!input.trim()) {
+    console.warn("[WARN] Empty input. Ignoring submit.");
+    return;
+  }
 
   const userInput = input;
+  console.log("==========================================");
+  console.log("[EVENT] handleSubmit triggered");
+  console.log("[INFO] User input:", userInput);
+
   setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
   setInput("");
   setIsWaiting(true);
 
-  try {
-    const response = await fetch(
-      `https://krishbackend-production-9603.up.railway.app/guest-chatbot?query=${encodeURIComponent(
-        userInput
-      )}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  const apiUrl = `https://krishbackend-production-9603.up.railway.app/guest-chatbot?query=${encodeURIComponent(
+    userInput
+  )}`;
 
-    if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
-    const data = await response.json();
+  console.log("[INFO] Sending request to backend:", apiUrl);
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("[DEBUG] Raw Response object:", response);
+
+    if (!response.ok) {
+      console.error(`[ERROR] Backend returned status ${response.status}`);
+      throw new Error(`Backend returned status ${response.status}`);
+    }
+
+    let data;
+    try {
+      data = await response.json();
+      console.log("[INFO] Parsed JSON from backend:", data);
+    } catch (jsonError) {
+      console.error("[ERROR] Failed to parse JSON response:", jsonError);
+      const textResponse = await response.text();
+      console.error("[DEBUG] Raw text response:", textResponse);
+      throw new Error("Invalid JSON format from backend");
+    }
+
+    if (!Array.isArray(data)) {
+      console.warn("[WARN] Unexpected response format — expected array, got:", typeof data);
+    }
 
     // Map backend response to frontend message format
-    const botMessages = data.map((item) => ({
-      sender: "bot",
-      text: item.snippet || "No response",
-      links: Array.isArray(item.links) ? item.links : [],
-    }));
+    const botMessages = (Array.isArray(data) ? data : []).map((item, index) => {
+      console.log(`[DEBUG] Processing item ${index}:`, item);
+      return {
+        sender: "bot",
+        text: item?.snippet || "No response",
+        links: Array.isArray(item?.links) ? item.links : [],
+      };
+    });
 
-    setMessages((prev) => [...prev, ...botMessages]);
+    console.log("[INFO] Mapped bot messages:", botMessages);
+
+    setMessages((prev) => {
+      console.log("[STATE] Updating messages...");
+      const updated = [...prev, ...botMessages];
+      console.log("[STATE] Updated messages:", updated);
+      return updated;
+    });
   } catch (error) {
-    console.error(error);
+    console.error("[FATAL ERROR] handleSubmit failed:", error);
     setMessages((prev) => [
       ...prev,
-      { sender: "bot", text: "Sorry, something went wrong while fetching the response.", links: [] },
+      {
+        sender: "bot",
+        text: "Sorry, something went wrong while fetching the response.",
+        links: [],
+      },
     ]);
   } finally {
     setIsWaiting(false);
+    console.log("[INFO] Request cycle completed. isWaiting set to false.");
+    console.log("==========================================");
   }
 };
 
