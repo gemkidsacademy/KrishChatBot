@@ -10,9 +10,7 @@ export default function DemoChatbot({ doctorData }) {
   const chatEndRef = useRef(null);
 
   // Debug doctorData
-  useEffect(() => {
-    console.log("DEBUG: doctorData on first render:", doctorData);
-  }, []);
+ 
 
   // Welcome message
   useEffect(() => {
@@ -212,6 +210,7 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
+
 
 
 
