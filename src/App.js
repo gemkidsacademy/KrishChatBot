@@ -249,7 +249,8 @@ const PrivateRoute = ({ isLoggedIn, children }) => {
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [doctorData, setDoctorData] = useState(null);
-  const [_sessionToken] = useState(null);
+  const [_sessionToken, setSessionToken] = useState(null);
+
 
   useEffect(() => {
     document.title = "Class Management System";
