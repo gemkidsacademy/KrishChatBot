@@ -23,7 +23,7 @@ import GuestChatbot from "./components/GuestChatbot";
 
 // --- Login Page ---
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
-  const [loginMode, setLoginMode] = useState("otp"); // "password" or "otp"
+  const [loginMode] = useState("otp"); // "password" or "otp"
   const [isDisabled, setIsDisabled] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -249,7 +249,7 @@ const PrivateRoute = ({ isLoggedIn, children }) => {
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [doctorData, setDoctorData] = useState(null);
-  const [sessionToken, setSessionToken] = useState(null);
+  const [_sessionToken] = useState(null);
 
   useEffect(() => {
     document.title = "Class Management System";
