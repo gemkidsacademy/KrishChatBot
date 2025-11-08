@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
 
-export default function GuestChatbot({ doctorData }) {
+export default function GuestChatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
