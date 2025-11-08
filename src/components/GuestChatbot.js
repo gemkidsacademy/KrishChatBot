@@ -59,7 +59,7 @@ export default function GuestChatbot() {
   };
 
   // Handle submit (guest chatbot just echoes user input)
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault();
   if (!input.trim()) {
     console.warn("[WARN] Empty input. Ignoring submit.");
@@ -107,19 +107,12 @@ export default function GuestChatbot() {
       throw new Error("Invalid JSON format from backend");
     }
 
-    if (!Array.isArray(data)) {
-      console.warn("[WARN] Unexpected response format — expected array, got:", typeof data);
-    }
-
-    // Map backend response to frontend message format
-    const botMessages = (Array.isArray(data) ? data : []).map((item, index) => {
-      console.log(`[DEBUG] Processing item ${index}:`, item);
-      return {
-        sender: "bot",
-        text: item?.snippet || "No response",
-        links: Array.isArray(item?.links) ? item.links : [],
-      };
-    });
+    // Wrap single object in array to unify handling
+    const botMessages = [{
+      sender: "bot",
+      text: data.snippet || "No response",
+      links: Array.isArray(data.links) ? data.links : [],
+    }];
 
     console.log("[INFO] Mapped bot messages:", botMessages);
 
@@ -145,6 +138,7 @@ export default function GuestChatbot() {
     console.log("==========================================");
   }
 };
+
 
 
   return (
