@@ -4,7 +4,6 @@ import "./DemoChatbot.css";
 export default function GuestChatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
   const chatEndRef = useRef(null);
 
@@ -46,10 +45,7 @@ export default function GuestChatbot() {
   const formatMessageWithLinks = (text) => {
     if (!text) return "";
 
-    // convert **bold** to <strong>...</strong>
     let formatted = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-
-    // convert URLs to clickable links
     formatted = formatted.replace(
       /(https?:\/\/[^\s]+)/g,
       '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
@@ -58,102 +54,88 @@ export default function GuestChatbot() {
     return formatted;
   };
 
-  // Handle submit (guest chatbot just echoes user input)
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (!input.trim()) {
-    console.warn("[WARN] Empty input. Ignoring submit.");
-    return;
-  }
-
-  const userInput = input;
-  console.log("==========================================");
-  console.log("[EVENT] handleSubmit triggered");
-  console.log("[INFO] User input:", userInput);
-
-  // Step 1: Add user message to local state immediately
-  setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
-  setInput("");
-  setIsWaiting(true);
-
-  // Step 2: Build context (previous 5 interactions)
-  const contextMessages = messages.slice(-5).map((msg) => ({
-    role: msg.sender === "user" ? "user" : "assistant",
-    content: msg.text,
-  }));
-
-  console.log("[DEBUG] Context messages sent to backend:", contextMessages);
-
-  const apiUrl = "https://krishbackend-production-9603.up.railway.app/guest-chatbot";
-
-  console.log("[INFO] Sending POST request to backend:", apiUrl);
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: userInput,
-        context: contextMessages, // send previous conversation
-      }),
-    });
-
-    console.log("[DEBUG] Raw Response object:", response);
-
-    if (!response.ok) {
-      console.error(`[ERROR] Backend returned status ${response.status}`);
-      throw new Error(`Backend returned status ${response.status}`);
+  // Handle submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) {
+      console.warn("[WARN] Empty input. Ignoring submit.");
+      return;
     }
 
-    let data;
-    try {
-      data = await response.json();
-      console.log("[INFO] Parsed JSON from backend:", data);
-    } catch (jsonError) {
-      console.error("[ERROR] Failed to parse JSON response:", jsonError);
-      const textResponse = await response.text();
-      console.error("[DEBUG] Raw text response:", textResponse);
-      throw new Error("Invalid JSON format from backend");
-    }
-
-    // Step 3: Append bot response
-    const botMessages = [
-      {
-        sender: "bot",
-        text: data.snippet || "No response",
-        links: Array.isArray(data.links) ? data.links : [],
-      },
-    ];
-
-    console.log("[INFO] Mapped bot messages:", botMessages);
-
-    setMessages((prev) => {
-      console.log("[STATE] Updating messages...");
-      const updated = [...prev, ...botMessages];
-      console.log("[STATE] Updated messages:", updated);
-      return updated;
-    });
-  } catch (error) {
-    console.error("[FATAL ERROR] handleSubmit failed:", error);
-    setMessages((prev) => [
-      ...prev,
-      {
-        sender: "bot",
-        text: "Sorry, something went wrong while fetching the response.",
-        links: [],
-      },
-    ]);
-  } finally {
-    setIsWaiting(false);
-    console.log("[INFO] Request cycle completed. isWaiting set to false.");
+    const userInput = input;
     console.log("==========================================");
-  }
-};
+    console.log("[EVENT] handleSubmit triggered");
+    console.log("[INFO] User input:", userInput);
 
+    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+    setInput("");
+    setIsWaiting(true);
 
+    // Build context (previous 5 interactions)
+    const contextMessages = messages.slice(-5).map((msg) => ({
+      role: msg.sender === "user" ? "user" : "assistant",
+      content: msg.text,
+    }));
+
+    console.log("[DEBUG] Context messages sent to backend:", contextMessages);
+
+    const apiUrl = "https://krishbackend-production-9603.up.railway.app/guest-chatbot";
+
+    console.log("[INFO] Sending POST request to backend:", apiUrl);
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: userInput,
+          context: contextMessages,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`[ERROR] Backend returned status ${response.status}`);
+        throw new Error(`Backend returned status ${response.status}`);
+      }
+
+      let data;
+      try {
+        data = await response.json();
+        console.log("[INFO] Parsed JSON from backend:", data);
+      } catch (jsonError) {
+        console.error("[ERROR] Failed to parse JSON response:", jsonError);
+        const textResponse = await response.text();
+        console.error("[DEBUG] Raw text response:", textResponse);
+        throw new Error("Invalid JSON format from backend");
+      }
+
+      const botMessages = [
+        {
+          sender: "bot",
+          text: data.snippet || "No response",
+          links: Array.isArray(data.links) ? data.links : [],
+        },
+      ];
+
+      setMessages((prev) => [...prev, ...botMessages]);
+    } catch (error) {
+      console.error("[FATAL ERROR] handleSubmit failed:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "Sorry, something went wrong while fetching the response.",
+          links: [],
+        },
+      ]);
+    } finally {
+      setIsWaiting(false);
+      console.log("[INFO] Request cycle completed. isWaiting set to false.");
+      console.log("==========================================");
+    }
+  };
 
   return (
     <div className="chat-container">
@@ -220,18 +202,6 @@ export default function GuestChatbot() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-          <div className="reasoning-container">
-            <label htmlFor="reasoning-select" className="reasoning-label">Reasoning</label>
-            <select
-              id="reasoning-select"
-              value={reasoningLevel}
-              onChange={(e) => setReasoningLevel(e.target.value)}
-            >
-              <option value="simple">Simple</option>
-              <option value="medium">Medium</option>
-              <option value="advanced">Advanced</option>
-            </select>
-          </div>
           <button type="submit" disabled={isWaiting || !input.trim()}>
             {isWaiting ? "Sending..." : "Send"}
           </button>
