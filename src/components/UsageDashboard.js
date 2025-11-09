@@ -9,7 +9,7 @@ const UsageDashboard = () => {
   useEffect(() => {
     const fetchUsageData = async () => {
       try {
-        const response = await fetch("/api/openai-usage"); // Backend endpoint for OpenAI API usage
+        const response = await fetch("https://krishbackend-production-9603.up.railway.app/api/openai-usage"); // Backend endpoint for OpenAI API usage
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
