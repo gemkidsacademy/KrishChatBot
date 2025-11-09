@@ -61,6 +61,7 @@ export default function GuestChatbot() {
   // Handle submit (guest chatbot just echoes user input)
  const handleSubmit = async (e) => {
   e.preventDefault();
+
   if (!input.trim()) {
     console.warn("[WARN] Empty input. Ignoring submit.");
     return;
@@ -71,22 +72,33 @@ export default function GuestChatbot() {
   console.log("[EVENT] handleSubmit triggered");
   console.log("[INFO] User input:", userInput);
 
+  // Step 1: Add user message to local state immediately
   setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
   setInput("");
   setIsWaiting(true);
 
-  const apiUrl = `https://krishbackend-production-9603.up.railway.app/guest-chatbot?query=${encodeURIComponent(
-    userInput
-  )}`;
+  // Step 2: Build context (previous 5 interactions)
+  const contextMessages = messages.slice(-5).map((msg) => ({
+    role: msg.sender === "user" ? "user" : "assistant",
+    content: msg.text,
+  }));
 
-  console.log("[INFO] Sending request to backend:", apiUrl);
+  console.log("[DEBUG] Context messages sent to backend:", contextMessages);
+
+  const apiUrl = "https://krishbackend-production-9603.up.railway.app/guest-chatbot";
+
+  console.log("[INFO] Sending POST request to backend:", apiUrl);
 
   try {
     const response = await fetch(apiUrl, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        query: userInput,
+        context: contextMessages, // send previous conversation
+      }),
     });
 
     console.log("[DEBUG] Raw Response object:", response);
@@ -107,12 +119,14 @@ export default function GuestChatbot() {
       throw new Error("Invalid JSON format from backend");
     }
 
-    // Wrap single object in array to unify handling
-    const botMessages = [{
-      sender: "bot",
-      text: data.snippet || "No response",
-      links: Array.isArray(data.links) ? data.links : [],
-    }];
+    // Step 3: Append bot response
+    const botMessages = [
+      {
+        sender: "bot",
+        text: data.snippet || "No response",
+        links: Array.isArray(data.links) ? data.links : [],
+      },
+    ];
 
     console.log("[INFO] Mapped bot messages:", botMessages);
 
