@@ -1,50 +1,39 @@
 import React, { useState } from "react";
 
 const UploadVectorStores = () => {
-  const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
   const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
+    setMessage("Processing...");
 
     try {
       const response = await fetch(
         "https://krishbackend-production-9603.up.railway.app/admin/create_vectorstores",
         {
           method: "POST",
-          body: formData,
         }
       );
 
+      const data = await response.json();
+
       if (response.ok) {
-        setMessage("File uploaded successfully!");
+        setMessage(data.message || "Vector stores processed successfully!");
       } else {
-        setMessage("Upload failed. Please try again.");
+        setMessage(data.message || "Upload failed. Please try again.");
       }
     } catch (error) {
       console.error(error);
-      setMessage("An error occurred during upload.");
+      setMessage("An error occurred during processing.");
     }
   };
 
   return (
     <div>
-      <input type="file" onChange={handleFileChange} />
       <button
         onClick={handleUpload}
-        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+        className="px-4 py-2 bg-blue-500 text-white rounded"
       >
-        Upload
+        Process Vector Stores
       </button>
       {message && <p className="mt-2 text-sm">{message}</p>}
     </div>
