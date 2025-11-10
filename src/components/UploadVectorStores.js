@@ -19,7 +19,7 @@ const UploadVectorStores = () => {
 
     try {
       const response = await fetch(
-        "https://krishbackend-production-9603.up.railway.app/api/upload_vector_store",
+        "https://krishbackend-production-9603.up.railway.app/admin/create_vectorstores",
         {
           method: "POST",
           body: formData,
