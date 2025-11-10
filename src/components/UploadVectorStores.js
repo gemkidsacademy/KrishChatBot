@@ -18,10 +18,13 @@ const UploadVectorStores = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("/api/upload_vector_store", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "https://krishbackend-production-9603.up.railway.app/api/upload_vector_store",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         setMessage("File uploaded successfully!");
