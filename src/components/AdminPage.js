@@ -9,6 +9,9 @@ import ViewUserModal from "./ViewUserModal";
 import DeleteUserForm from "./DeleteUserForm";
 import UsageDashboard from "./UsageDashboard";
 import AddUsersBulkForm from "./AddUsersBulkForm";
+import UploadVectorStores from "./UploadVectorStores";
+
+
 
 
 
@@ -31,11 +34,12 @@ const AdminPanel = () => {
   
   
   const tabs = [
-    { id: "database", label: "Chatbot User Management" },
-    { id: "AI_tutor", label: "Add PDF for AI Tutor" },
-    { id: "openai", label: "View OpenAI Usage" },
-    { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
-  ];
+  { id: "database", label: "Chatbot User Management" },
+  { id: "AI_tutor", label: "Add PDF for AI Tutor" },
+  { id: "openai", label: "View OpenAI Usage" },
+  { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
+  { id: "upload_vector_stores", label: "Upload Vector Stores" },
+];
 
   const handleUserUpdated = () => {
     setShowEditUser(false);
@@ -174,7 +178,21 @@ const AdminPanel = () => {
             <ChatbotSettings />
           </div>
         )}
-        
+        {/* upload vector store) */}
+        {activeTab === "upload_vector_stores" && (
+          <div
+            className="tab-panel"
+            style={{
+              height: "100vh", // full height
+              overflowY: "auto",
+              padding: "1rem",
+            }}
+          >
+            <h2 className="text-xl font-semibold mb-4">Upload Vector Stores</h2>
+            <UploadVectorStores />
+          </div>
+        )}
+
 
         {/* OpenAI Usage */}
         {activeTab === "openai" && (
