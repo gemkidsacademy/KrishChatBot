@@ -35,52 +35,73 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const server = "https://krishbackend-production-9603.up.railway.app";
 
 
-  // --- Generate OTP ---
+  // --- Generate OTP (testing mode) ---
   const generateOtp = async () => {
   if (!phone) {
     setError("Please enter a phone number");
     return;
   }
 
-  const formattedPhone = phone.trim(); // just trim whitespace
+  const formattedPhone = phone.trim();
 
-  try {
-    const response = await fetch(
-      "https://krishbackend-production-9603.up.railway.app/send-otp",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number: formattedPhone }),
-      }
-    );
+  // Simulate backend response for testing
+  console.log("[TEST MODE] Skipping backend OTP call. Simulating success...");
 
-    const data = await response.json();
+  setOtpSent(true);
+  setError(null);
+  setIsDisabled(false);
 
-    if (response.ok) {
-      setOtpSent(true);
-      setError(null);
-      setIsDisabled(false);
-
-      console.log("[INFO] OTP sent successfully:", data);
-    } else {
-      setError(data.detail || "Failed to generate OTP");
-      console.warn("[WARN] OTP generation failed:", data);
-    }
-  } catch (err) {
-    setError("Failed to generate OTP");
-    console.error("[ERROR] Exception while generating OTP:", err);
-  }
+  // Optionally show mock response for clarity during testing
+  console.log("[INFO] OTP 'sent' successfully (test mode):", {
+    phone_number: formattedPhone,
+    otp: "123456", // fake OTP for local testing
+  });
 };
 
+  // --- Generate OTP (Actual Code) ---
+// const generateOtp = async () => {
+//   if (!phone) {
+//     setError("Please enter a phone number");
+//     return;
+//   }
 
-  // --- Login Handler OTP Only---
-  
+//   const formattedPhone = phone.trim(); // just trim whitespace
+
+//   try {
+//     const response = await fetch(
+//       "https://krishbackend-production-9603.up.railway.app/send-otp",
+//       {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ phone_number: formattedPhone }),
+//       }
+//     );
+
+//     const data = await response.json();
+
+//     if (response.ok) {
+//       setOtpSent(true);
+//       setError(null);
+//       setIsDisabled(false);
+
+//       console.log("[INFO] OTP sent successfully:", data);
+//     } else {
+//       setError(data.detail || "Failed to generate OTP");
+//       console.warn("[WARN] OTP generation failed:", data);
+//     }
+//   } catch (err) {
+//     setError("Failed to generate OTP");
+//     console.error("[ERROR] Exception while generating OTP:", err);
+//   }
+// };
+
+// --- Handle Login (Test Mode) ---
 const handleLogin = async () => {
   try {
     setError(null);
+    console.log("[TEST MODE] OTP login simulated — backend call disabled.");
 
-    console.log("[INFO] OTP login mode active");
-
+    // Basic validation
     if (!otpSent) {
       setError("Please generate OTP first");
       return;
@@ -92,60 +113,114 @@ const handleLogin = async () => {
     }
 
     if (!otp) {
-      setError("Please enter the OTP");
+      setError("Please enter password");
       return;
     }
 
-    const formattedPhone = phone.trim(); // just trim whitespace
-    console.log("[INFO] Sending verify-otp request for phone:", formattedPhone, "OTP:", otp);
+    const formattedPhone = phone.trim();
 
-    try {
-      const verifyResponse = await fetch(`${server}/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number: formattedPhone, otp }),
-      });
+    // Simulated password check
+    if (otp.trim() === "krish123") {
+      console.log("[TEST MODE] Login successful with test password.");
 
-      console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
+      const mockUser = { name: "Test User", phone: formattedPhone }; // fake user for UI
+      setIsLoggedIn(true);
+      setDoctorData(mockUser);
+      setSessionToken("mock-session-token");
 
-      let verifyData;
-      try {
-        verifyData = await verifyResponse.json();
-        console.log("[DEBUG] verify-otp response JSON:", verifyData);
-      } catch (err) {
-        console.error("[ERROR] Failed to parse verify-otp response:", err);
-        setError("Failed to verify OTP");
-        return;
-      }
-
-      if (verifyResponse.ok) {
-        console.log("[INFO] OTP verified successfully");
-
-        setIsLoggedIn(true);
-        setDoctorData(verifyData.user);
-        setSessionToken(null); // or generate/manage session token here
-        console.log("📝 data.name:", verifyData.user.name);
-
-        if (verifyData?.user?.name === "Admin") {
-          console.log("🚀 User is Admin. Redirecting to AdminPanel");
-          navigate("/AdminPanel");
-        } else {
-          console.log("👤 User is not Admin. Redirecting to ChatBot");
-          navigate("/ChatBot");
-        }
+      // Simulate role-based redirect
+      if (mockUser.name === "Admin") {
+        console.log("🚀 User is Admin. Redirecting to AdminPanel");
+        navigate("/AdminPanel");
       } else {
-        console.warn("[WARN] OTP verification failed:", verifyData);
-        setError(verifyData.detail || "Invalid OTP");
+        console.log("👤 User is not Admin. Redirecting to ChatBot");
+        navigate("/ChatBot");
       }
-    } catch (err) {
-      console.error("[ERROR] OTP login failed unexpectedly:", err);
-      setError("Login failed. Please try again.");
+    } else {
+      console.warn("[WARN] Invalid test password entered.");
+      setError("Invalid password. Use 'krish123' for testing.");
     }
   } catch (err) {
     console.error("[ERROR] Login failed unexpectedly:", err);
     setError("Login failed. Please try again.");
   }
 };
+
+
+
+  // --- Login Handler OTP Only---
+  
+// const handleLogin = async () => {
+//   try {
+//     setError(null);
+
+//     console.log("[INFO] OTP login mode active");
+
+//     if (!otpSent) {
+//       setError("Please generate OTP first");
+//       return;
+//     }
+
+//     if (!phone) {
+//       setError("Please enter phone number");
+//       return;
+//     }
+
+//     if (!otp) {
+//       setError("Please enter the OTP");
+//       return;
+//     }
+
+//     const formattedPhone = phone.trim(); // just trim whitespace
+//     console.log("[INFO] Sending verify-otp request for phone:", formattedPhone, "OTP:", otp);
+
+//     try {
+//       const verifyResponse = await fetch(`${server}/verify-otp`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ phone_number: formattedPhone, otp }),
+//       });
+
+//       console.log("[DEBUG] Raw verify-otp response status:", verifyResponse.status);
+
+//       let verifyData;
+//       try {
+//         verifyData = await verifyResponse.json();
+//         console.log("[DEBUG] verify-otp response JSON:", verifyData);
+//       } catch (err) {
+//         console.error("[ERROR] Failed to parse verify-otp response:", err);
+//         setError("Failed to verify OTP");
+//         return;
+//       }
+
+//       if (verifyResponse.ok) {
+//         console.log("[INFO] OTP verified successfully");
+
+//         setIsLoggedIn(true);
+//         setDoctorData(verifyData.user);
+//         setSessionToken(null); // or generate/manage session token here
+//         console.log("📝 data.name:", verifyData.user.name);
+
+//         if (verifyData?.user?.name === "Admin") {
+//           console.log("🚀 User is Admin. Redirecting to AdminPanel");
+//           navigate("/AdminPanel");
+//         } else {
+//           console.log("👤 User is not Admin. Redirecting to ChatBot");
+//           navigate("/ChatBot");
+//         }
+//       } else {
+//         console.warn("[WARN] OTP verification failed:", verifyData);
+//         setError(verifyData.detail || "Invalid OTP");
+//       }
+//     } catch (err) {
+//       console.error("[ERROR] OTP login failed unexpectedly:", err);
+//       setError("Login failed. Please try again.");
+//     }
+//   } catch (err) {
+//     console.error("[ERROR] Login failed unexpectedly:", err);
+//     setError("Login failed. Please try again.");
+//   }
+// };
 
 
 
