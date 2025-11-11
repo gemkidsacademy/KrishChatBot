@@ -50,7 +50,7 @@ const UploadVectorStores = () => {
     setMessage("Initializing Faiss memory...");
     try {
       const response = await fetch(
-        "https://krishbackend-production-9603.up.railway.app/admin/initialize_faiss_memory",
+        "https://krishbackend-production-9603.up.railway.app/admin/initialize_faiss",
         { method: "POST" }
       );
       const data = await response.json();
