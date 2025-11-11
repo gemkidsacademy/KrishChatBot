@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const UploadVectorStores = () => {
   const [message, setMessage] = useState("");
 
-  // Handler for processing vector stores (existing functionality)
+  // Handler for processing vector stores
   const handleProcessVectorStores = async () => {
     setMessage("Processing vector stores...");
 
@@ -28,7 +28,7 @@ const UploadVectorStores = () => {
     }
   };
 
-  // Handler for uploading embeddings to Railway DB (new functionality)
+  // Handler for uploading embeddings to Railway DB
   const handleUploadEmbeddings = async () => {
     setMessage("Uploading embeddings to Railway DB...");
 
@@ -53,6 +53,31 @@ const UploadVectorStores = () => {
     }
   };
 
+  // Handler for initializing Faiss memory
+  const handleInitializeFaiss = async () => {
+    setMessage("Initializing Faiss memory...");
+
+    try {
+      const response = await fetch(
+        "https://krishbackend-production-9603.up.railway.app/admin/initialize_faiss",
+        {
+          method: "POST",
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message || "Faiss memory initialized successfully!");
+      } else {
+        setMessage(data.message || "Initialization failed. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage("An error occurred during Faiss memory initialization.");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <button
@@ -69,7 +94,14 @@ const UploadVectorStores = () => {
         Upload Embeddings to Railway DB
       </button>
 
-      {message && <p className="mt-2 text-sm">{message}</p>}
+      <button
+        onClick={handleInitializeFaiss}
+        className="px-4 py-2 bg-purple-500 text-white rounded"
+      >
+        Initialize Faiss Memory
+      </button>
+
+      {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
     </div>
   );
 };
