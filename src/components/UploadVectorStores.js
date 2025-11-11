@@ -2,23 +2,23 @@ import React, { useState } from "react";
 
 const UploadVectorStores = () => {
   const [message, setMessage] = useState("");
+  const [vectorProcessed, setVectorProcessed] = useState(false);
+  const [embeddingsUploaded, setEmbeddingsUploaded] = useState(false);
 
-  // Handler for processing vector stores
+  // Step 1: Process Vector Stores
   const handleProcessVectorStores = async () => {
     setMessage("Processing vector stores...");
 
     try {
       const response = await fetch(
         "https://krishbackend-production-9603.up.railway.app/admin/create_vectorstores",
-        {
-          method: "POST",
-        }
+        { method: "POST" }
       );
-
       const data = await response.json();
 
       if (response.ok) {
         setMessage(data.message || "Vector stores processed successfully!");
+        setVectorProcessed(true);
       } else {
         setMessage(data.message || "Processing failed. Please try again.");
       }
@@ -28,22 +28,20 @@ const UploadVectorStores = () => {
     }
   };
 
-  // Handler for uploading embeddings to Railway DB
+  // Step 2: Upload Embeddings to Railway DB
   const handleUploadEmbeddings = async () => {
     setMessage("Uploading embeddings to Railway DB...");
 
     try {
       const response = await fetch(
         "https://krishbackend-production-9603.up.railway.app/admin/upload_embeddings_to_db",
-        {
-          method: "POST",
-        }
+        { method: "POST" }
       );
-
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message || "Embeddings uploaded to DB successfully!");
+        setMessage(data.message || "Embeddings uploaded successfully!");
+        setEmbeddingsUploaded(true);
       } else {
         setMessage(data.message || "Upload failed. Please try again.");
       }
@@ -53,18 +51,15 @@ const UploadVectorStores = () => {
     }
   };
 
-  // Handler for initializing Faiss memory
+  // Step 3: Initialize Faiss Memory
   const handleInitializeFaiss = async () => {
     setMessage("Initializing Faiss memory...");
 
     try {
       const response = await fetch(
-        "https://krishbackend-production-9603.up.railway.app/admin/initialize_faiss",
-        {
-          method: "POST",
-        }
+        "https://krishbackend-production-9603.up.railway.app/admin/initialize_faiss_memory",
+        { method: "POST" }
       );
-
       const data = await response.json();
 
       if (response.ok) {
@@ -79,24 +74,26 @@ const UploadVectorStores = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-sm">
       <button
         onClick={handleProcessVectorStores}
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        className="w-full px-4 py-2 bg-blue-500 text-white rounded"
       >
         Process Vector Stores
       </button>
 
       <button
         onClick={handleUploadEmbeddings}
-        className="px-4 py-2 bg-green-500 text-white rounded"
+        disabled={!vectorProcessed}
+        className="w-full px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
       >
-        Upload Embeddings to Railway DB
+        Upload Embeddings
       </button>
 
       <button
         onClick={handleInitializeFaiss}
-        className="px-4 py-2 bg-purple-500 text-white rounded"
+        disabled={!embeddingsUploaded}
+        className="w-full px-4 py-2 bg-purple-500 text-white rounded disabled:opacity-50"
       >
         Initialize Faiss Memory
       </button>
