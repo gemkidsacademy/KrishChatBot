@@ -153,93 +153,88 @@ const handleLogin = async () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.loginBox}>
-        
-        </div>
+  <div style={styles.loginBox}>
+    <h2>
+      {loginMode === "password" ? "Login with ID/Password" : "Login with OTP"}
+    </h2>
 
-        <h2>
-          {loginMode === "password" ? "Login with ID/Password" : "Login with OTP"}
-        </h2>
-
-        {loginMode === "password" ? (
-          <>
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-            />
-          </>
-        ) : (
-          <>
-            <input
-              type="text"
-              placeholder="Enter phone number in the format 0412345678"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              style={styles.input}
-              disabled={otpSent} // disable phone after OTP is sent
-            />
-            {!otpSent && (
-              <button
-                onClick={generateOtp}
-                style={{ ...styles.button, background: "#28a745", marginTop: "5px" }}
-                disabled={!phone}
-              >
-                Generate OTP
-              </button>
-            )}
-            {otpSent && (
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                style={styles.input}
-              />
-            )}
-          </>
+    {loginMode === "password" ? (
+      <>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          style={styles.input}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={styles.input}
+        />
+      </>
+    ) : (
+      <>
+        <input
+          type="text"
+          placeholder="Enter phone number in the format 0412345678"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          style={styles.input}
+          disabled={otpSent} // disable phone after OTP is sent
+        />
+        {!otpSent && (
+          <button
+            onClick={generateOtp}
+            style={{ ...styles.button, background: "#28a745", marginTop: "5px" }}
+            disabled={!phone}
+          >
+            Generate OTP
+          </button>
         )}
+        {otpSent && (
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            style={styles.input}
+          />
+        )}
+      </>
+    )}
 
-         <button
-          onClick={handleLogin}
-          style={{
-            ...styles.button,
-            backgroundColor: "#EC5125", // added your main orange color
-            opacity: isDisabled ? 0.5 : 1,
-            cursor: isDisabled ? "not-allowed" : "pointer",
-          }}
-          disabled={isDisabled} // controlled by state
-        >
-          Login
-        </button>
+    <button
+      onClick={handleLogin}
+      style={{
+        ...styles.button,
+        backgroundColor: "#EC5125", // main orange color
+        opacity: isDisabled ? 0.5 : 1,
+        cursor: isDisabled ? "not-allowed" : "pointer",
+      }}
+      disabled={isDisabled} // controlled by state
+    >
+      Login
+    </button>
 
-        {/* Guest Login Button */}
-        <button
-            onClick={() => window.location.href = "/guest-chatbot"}
-            style={{
-            ...styles.button,
-            backgroundColor: "#007bff", // blue color for guest login
-            marginTop: "10px"
-            }}
-        >
-            Continue as Guest
-        </button>
+    {/* Guest Login Button */}
+    <button
+      onClick={() => window.location.href = "/guest-chatbot"}
+      style={{
+        ...styles.button,
+        backgroundColor: "#007bff", // blue color for guest login
+        marginTop: "10px",
+      }}
+    >
+      Continue as Guest
+    </button>
 
+    {error && <p style={styles.error}>{error}</p>}
+  </div>
+</div>
 
-        
-
-        {error && <p style={styles.error}>{error}</p>}
-      </div>
-    </div>
   );
 }
 
