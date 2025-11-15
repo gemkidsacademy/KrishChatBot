@@ -17,7 +17,7 @@ export default function DemoChatbot({ doctorData }) {
     if (doctorData?.name) {
       const welcomeMsg = {
         sender: "bot",
-        text: `Welcome, Dr. ${doctorData.name}! How can I assist you today?`,
+        text: `Welcome, Dear. ${doctorData.name}! How can I assist you today?`,
         links: [],
       };
       setMessages([welcomeMsg]);
@@ -210,6 +210,7 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
+
 
 
 
