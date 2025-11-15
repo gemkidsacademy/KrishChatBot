@@ -154,13 +154,7 @@ const handleLogin = async () => {
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        {/* 🌟 Client Logo */}
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <img 
-            src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
-            alt="Client Logo"
-            style={{ width: "120px", height: "auto" }}
-          />
+        
         </div>
 
         <h2>
