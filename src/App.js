@@ -15,7 +15,7 @@ import ViewDoctors from "./components/ViewDoctors";
 import DeleteDoctor from "./components/DeleteDoctor";
 import DemoChatbot from "./components/DemoChatbot";
 import UsageDashboard from "./components/UsageDashboard";
-import ChatbotSettings from "./components/ChatbotSettings";
+import StudentDashboard from "./components/StudentDashboard";
 import GuestChatbot from "./components/GuestChatbot";
 
 
@@ -332,7 +332,7 @@ function App() {
           path="/chatbot-settings"
           element={
             <PrivateRoute isLoggedIn={isLoggedIn}>
-              <ChatbotSettings />
+              <StudentDashboard />
             </PrivateRoute>
           }
         />
