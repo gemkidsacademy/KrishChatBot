@@ -74,53 +74,64 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
   // --- Handle OTP Login ---
   const handleLogin = async () => {
-    if (!otpSent) {
-      setError("Please generate OTP first");
-      return;
-    }
+  if (!otpSent) {
+    setError("Please generate OTP first");
+    console.log("[DEBUG] OTP not sent yet");
+    return;
+  }
 
-    if (!email) {
-      setError("Please enter email");
-      return;
-    }
+  if (!email) {
+    setError("Please enter email");
+    console.log("[DEBUG] Email not provided");
+    return;
+  }
 
-    if (!otp) {
-      setError("Please enter the OTP");
-      return;
-    }
+  if (!otp) {
+    setError("Please enter the OTP");
+    console.log("[DEBUG] OTP not provided");
+    return;
+  }
 
-    const formattedEmail = email.trim();
-    console.log("[INFO] Sending verify-otp request for email:", formattedEmail);
+  const formattedEmail = email.trim();
+  console.log("[INFO] Sending verify-otp request for email:", formattedEmail);
 
-    try {
-      const verifyResponse = await fetch(`${server}/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formattedEmail, otp }),
-      });
+  try {
+    const verifyResponse = await fetch(`${server}/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: formattedEmail, otp }),
+    });
 
-      const verifyData = await verifyResponse.json();
+    console.log("[DEBUG] verifyResponse status:", verifyResponse.status);
 
-      if (verifyResponse.ok) {
-        console.log("[INFO] OTP verified successfully");
-        setIsLoggedIn(true);
-        setDoctorData(verifyData); // ensure backend returns user info including class_name
-        setSessionToken(null);
+    const verifyData = await verifyResponse.json();
+    console.log("[DEBUG] verifyData received from backend:", verifyData);
 
-        if (verifyData?.name === "Admin") {
-          navigate("/AdminPanel");
-        } else {
-          navigate("/ChatBot");
-        }
+    if (verifyResponse.ok) {
+      console.log("[INFO] OTP verified successfully");
+      setIsLoggedIn(true);
+      setDoctorData(verifyData); // check structure of verifyData
+      console.log("[DEBUG] doctorData set:", verifyData);
+      setSessionToken(null);
+
+      if (verifyData?.name === "Admin") {
+        console.log("[INFO] Navigating to AdminPanel");
+        navigate("/AdminPanel");
+      } else if (verifyData?.name) {
+        console.log("[INFO] Navigating to ChatBot");
+        navigate("/ChatBot");
       } else {
-        setError(verifyData.detail || "Invalid OTP");
-        console.warn("[WARN] OTP verification failed:", verifyData);
+        console.warn("[WARN] doctorData.name missing, cannot navigate to ChatBot");
       }
-    } catch (err) {
-      setError("Login failed. Please try again.");
-      console.error("[ERROR] OTP login failed unexpectedly:", err);
+    } else {
+      setError(verifyData.detail || "Invalid OTP");
+      console.warn("[WARN] OTP verification failed:", verifyData);
     }
-  };
+  } catch (err) {
+    setError("Login failed. Please try again.");
+    console.error("[ERROR] OTP login failed unexpectedly:", err);
+  }
+};
 
   return (
     <div style={styles.container}>
