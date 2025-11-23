@@ -8,6 +8,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
+  const [classDay, setClassDay] = useState(""); // new field for class_day
   const [password, setPassword] = useState("");
 
   // Fetch user IDs on mount
@@ -16,7 +17,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
       try {
         const res = await fetch("https://krishbackend-production-9603.up.railway.app/user_ids");
         if (!res.ok) throw new Error("Failed to fetch user IDs");
-        const data = await res.json(); // should return array like [{id:1}, {id:2}, ...]
+        const data = await res.json();
         setUserIds(data);
       } catch (err) {
         console.error(err);
@@ -40,6 +41,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
         setEmail(user.email || "");
         setPhoneNumber(user.phone_number || "");
         setClassName(user.class_name || "");
+        setClassDay(user.class_day || ""); // <-- added
         setPassword(""); // leave empty unless admin wants to reset
       } catch (err) {
         console.error(err);
@@ -68,6 +70,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
             email,
             phone_number: phoneNumber,
             class_name: className,
+            class_day: classDay, // <-- added
             password, // send only if admin wants to update
           }),
         }
@@ -127,6 +130,12 @@ function EditUserForm({ onClose, onUserUpdated }) {
             placeholder="Class name (optional)"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Class day (optional)"
+            value={classDay}
+            onChange={(e) => setClassDay(e.target.value)}
           />
           <input
             type="password"
