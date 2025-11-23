@@ -6,17 +6,17 @@ function AddUserForm({ onClose, onUserAdded }) {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
+  const [classDay, setClassDay] = useState(""); // New field for class day
   const [password, setPassword] = useState("");
-  const [nextId, setNextId] = useState(null); // New state for next user ID
+  const [nextId, setNextId] = useState(null);
 
-  // ----------------- Fetch next user ID on component mount -----------------
+  // ----------------- Fetch next user ID on mount -----------------
   useEffect(() => {
     const fetchNextId = async () => {
       try {
-         const response = await fetch(
-            "https://krishbackend-production-9603.up.railway.app/get_next_user_id"
-          );
-
+        const response = await fetch(
+          "https://krishbackend-production-9603.up.railway.app/get_next_user_id"
+        );
         const id = await response.json();
         setNextId(id);
       } catch (err) {
@@ -35,10 +35,18 @@ function AddUserForm({ onClose, onUserAdded }) {
     const trimmedEmail = email.trim();
     const trimmedPhone = phoneNumber.trim();
     const trimmedClass = className.trim();
+    const trimmedClassDay = classDay.trim();
     const trimmedPassword = password.trim();
 
     // ----------------- Validation -----------------
-    if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedClass || !trimmedPassword) {
+    if (
+      !trimmedName ||
+      !trimmedEmail ||
+      !trimmedPhone ||
+      !trimmedClass ||
+      !trimmedClassDay ||
+      !trimmedPassword
+    ) {
       alert("All fields are required");
       return;
     }
@@ -62,11 +70,12 @@ function AddUserForm({ onClose, onUserAdded }) {
 
     // ----------------- Prepare payload -----------------
     const payload = {
-      id: nextId, // include the fetched ID
+      id: nextId,
       name: trimmedName,
       email: trimmedEmail,
       phone_number: trimmedPhone,
       class_name: trimmedClass,
+      class_day: trimmedClassDay, // Include class day
       password: trimmedPassword,
     };
 
@@ -98,6 +107,7 @@ function AddUserForm({ onClose, onUserAdded }) {
       setEmail("");
       setPhoneNumber("");
       setClassName("");
+      setClassDay("");
       setPassword("");
 
       // ----------------- Fetch next ID again -----------------
@@ -142,6 +152,13 @@ function AddUserForm({ onClose, onUserAdded }) {
             placeholder="Class name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Class day (e.g. Monday)"
+            value={classDay}
+            onChange={(e) => setClassDay(e.target.value)}
             required
           />
           <input
