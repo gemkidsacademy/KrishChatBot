@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import "./DemoChatbot.css";
-  
+
 export default function DemoChatbot({ doctorData }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // set 60 for testing
+  const [timeLeft, setTimeLeft] = useState(60); // 60 seconds for testing
   const chatEndRef = useRef(null);
+
+  const isTimeUp = timeLeft === 0;
 
   // ------------------ Auto-scroll ------------------
   useEffect(() => {
@@ -30,24 +32,26 @@ export default function DemoChatbot({ doctorData }) {
 
   // ------------------ Timer effect ------------------
   useEffect(() => {
-  const interval = setInterval(() => {
-    setTimeLeft(prev => {
-      if (prev <= 1) {
-        clearInterval(interval);
-        setMessages(prevMsg => [
-          ...prevMsg,
-          { sender: "bot", text: "⏰ You should log in again." }
-        ]);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
+    if (timeLeft <= 0) return; // stop if already zero
 
-  return () => clearInterval(interval);
-}, []);
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
 
-  const isTimeUp = timeLeft === 0;
+          // Append message safely
+          setMessages(prevMsg => [
+            ...prevMsg,
+            { sender: "bot", text: "⏰ You should log in again." }
+          ]);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
 
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
@@ -215,5 +219,3 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
-
-
