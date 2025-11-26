@@ -7,7 +7,7 @@ export default function DemoChatbot({ doctorData }) {
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3600); // set 60 for testing
+  const [timeLeft, setTimeLeft] = useState(60); // set 60 for testing
   const chatEndRef = useRef(null);
 
   // ------------------ Auto-scroll ------------------
@@ -215,3 +215,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
