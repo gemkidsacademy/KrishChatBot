@@ -34,7 +34,7 @@ const AdminPanel = () => {
   // --- Reset Students backend call ---
   const handleResetStudents = async () => {
     try {
-      const response = await fetch("https://your-backend-url/reset-students", {
+      const response = await fetch("https://krishbackend-production-9603.up.railway.app/reset-students", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
