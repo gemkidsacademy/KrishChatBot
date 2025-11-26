@@ -7,7 +7,7 @@ export default function DemoChatbot({ doctorData }) {
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 60 seconds for testing
+  const [timeLeft, setTimeLeft] = useState(10); // 60 seconds for testing
   const chatEndRef = useRef(null);
 
   const isTimeUp = timeLeft === 0;
@@ -31,27 +31,25 @@ export default function DemoChatbot({ doctorData }) {
   }, [doctorData?.name]);
 
   // ------------------ Timer effect ------------------
-  useEffect(() => {
-    if (timeLeft <= 0) return; // stop if already zero
+  // ------------------ Timer effect ------------------
+useEffect(() => {
+  const interval = setInterval(() => {
+    setTimeLeft(prev => {
+      if (prev <= 1) {
+        clearInterval(interval);
+        setMessages(prevMsg => [
+          ...prevMsg,
+          { sender: "bot", text: "⏰ You should log in again." }
+        ]);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
 
-    const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(interval);
+  return () => clearInterval(interval); // cleanup on unmount
+}, []); // empty dependency array
 
-          // Append message safely
-          setMessages(prevMsg => [
-            ...prevMsg,
-            { sender: "bot", text: "⏰ You should log in again." }
-          ]);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timeLeft]);
 
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
@@ -219,3 +217,4 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
