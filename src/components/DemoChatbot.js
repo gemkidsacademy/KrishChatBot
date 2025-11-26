@@ -7,75 +7,91 @@ export default function DemoChatbot({ doctorData }) {
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(3600); // set 60 for testing
   const chatEndRef = useRef(null);
 
-  // Debug doctorData
- 
-
-  // Welcome message
-  useEffect(() => {
-    if (doctorData?.name) {
-      const welcomeMsg = {
-        sender: "bot",
-        text: `Welcome, Dear. ${doctorData.name}! How can I assist you today?`,
-        links: [],
-      };
-      setMessages([welcomeMsg]);
-    }
-  }, [doctorData?.name]);
-
-  // Auto-scroll
+  // ------------------ Auto-scroll ------------------
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isWaiting]);
+
+  // ------------------ Welcome message ------------------
+  useEffect(() => {
+    if (doctorData?.name) {
+      setMessages([
+        {
+          sender: "bot",
+          text: `Welcome, Dear. ${doctorData.name}! How can I assist you today?`,
+          links: [],
+        },
+      ]);
+    }
+  }, [doctorData?.name]);
+
+  // ------------------ Timer effect ------------------
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setMessages(prevMsg => [
+            ...prevMsg,
+            { sender: "bot", text: "⏰ Time is up! The session is now closed." }
+          ]);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const isTimeUp = timeLeft === 0;
+
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`;
+  };
 
   if (!doctorData?.name) {
     return <Navigate to="/" replace />;
   }
 
-  // Parse **bold** text
+  // ------------------ Helpers ------------------
   const parseBoldText = (text) => {
     const regex = /\*\*(.+?)\*\*/g;
     const parts = [];
     let lastIndex = 0;
     let match;
     while ((match = regex.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(<span key={lastIndex}>{text.slice(lastIndex, match.index)}</span>);
-      }
+      if (match.index > lastIndex) parts.push(<span key={lastIndex}>{text.slice(lastIndex, match.index)}</span>);
       parts.push(<strong key={match.index}>{match[1]}</strong>);
       lastIndex = match.index + match[0].length;
     }
-    if (lastIndex < text.length) {
-      parts.push(<span key={lastIndex}>{text.slice(lastIndex)}</span>);
-    }
+    if (lastIndex < text.length) parts.push(<span key={lastIndex}>{text.slice(lastIndex)}</span>);
     return parts;
   };
 
-  // Parse bold text and URLs
-const formatMessageWithLinks = (text) => {
-  if (!text) return "";
+  const formatMessageWithLinks = (text) => {
+    if (!text) return "";
+    let formatted = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    formatted = formatted.replace(
+      /(https?:\/\/[^\s]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+    return formatted;
+  };
 
-  // convert **bold** to <strong>...</strong>
-  let formatted = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-
-  // convert URLs to clickable links
-  formatted = formatted.replace(
-    /(https?:\/\/[^\s]+)/g,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-  );
-
-  return formatted;
-};
-
-
-  // Handle submit
+  // ------------------ Handle submit ------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isTimeUp) return; // stop if time is up
 
     const userInput = input;
-    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+    setMessages(prev => [...prev, { sender: "user", text: userInput }]);
     setInput("");
     setIsWaiting(true);
 
@@ -97,10 +113,10 @@ const formatMessageWithLinks = (text) => {
         links: Array.isArray(item.links) ? item.links : []
       }));
 
-      setMessages((prev) => [...prev, ...processedMessages]);
+      setMessages(prev => [...prev, ...processedMessages]);
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
         { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] }
       ]);
@@ -109,9 +125,9 @@ const formatMessageWithLinks = (text) => {
     }
   };
 
+  // ------------------ Render ------------------
   return (
     <div className="chat-container">
-      {/* 🌟 Background images 🌟 */}
       <div className="bg-img bg-img-1"></div>
       <div className="bg-img bg-img-2"></div>
       <div className="bg-img bg-img-3"></div>
@@ -123,36 +139,23 @@ const formatMessageWithLinks = (text) => {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-start",
-            gap: "8px",
-            background: "linear-gradient(to right, #EC5125, #f97316)", // original orange gradient
+            justifyContent: "space-between",
             padding: "0.75rem 1rem",
+            background: "linear-gradient(to right, #EC5125, #f97316)"
           }}
         >
-          {/* White circular background for logo */}
-          <div
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "50%",
-              padding: "4px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
-              alt="Gem Kids Logo"
-              style={{
-                width: "24px",
-                height: "24px",
-              }}
-            />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ backgroundColor: "#fff", borderRadius: "50%", padding: "4px" }}>
+              <img
+                src="https://gemkidsacademy.com.au/wp-content/uploads/2024/11/Frame-1707478212.svg"
+                alt="Gem Kids Logo"
+                style={{ width: "24px", height: "24px" }}
+              />
+            </div>
+            <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI</span>
           </div>
-        
-          <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI</span>
+          <span style={{ color: "#fff", fontWeight: "bold" }}>{formatTime(timeLeft)}</span>
         </div>
-
 
         <div className="chat-messages">
           {messages.map((msg, idx) => (
@@ -189,6 +192,7 @@ const formatMessageWithLinks = (text) => {
             placeholder="Type your query..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            disabled={isTimeUp} // disable input when time is up
           />
           <div className="reasoning-container">
             <label htmlFor="reasoning-select" className="reasoning-label">Reasoning</label>
@@ -196,13 +200,14 @@ const formatMessageWithLinks = (text) => {
               id="reasoning-select"
               value={reasoningLevel}
               onChange={(e) => setReasoningLevel(e.target.value)}
+              disabled={isTimeUp} // disable reasoning select when time is up
             >
               <option value="simple">Simple</option>
               <option value="medium">Medium</option>
               <option value="advanced">Advanced</option>
             </select>
           </div>
-          <button type="submit" disabled={isWaiting || !input.trim()}>
+          <button type="submit" disabled={isWaiting || !input.trim() || isTimeUp}>
             {isWaiting ? "Sending..." : "Send"}
           </button>
         </form>
@@ -210,12 +215,3 @@ const formatMessageWithLinks = (text) => {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
