@@ -30,22 +30,22 @@ export default function DemoChatbot({ doctorData }) {
 
   // ------------------ Timer effect ------------------
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setMessages(prevMsg => [
-            ...prevMsg,
-            { sender: "bot", text: "⏰ Time is up! The session is now closed." }
-          ]);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  const interval = setInterval(() => {
+    setTimeLeft(prev => {
+      if (prev <= 1) {
+        clearInterval(interval);
+        setMessages(prevMsg => [
+          ...prevMsg,
+          { sender: "bot", text: "⏰ You should log in again." }
+        ]);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  return () => clearInterval(interval);
+}, []);
 
   const isTimeUp = timeLeft === 0;
 
@@ -215,4 +215,5 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
