@@ -7,10 +7,8 @@ export default function DemoChatbot({ doctorData }) {
   const [input, setInput] = useState("");
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(10); // 60 seconds for testing
+  const [timeLeft, setTimeLeft] = useState(60); // adjust as needed
   const chatEndRef = useRef(null);
-
-  const isTimeUp = timeLeft === 0;
 
   // ------------------ Auto-scroll ------------------
   useEffect(() => {
@@ -23,7 +21,7 @@ export default function DemoChatbot({ doctorData }) {
       setMessages([
         {
           sender: "bot",
-          text: `Welcome, Dear. ${doctorData.name}! How can I assist you today?`,
+          text: `Welcome, Dear ${doctorData.name}! How can I assist you today?`,
           links: [],
         },
       ]);
@@ -31,25 +29,28 @@ export default function DemoChatbot({ doctorData }) {
   }, [doctorData?.name]);
 
   // ------------------ Timer effect ------------------
-  // ------------------ Timer effect ------------------
-useEffect(() => {
-  const interval = setInterval(() => {
-    setTimeLeft(prev => {
-      if (prev <= 1) {
-        clearInterval(interval);
-        setMessages(prevMsg => [
-          ...prevMsg,
-          { sender: "bot", text: "⏰ You should log in again." }
-        ]);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
+  useEffect(() => {
+    if (timeLeft <= 0) return; // stop if already zero
 
-  return () => clearInterval(interval); // cleanup on unmount
-}, []); // empty dependency array
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          // Append message safely
+          setMessages(prevMsg => [
+            ...prevMsg,
+            { sender: "bot", text: "⏰ You should log in again." }
+          ]);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  const isTimeUp = timeLeft === 0;
 
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
@@ -58,9 +59,7 @@ useEffect(() => {
     return `${hrs.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`;
   };
 
-  if (!doctorData?.name) {
-    return <Navigate to="/" replace />;
-  }
+  if (!doctorData?.name) return <Navigate to="/" replace />;
 
   // ------------------ Helpers ------------------
   const parseBoldText = (text) => {
@@ -90,7 +89,7 @@ useEffect(() => {
   // ------------------ Handle submit ------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim() || isTimeUp) return; // stop if time is up
+    if (!input.trim() || isTimeUp) return;
 
     const userInput = input;
     setMessages(prev => [...prev, { sender: "user", text: userInput }]);
@@ -108,7 +107,7 @@ useEffect(() => {
       if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
       const data = await response.json();
 
-      const processedMessages = data.map((item) => ({
+      const processedMessages = data.map(item => ({
         sender: "bot",
         text: item.snippet,
         name: item.name,
@@ -194,7 +193,7 @@ useEffect(() => {
             placeholder="Type your query..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={isTimeUp} // disable input when time is up
+            disabled={isTimeUp}
           />
           <div className="reasoning-container">
             <label htmlFor="reasoning-select" className="reasoning-label">Reasoning</label>
@@ -202,7 +201,7 @@ useEffect(() => {
               id="reasoning-select"
               value={reasoningLevel}
               onChange={(e) => setReasoningLevel(e.target.value)}
-              disabled={isTimeUp} // disable reasoning select when time is up
+              disabled={isTimeUp}
             >
               <option value="simple">Simple</option>
               <option value="medium">Medium</option>
@@ -217,4 +216,3 @@ useEffect(() => {
     </div>
   );
 }
-
