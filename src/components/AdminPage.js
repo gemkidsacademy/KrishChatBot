@@ -22,6 +22,7 @@ const AdminPanel = () => {
   const [showViewUser, setShowViewUser] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
   const [showAddUsersBulk, setShowAddUsersBulk] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const tabs = [
     { id: "database", label: "Chatbot User Management" },
@@ -33,20 +34,27 @@ const AdminPanel = () => {
 
   // --- Reset Students backend call ---
   const handleResetStudents = async () => {
-    try {
-      const response = await fetch("https://krishbackend-production-9603.up.railway.app/reset-students", {
+  try {
+    setIsResetting(true);
+
+    const response = await fetch(
+      "https://krishbackend-production-9603.up.railway.app/reset-students",
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-      });
+      }
+    );
 
-      if (!response.ok) throw new Error("Failed to reset students");
+    if (!response.ok) throw new Error("Failed to reset students");
 
-      alert("All students have been reset successfully!");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong while resetting students.");
-    }
-  };
+    alert("All students have been reset successfully!");
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Something went wrong while resetting students.");
+  } finally {
+    setIsResetting(false);
+  }
+};
 
   // Modal callbacks
   const handleUserAdded = () => {
@@ -135,8 +143,12 @@ const AdminPanel = () => {
 
             {/* ---- NEW RESET STUDENTS BUTTON ---- */}
             <div>
-              <button className="dashboard-button" onClick={handleResetStudents}>
-                Reset Students
+              <button
+                className="dashboard-button"
+                onClick={handleResetStudents}
+                disabled={isResetting}
+              >
+                {isResetting ? "Resetting..." : "Reset Students"}
               </button>
             </div>
           </div>
