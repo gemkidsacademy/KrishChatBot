@@ -153,7 +153,7 @@ export default function DemoChatbot({ doctorData }) {
                 style={{ width: "24px", height: "24px" }}
               />
             </div>
-            <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI</span>
+            <span style={{ color: "#fff", fontWeight: "bold" }}>Gem AI Chatbot</span>
           </div>
           <span style={{ color: "#fff", fontWeight: "bold" }}>{formatTime(timeLeft)}</span>
         </div>
@@ -216,4 +216,5 @@ export default function DemoChatbot({ doctorData }) {
     </div>
   );
 }
+
 
