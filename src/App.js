@@ -264,15 +264,15 @@ const styles = {
     fontSize: "16px",
   },
 
-  // ⭐ THESE WERE MISSING — NOW ADDED BACK ⭐
+  // 🎨 CORRECT LOGO COLORS
   gButton: {
-    backgroundColor: "rgb(223, 178, 179)",  // g
+    backgroundColor: "rgb(219, 71, 45)",   // g (red-orange)
   },
   eButton: {
-    backgroundColor: "rgb(180, 208, 210)",  // e
+    backgroundColor: "rgb(0, 140, 200)",   // e (blue)
   },
   mButton: {
-    backgroundColor: "rgb(239, 214, 181)",  // m
+    backgroundColor: "rgb(242, 152, 52)",  // m (orange)
   },
 
   error: {
@@ -280,5 +280,6 @@ const styles = {
     marginTop: "10px",
   },
 };
+
 
 export default App;
