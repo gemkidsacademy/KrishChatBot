@@ -2,20 +2,24 @@ import React, { useState, useEffect } from "react";
 import "./AddUserForm.css"; // reuse the same modal styling
 
 function EditUserForm({ onClose, onUserUpdated }) {
-  const [userIds, setUserIds] = useState([]); // list of user IDs
+  const [userIds, setUserIds] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState("");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
-  const [classDay, setClassDay] = useState(""); // new field for class_day
+  const [classDay, setClassDay] = useState("");
+  const [studentId, setStudentId] = useState(""); // <-- NEW FIELD
   const [password, setPassword] = useState("");
 
-  // Fetch user IDs on mount
+  // Fetch user IDs list
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
-        const res = await fetch("https://krishbackend-production-9603.up.railway.app/user_ids");
+        const res = await fetch(
+          "https://krishbackend-production-9603.up.railway.app/user_ids"
+        );
         if (!res.ok) throw new Error("Failed to fetch user IDs");
         const data = await res.json();
         setUserIds(data);
@@ -28,21 +32,26 @@ function EditUserForm({ onClose, onUserUpdated }) {
     fetchUserIds();
   }, []);
 
-  // Fetch user details when a user ID is selected
+  // Fetch user details when a user is selected
   useEffect(() => {
     if (!selectedUserId) return;
 
     const fetchUserDetails = async () => {
       try {
-        const res = await fetch(`https://krishbackend-production-9603.up.railway.app/users/info/${selectedUserId}`);
+        const res = await fetch(
+          `https://krishbackend-production-9603.up.railway.app/users/info/${selectedUserId}`
+        );
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
+
         setName(user.name || "");
         setEmail(user.email || "");
         setPhoneNumber(user.phone_number || "");
         setClassName(user.class_name || "");
-        setClassDay(user.class_day || ""); // <-- added
-        setPassword(""); // leave empty unless admin wants to reset
+        setClassDay(user.class_day || "");
+        setStudentId(user.student_id || ""); // <-- LOAD student_id
+        setPassword(""); // admin can reset if needed
+
       } catch (err) {
         console.error(err);
         alert("Error fetching user details");
@@ -54,6 +63,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!selectedUserId) {
       alert("Please select a user to edit");
       return;
@@ -70,15 +80,19 @@ function EditUserForm({ onClose, onUserUpdated }) {
             email,
             phone_number: phoneNumber,
             class_name: className,
-            class_day: classDay, // <-- added
-            password, // send only if admin wants to update
+            class_day: classDay,
+            student_id: studentId, // <-- SEND updated value
+            password, // only update if non-empty
           }),
         }
       );
 
       if (!res.ok) throw new Error("Failed to update user");
+
       await res.json();
+      alert("User updated successfully");
       onUserUpdated();
+
     } catch (err) {
       console.error(err);
       alert("Error updating user");
@@ -91,7 +105,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
         <h3>Edit User</h3>
 
         <form onSubmit={handleSubmit}>
-          {/* User selection dropdown */}
+          {/* User dropdown */}
           <select
             value={selectedUserId}
             onChange={(e) => setSelectedUserId(e.target.value)}
@@ -112,6 +126,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
             onChange={(e) => setName(e.target.value)}
             required
           />
+
           <input
             type="email"
             placeholder="User email"
@@ -119,24 +134,36 @@ function EditUserForm({ onClose, onUserUpdated }) {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="text"
-            placeholder="Phone number (optional)"
+            placeholder="Phone number"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
+
           <input
             type="text"
-            placeholder="Class name (optional)"
+            placeholder="Class name"
             value={className}
             onChange={(e) => setClassName(e.target.value)}
           />
+
           <input
             type="text"
-            placeholder="Class day (optional)"
+            placeholder="Class day"
             value={classDay}
             onChange={(e) => setClassDay(e.target.value)}
           />
+
+          <input
+            type="text"
+            placeholder="Student ID (e.g. Gem001)"
+            value={studentId}
+            onChange={(e) => setStudentId(e.target.value)}
+            required
+          />
+
           <input
             type="password"
             placeholder="Password (leave blank to keep unchanged)"
