@@ -7,7 +7,7 @@ function ViewUserModal({ onClose }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-         const res = await fetch(
+        const res = await fetch(
           "https://krishbackend-production-9603.up.railway.app/api/users"
         );
 
@@ -50,28 +50,29 @@ function ViewUserModal({ onClose }) {
               style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                minWidth: "800px",
+                minWidth: "900px",
               }}
             >
               <thead style={{ backgroundColor: "#f0f0f0" }}>
                 <tr>
                   <th>ID</th>
+                  <th>Student ID</th> {/* <-- ADDED */}
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Class</th>
-                  {/* Removed Created At */}
                 </tr>
               </thead>
+
               <tbody>
                 {users.map((user) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
+                    <td>{user.student_id || "-"}</td> {/* <-- ADDED */}
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td>{user.phone_number || "-"}</td>
                     <td>{user.class_name || "-"}</td>
-                    {/* Removed Created At */}
                   </tr>
                 ))}
               </tbody>
