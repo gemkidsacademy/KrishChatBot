@@ -6,11 +6,12 @@ function AddUserForm({ onClose, onUserAdded }) {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
-  const [classDay, setClassDay] = useState(""); // New field for class day
+  const [classDay, setClassDay] = useState("");
+  const [studentId, setStudentId] = useState("");      // <-- NEW FIELD
   const [password, setPassword] = useState("");
   const [nextId, setNextId] = useState(null);
 
-  // ----------------- Fetch next user ID on mount -----------------
+  // ----------------- Fetch next user ID -----------------
   useEffect(() => {
     const fetchNextId = async () => {
       try {
@@ -30,12 +31,13 @@ function AddUserForm({ onClose, onUserAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ----------------- Trim fields -----------------
+    // ----------------- Trim values -----------------
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phoneNumber.trim();
     const trimmedClass = className.trim();
     const trimmedClassDay = classDay.trim();
+    const trimmedStudentId = studentId.trim();         // <-- NEW
     const trimmedPassword = password.trim();
 
     // ----------------- Validation -----------------
@@ -45,6 +47,7 @@ function AddUserForm({ onClose, onUserAdded }) {
       !trimmedPhone ||
       !trimmedClass ||
       !trimmedClassDay ||
+      !trimmedStudentId ||                              // <-- NEW
       !trimmedPassword
     ) {
       alert("All fields are required");
@@ -75,11 +78,12 @@ function AddUserForm({ onClose, onUserAdded }) {
       email: trimmedEmail,
       phone_number: trimmedPhone,
       class_name: trimmedClass,
-      class_day: trimmedClassDay, // Include class day
+      class_day: trimmedClassDay,
+      student_id: trimmedStudentId,                    // <-- NEW
       password: trimmedPassword,
     };
 
-    console.log("[DEBUG] Sending payload to backend:", JSON.stringify(payload));
+    console.log("[DEBUG] Sending payload:", JSON.stringify(payload));
 
     try {
       const response = await fetch(
@@ -91,30 +95,32 @@ function AddUserForm({ onClose, onUserAdded }) {
         }
       );
 
-      const responseData = await response.json();
-      console.log("[DEBUG] Add user response:", responseData);
+      const data = await response.json();
+      console.log("[DEBUG] Add user response:", data);
 
       if (!response.ok) {
-        alert(responseData.detail || "Failed to add user");
+        alert(data.detail || "Failed to add user");
         return;
       }
 
       alert("User added successfully");
       onUserAdded();
 
-      // ----------------- Reset form -----------------
+      // Reset form
       setName("");
       setEmail("");
       setPhoneNumber("");
       setClassName("");
       setClassDay("");
+      setStudentId("");                               // <-- RESET
       setPassword("");
 
-      // ----------------- Fetch next ID again -----------------
+      // Fetch next ID again
       const newId = await fetch(
         "https://krishbackend-production-9603.up.railway.app/get_next_user_id"
       ).then((res) => res.json());
       setNextId(newId);
+
     } catch (err) {
       console.error("[ERROR] Failed to add user:", err);
       alert("An unexpected error occurred while adding the user");
@@ -125,6 +131,7 @@ function AddUserForm({ onClose, onUserAdded }) {
     <div className="modal-overlay">
       <div className="modal">
         <h3>Add New User</h3>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -133,6 +140,7 @@ function AddUserForm({ onClose, onUserAdded }) {
             onChange={(e) => setName(e.target.value)}
             required
           />
+
           <input
             type="email"
             placeholder="User email"
@@ -140,6 +148,7 @@ function AddUserForm({ onClose, onUserAdded }) {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="text"
             placeholder="Phone number (e.g. 0412345678)"
@@ -147,6 +156,7 @@ function AddUserForm({ onClose, onUserAdded }) {
             onChange={(e) => setPhoneNumber(e.target.value)}
             required
           />
+
           <input
             type="text"
             placeholder="Class name"
@@ -154,6 +164,7 @@ function AddUserForm({ onClose, onUserAdded }) {
             onChange={(e) => setClassName(e.target.value)}
             required
           />
+
           <input
             type="text"
             placeholder="Class day (e.g. Monday)"
@@ -161,6 +172,15 @@ function AddUserForm({ onClose, onUserAdded }) {
             onChange={(e) => setClassDay(e.target.value)}
             required
           />
+
+          <input
+            type="text"
+            placeholder="Student ID (e.g. Gem001)"
+            value={studentId}
+            onChange={(e) => setStudentId(e.target.value)}
+            required
+          />
+
           <input
             type="password"
             placeholder="Password"
@@ -168,6 +188,7 @@ function AddUserForm({ onClose, onUserAdded }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
           <div className="modal-actions">
             <button type="submit">Add User</button>
             <button type="button" onClick={onClose}>
