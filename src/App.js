@@ -97,73 +97,85 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.loginBox}>
-        <h2>Login with OTP</h2>
+  <div style={{ 
+      ...styles.container,
+      flexDirection: "column" // ensures logo appears above
+  }}>
 
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-          disabled={otpSent}
-        />
+    {/* ⭐ LOGO ABOVE LOGIN CARD ⭐ */}
+    <img
+      src="https://gemkidsacademy.com.au/wp-content/uploads/2024/10/cropped-logo-4-1.png"
+      alt="Gem Kids Academy"
+      style={{ width: "180px", marginBottom: "20px" }}
+    />
 
-        {!otpSent && (
-          <button onClick={generateOtp} style={{ ...styles.button, background: "#28a745" }}>
-            Generate OTP
-          </button>
-        )}
+    <div style={styles.loginBox}>
+      <h2>Login with OTP</h2>
 
-        {otpSent && timer === 0 && (
-          <button onClick={generateOtp} style={{ ...styles.button, background: "#ffc107" }}>
-            Resend OTP
-          </button>
-        )}
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={styles.input}
+        disabled={otpSent}
+      />
 
-        {otpSent && (
-          <>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              style={styles.input}
-            />
-            {timer > 0 && (
-              <p style={{ textAlign: "center" }}>
-                Resend OTP in {Math.floor(timer / 60).toString().padStart(2, "0")}:
-                {(timer % 60).toString().padStart(2, "0")}
-              </p>
-            )}
-          </>
-        )}
-
-        <button
-          onClick={handleLogin}
-          style={{
-            ...styles.button,
-            backgroundColor: "#EC5125",
-            opacity: isDisabled ? 0.5 : 1,
-            cursor: isDisabled ? "not-allowed" : "pointer",
-          }}
-          disabled={isDisabled}
-        >
-          Login
+      {!otpSent && (
+        <button onClick={generateOtp} style={{ ...styles.button, background: "#28a745" }}>
+          Generate OTP
         </button>
+      )}
 
-        <button
-          onClick={() => navigate("/guest-chatbot")}
-          style={{ ...styles.button, backgroundColor: "#007bff", marginTop: "10px" }}
-        >
-          Continue as Guest
+      {otpSent && timer === 0 && (
+        <button onClick={generateOtp} style={{ ...styles.button, background: "#ffc107" }}>
+          Resend OTP
         </button>
+      )}
 
-        {error && <p style={styles.error}>{error}</p>}
-      </div>
+      {otpSent && (
+        <>
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            style={styles.input}
+          />
+          {timer > 0 && (
+            <p style={{ textAlign: "center" }}>
+              Resend OTP in {Math.floor(timer / 60).toString().padStart(2, "0")}:
+              {(timer % 60).toString().padStart(2, "0")}
+            </p>
+          )}
+        </>
+      )}
+
+      <button
+        onClick={handleLogin}
+        style={{
+          ...styles.button,
+          backgroundColor: "#EC5125",
+          opacity: isDisabled ? 0.5 : 1,
+          cursor: isDisabled ? "not-allowed" : "pointer",
+        }}
+        disabled={isDisabled}
+      >
+        Login
+      </button>
+
+      <button
+        onClick={() => navigate("/guest-chatbot")}
+        style={{ ...styles.button, backgroundColor: "#007bff", marginTop: "10px" }}
+      >
+        Continue as Guest
+      </button>
+
+      {error && <p style={styles.error}>{error}</p>}
     </div>
-  );
+  </div>
+);
+
 }
 
 // ----------------- Private Route -----------------
