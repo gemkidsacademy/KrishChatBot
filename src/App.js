@@ -122,7 +122,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       />
 
       {!otpSent && (
-        <button onClick={generateOtp} style={{ ...styles.button, background: "#28a745" }}>
+        <button onClick={generateOtp} style={{ ...styles.button, ...styles.gButton }}>
           Generate OTP
         </button>
       )}
@@ -155,10 +155,11 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
         onClick={handleLogin}
         style={{
           ...styles.button,
-          backgroundColor: "#EC5125",
+          ...styles.eButton,
           opacity: isDisabled ? 0.5 : 1,
           cursor: isDisabled ? "not-allowed" : "pointer",
         }}
+
         disabled={isDisabled}
       >
         Login
@@ -166,7 +167,12 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
       <button
         onClick={() => navigate("/guest-chatbot")}
-        style={{ ...styles.button, backgroundColor: "#007bff", marginTop: "10px" }}
+        style={{
+          ...styles.button,
+          ...styles.mButton,
+          marginTop: "10px",
+        }}
+
       >
         Continue as Guest
       </button>
