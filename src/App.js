@@ -70,7 +70,9 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   };
 
   // ---------- Handle OTP Login ----------
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
     if (!otpSent) return setError("Generate OTP first");
     if (!otp.trim()) return setError("Enter OTP");
 
@@ -109,7 +111,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       style={{ width: "180px", marginBottom: "20px" }}
     />
 
-    <div style={styles.loginBox}>
+    <form style={styles.loginBox} onSubmit={handleLogin}>
       <h2>Login with OTP</h2>
 
       <input
@@ -122,15 +124,24 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       />
 
       {!otpSent && (
-        <button onClick={generateOtp} style={{ ...styles.button, ...styles.gButton }}>
+        <button
+          type="button"
+          onClick={generateOtp}
+          style={{ ...styles.button, ...styles.gButton }}
+        >
           Generate OTP
         </button>
       )}
 
       {otpSent && timer === 0 && (
-        <button onClick={generateOtp} style={{ ...styles.button, background: "#ffc107" }}>
+        <button
+          type="button"
+          onClick={generateOtp}
+          style={{ ...styles.button, background: "#ffc107" }}
+        >
           Resend OTP
         </button>
+
       )}
 
       {otpSent && (
@@ -152,33 +163,33 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       )}
 
       <button
-        onClick={handleLogin}
+        type="submit"
+        disabled={isDisabled}
         style={{
           ...styles.button,
           ...styles.eButton,
           opacity: isDisabled ? 0.5 : 1,
           cursor: isDisabled ? "not-allowed" : "pointer",
         }}
-
-        disabled={isDisabled}
       >
         Login
       </button>
 
+
       <button
+        type="button"
         onClick={() => navigate("/guest-chatbot")}
         style={{
           ...styles.button,
           ...styles.mButton,
           marginTop: "10px",
         }}
-
       >
         Continue as Guest
       </button>
 
       {error && <p style={styles.error}>{error}</p>}
-    </div>
+    </form>
   </div>
 );
 
