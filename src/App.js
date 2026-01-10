@@ -173,12 +173,9 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
       <button
         type="submit"
-        disabled={isDisabled}
         style={{
           ...styles.button,
           ...styles.eButton,
-          opacity: isDisabled ? 0.5 : 1,
-          cursor: isDisabled ? "not-allowed" : "pointer",
         }}
       >
         Login
@@ -194,7 +191,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
           marginTop: "10px",
         }}
       >
-        Continue as Guest
+        Continue As Guest
       </button>
 
       {error && <p style={styles.error}>{error}</p>}
