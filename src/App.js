@@ -73,30 +73,39 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const handleLogin = async (e) => {
   e.preventDefault();
 
-    if (!otpSent) return setError("Generate OTP first");
-    if (!otp.trim()) return setError("Enter OTP");
+  if (!otpSent) {
+    generateOtp(); // 👈 Enter triggers OTP generation
+    return;
+  }
 
-    try {
-      const res = await fetch(`${server}/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), otp: otp.trim() }),
-      });
-      const data = await res.json();
-      if (res.ok && data.user?.name) {
-        setDoctorData(data.user);
-        setIsLoggedIn(true);
-        setSessionToken(null);
+  if (!otp.trim()) {
+    setError("Enter OTP");
+    return;
+  }
 
-        if (data.user.name === "Admin") navigate("/AdminPanel");
-        else navigate("/ChatBot");
-      } else {
-        setError(data.detail || "Invalid OTP or missing user data");
-      }
-    } catch (err) {
-      setError("Login failed. Try again.");
+  try {
+    const res = await fetch(`${server}/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim(), otp: otp.trim() }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.user?.name) {
+      setDoctorData(data.user);
+      setIsLoggedIn(true);
+      setSessionToken(null);
+
+      if (data.user.name === "Admin") navigate("/AdminPanel");
+      else navigate("/ChatBot");
+    } else {
+      setError(data.detail || "Invalid OTP or missing user data");
     }
-  };
+  } catch (err) {
+    setError("Login failed. Try again.");
+  }
+};
 
   return (
   <div style={{ 
