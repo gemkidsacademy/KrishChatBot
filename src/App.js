@@ -28,8 +28,10 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [isDisabled, setIsDisabled] = useState(true);
 
   const navigate = useNavigate();
-  const server = "https://krishbackend-production-9603.up.railway.app";
-
+  const server =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:8000"
+      : "https://krishbackend-production-9603.up.railway.app";
   // ---------- OTP Timer ----------
   useEffect(() => {
     let interval = null;

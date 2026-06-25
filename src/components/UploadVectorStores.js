@@ -2,13 +2,17 @@ import React, { useState } from "react";
 
 const UploadVectorStores = () => {
   const [message, setMessage] = useState("");
+  const server =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : "https://krishbackend-production-9603.up.railway.app";
 
   // Step 1: Process Vector Stores
   const handleProcessVectorStores = async () => {
     setMessage("Processing vector stores...");
     try {
       const response = await fetch(
-        "https://krishbackend-production-9603.up.railway.app/admin/create_vectorstores",
+        `${server}/admin/create_vectorstores`,
         { method: "POST" }
       );
       const data = await response.json();
@@ -29,7 +33,7 @@ const UploadVectorStores = () => {
     setMessage("Uploading embeddings to Railway DB...");
     try {
       const response = await fetch(
-        "https://krishbackend-production-9603.up.railway.app/admin/upload_embeddings_to_db",
+        `${server}/admin/upload_embeddings_to_db`,
         { method: "POST" }
       );
       const data = await response.json();
@@ -50,7 +54,7 @@ const UploadVectorStores = () => {
     setMessage("Initializing Faiss memory...");
     try {
       const response = await fetch(
-        "https://krishbackend-production-9603.up.railway.app/admin/initialize_faiss",
+        `${server}/admin/initialize_faiss`,
         { method: "POST" }
       );
       const data = await response.json();

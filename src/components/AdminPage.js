@@ -15,6 +15,10 @@ import UploadVectorStores from "./UploadVectorStores";
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("database");
   const navigate = useNavigate();
+  const server =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : "https://krishbackend-production-9603.up.railway.app";
 
   // Modals
   const [showAddUser, setShowAddUser] = useState(false);
@@ -38,7 +42,7 @@ const AdminPanel = () => {
     setIsResetting(true);
 
     const response = await fetch(
-      "https://krishbackend-production-9603.up.railway.app/reset-students",
+      `${server}/reset-students`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
