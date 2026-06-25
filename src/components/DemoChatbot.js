@@ -9,6 +9,10 @@ export default function DemoChatbot({ doctorData }) {
   const [isWaiting, setIsWaiting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(3600); // adjust as needed
   const chatEndRef = useRef(null);
+  const server =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : "https://krishbackend-production-9603.up.railway.app";
 
   // ------------------ Auto-scroll ------------------
   useEffect(() => {
@@ -97,29 +101,41 @@ export default function DemoChatbot({ doctorData }) {
     setIsWaiting(true);
 
     try {
-      const url = `https://krishbackend-production-9603.up.railway.app/search?query=${encodeURIComponent(
+      const url = `${server}/search?query=${encodeURIComponent(
         userInput
-      )}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(
+      )}&reasoning=${encodeURIComponent(
+        reasoningLevel
+      )}&user_id=${encodeURIComponent(
         doctorData.name
-      )}&class_name=${encodeURIComponent(doctorData.class_name)}`;
+      )}&class_name=${encodeURIComponent(
+        doctorData.class_name
+      )}`;
 
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`Backend returned status ${response.status}`);
+
+      if (!response.ok) {
+        throw new Error(`Backend returned status ${response.status}`);
+      }
+
       const data = await response.json();
 
-      const processedMessages = data.map(item => ({
+      const processedMessages = data.map((item) => ({
         sender: "bot",
         text: item.snippet,
         name: item.name,
-        links: Array.isArray(item.links) ? item.links : []
+        links: Array.isArray(item.links) ? item.links : [],
       }));
 
-      setMessages(prev => [...prev, ...processedMessages]);
+      setMessages((prev) => [...prev, ...processedMessages]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "Sorry, something went wrong while fetching results.", links: [] }
+        {
+          sender: "bot",
+          text: "Sorry, something went wrong while fetching results.",
+          links: [],
+        },
       ]);
     } finally {
       setIsWaiting(false);

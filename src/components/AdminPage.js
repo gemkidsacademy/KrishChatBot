@@ -38,27 +38,33 @@ const AdminPanel = () => {
 
   // --- Reset Students backend call ---
   const handleResetStudents = async () => {
-  try {
-    setIsResetting(true);
-
-    const response = await fetch(
-      `${server}/reset-students`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      }
+    const confirmed = window.confirm(
+      "Are you sure you want to reset all students?\n\nThis action cannot be undone."
     );
 
-    if (!response.ok) throw new Error("Failed to reset students");
+    if (!confirmed) return;
 
-    alert("All students have been reset successfully!");
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Something went wrong while resetting students.");
-  } finally {
-    setIsResetting(false);
-  }
-};
+    try {
+      setIsResetting(true);
+
+      const response = await fetch(
+        `${server}/reset-students`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to reset students");
+
+      alert("All students have been reset successfully!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong while resetting students.");
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   // Modal callbacks
   const handleUserAdded = () => {
@@ -147,13 +153,21 @@ const AdminPanel = () => {
 
             {/* ---- NEW RESET STUDENTS BUTTON ---- */}
             <div>
-              <button
-                className="dashboard-button"
-                onClick={handleResetStudents}
-                disabled={isResetting}
-              >
-                {isResetting ? "Resetting..." : "Reset Students"}
-              </button>
+              <div>
+                <button
+                  className="dashboard-button"
+                  onClick={handleResetStudents}
+                  disabled={isResetting}
+                  style={{
+                    backgroundColor: "#dc3545",
+                    color: "#fff",
+                    opacity: isResetting ? 0.6 : 1,
+                    cursor: isResetting ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isResetting ? "Resetting..." : "Reset Students"}
+                </button>
+              </div>
             </div>
           </div>
         )}

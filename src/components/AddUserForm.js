@@ -9,6 +9,7 @@ function AddUserForm({ onClose, onUserAdded }) {
   const [classDay, setClassDay] = useState("");
   const [studentId, setStudentId] = useState("");      // <-- NEW FIELD
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [nextId, setNextId] = useState(null);
   const API_BASE =
   window.location.hostname === "localhost"
@@ -33,6 +34,10 @@ function AddUserForm({ onClose, onUserAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+      setIsSubmitting(true);
+    
+
     // ----------------- Trim values -----------------
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
@@ -53,23 +58,28 @@ function AddUserForm({ onClose, onUserAdded }) {
       !trimmedPassword
     ) {
       alert("All fields are required");
+      setIsSubmitting(false);
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
       alert("Please enter a valid email address");
+      setIsSubmitting(false);
+      
       return;
     }
 
     const phoneRegex = /^04\d{8}$/;
     if (!phoneRegex.test(trimmedPhone)) {
       alert("Please enter a valid Australian phone number (e.g. 0412345678)");
+      setIsSubmitting(false);
       return;
     }
 
     if (!nextId) {
       alert("Next user ID not ready. Please try again.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -102,6 +112,7 @@ function AddUserForm({ onClose, onUserAdded }) {
 
       if (!response.ok) {
         alert(data.detail || "Failed to add user");
+        setIsSubmitting(false);
         return;
       }
 
@@ -126,6 +137,7 @@ function AddUserForm({ onClose, onUserAdded }) {
     } catch (err) {
       console.error("[ERROR] Failed to add user:", err);
       alert("An unexpected error occurred while adding the user");
+      setIsSubmitting(false);
     }
   };
 
@@ -192,7 +204,17 @@ function AddUserForm({ onClose, onUserAdded }) {
           />
 
           <div className="modal-actions">
-            <button type="submit">Add User</button>
+            <button
+              type="submit"
+              className="dashboard-button"
+              disabled={isSubmitting}
+              style={{
+                opacity: isSubmitting ? 0.5 : 1,
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+              }}
+            >
+              {isSubmitting ? "Adding User..." : "Add User"}
+            </button>
             <button type="button" onClick={onClose}>
               Cancel
             </button>

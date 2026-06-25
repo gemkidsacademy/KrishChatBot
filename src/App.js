@@ -26,6 +26,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [timer, setTimer] = useState(0); // seconds left
   const [error, setError] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const navigate = useNavigate();
   const server =
@@ -73,6 +74,8 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
   // ---------- Handle OTP Login ----------
   const handleLogin = async (e) => {
+    if (isLoggingIn) return;
+      setIsLoggingIn(true);
   e.preventDefault();
 
   if (!otpSent) {
@@ -103,9 +106,11 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       else navigate("/ChatBot");
     } else {
       setError(data.detail || "Invalid OTP or missing user data");
+      setIsLoggingIn(false);
     }
   } catch (err) {
     setError("Login failed. Try again.");
+    setIsLoggingIn(false);
   }
 };
 
@@ -175,12 +180,15 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
       <button
         type="submit"
+        disabled={otp.trim().length !== 6 || isLoggingIn}
         style={{
           ...styles.button,
           ...styles.eButton,
+          opacity: otp.trim().length === 6 && !isLoggingIn ? 1 : 0.5,
+          cursor: otp.trim().length === 6 && !isLoggingIn ? "pointer" : "not-allowed",
         }}
       >
-        Login
+        {isLoggingIn ? "Logging in..." : "Login"}
       </button>
 
 
