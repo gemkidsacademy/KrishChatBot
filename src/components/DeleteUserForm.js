@@ -8,13 +8,17 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [className, setClassName] = useState("");
+  const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8000"
+    : "https://web-production-481a5.up.railway.app";
 
   // Fetch user IDs on mount
   useEffect(() => {
     const fetchUserIds = async () => {
       try {
         const res = await fetch(
-          "https://krishbackend-production-9603.up.railway.app/user_ids"
+          `${API_BASE}/user_ids`
         );
         if (!res.ok) throw new Error("Failed to fetch user IDs");
         const data = await res.json();
@@ -35,7 +39,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
     const fetchUserDetails = async () => {
       try {
         const res = await fetch(
-          `https://krishbackend-production-9603.up.railway.app/users/info/${selectedUserId}`
+          `${API_BASE}/users/info/${selectedUserId}`
         );
         if (!res.ok) throw new Error("Failed to fetch user details");
         const user = await res.json();
@@ -62,7 +66,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
 
     try {
       const res = await fetch(
-        `https://krishbackend-production-9603.up.railway.app/delete-user/${selectedUserId}`,
+        `${API_BASE}/delete-user/${selectedUserId}`,
         {
           method: "DELETE",
         }
@@ -98,7 +102,7 @@ function DeleteUserForm({ onClose, onUserUpdated }) {
             <option value="">Select a user</option>
             {userIds.map((u) => (
               <option key={u.id} value={u.id}>
-                User ID: {u.id}
+                {u.name}
               </option>
             ))}
           </select>

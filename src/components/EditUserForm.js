@@ -14,7 +14,7 @@ function EditUserForm({ onClose, onUserUpdated }) {
   const [password, setPassword] = useState("");
   const API_BASE =
   window.location.hostname === "localhost"
-    ? "http://localhost:8001"
+    ? "http://localhost:8000"
     : "https://web-production-481a5.up.railway.app";
 
   // Fetch user IDs list

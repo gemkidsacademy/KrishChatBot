@@ -6,11 +6,15 @@ const EditDoctor = () => {
     const [doctorData, setDoctorData] = useState(null);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
+    const server =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:8000"
+      : "https://krishbackend-production-9603.up.railway.app";
 
     // Fetch Doctor Details
     const fetchDoctor = async () => {
         try {
-            const response = await axios.get(`https://web-production-e5ae.up.railway.app/doctors/${doctorId}`);
+            const response = await axios.get(`${server}/doctors/${doctorId}`);
             setDoctorData(response.data);
             setError("");
         } catch (err) {
@@ -29,7 +33,7 @@ const EditDoctor = () => {
         if (!doctorData) return;
 
         try {
-            const response = await axios.put(`https://web-production-e5ae.up.railway.app/edit_doctor/${doctorId}`, doctorData);
+            const response = await axios.put(`${server}/edit_doctor/${doctorId}`, doctorData);
             setMessage(response.data.message);
             setError("");
             setDoctorId("")

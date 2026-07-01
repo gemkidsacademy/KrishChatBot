@@ -189,3 +189,9 @@
   text-align: center;
   color: #333;
 }
+.set-term-panel {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+}

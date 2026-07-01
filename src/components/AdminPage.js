@@ -11,9 +11,10 @@ import DeleteUserForm from "./DeleteUserForm";
 import UsageDashboard from "./UsageDashboard";
 import AddUsersBulkForm from "./AddUsersBulkForm";
 import UploadVectorStores from "./UploadVectorStores";
+import SetTerm from "./SetTerm";
 
 const AdminPanel = () => {
-  const [activeTab, setActiveTab] = useState("database");
+  const [activeTab, setActiveTab] = useState("set_term");
   const navigate = useNavigate();
   const server =
   process.env.NODE_ENV === "development"
@@ -29,11 +30,12 @@ const AdminPanel = () => {
   const [isResetting, setIsResetting] = useState(false);
 
   const tabs = [
-    { id: "database", label: "Chatbot User Management" },
-    { id: "AI_tutor", label: "Add PDF for AI Tutor" },
-    { id: "openai", label: "View OpenAI Usage" },
-    { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
+    { id: "set_term", label: "Set Term" },
+    
     { id: "upload_vector_stores", label: "Upload Vector Stores" },
+    { id: "openai", label: "View OpenAI Usage (not functional)" },
+    { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
+    
   ];
 
   // --- Reset Students backend call ---
@@ -105,79 +107,14 @@ const AdminPanel = () => {
 
       {/* -------------------- Tab Content Wrapper (fixed) -------------------- */}
       <div className="tab-content">
-        {/* --- DATABASE TAB --- */}
-        {activeTab === "database" && (
-          <div className="tab-panel">
-            <div>
-              <button className="dashboard-button" onClick={() => setShowAddUsersBulk(true)}>
-                Add Users in Bulk
-              </button>
-              {showAddUsersBulk && (
-                <AddUsersBulkForm onClose={() => setShowAddUsersBulk(false)} onUsersAdded={handleUsersAdded} />
-              )}
-            </div>
+        
 
-            <div>
-              <button className="dashboard-button" onClick={() => setShowAddUser(true)}>
-                Add User
-              </button>
-              {showAddUser && (
-                <AddUserForm onClose={() => setShowAddUser(false)} onUserAdded={handleUserAdded} />
-              )}
-            </div>
-
-            <div>
-              <button className="dashboard-button" onClick={() => setShowEditUser(true)}>
-                Edit User
-              </button>
-              {showEditUser && (
-                <EditUserForm onClose={() => setShowEditUser(false)} onUserUpdated={handleUserUpdated} />
-              )}
-            </div>
-
-            <div>
-              <button className="dashboard-button" onClick={() => setShowViewUser(true)}>
-                View User
-              </button>
-              {showViewUser && <ViewUserModal onClose={() => setShowViewUser(false)} />}
-            </div>
-
-            <div>
-              <button className="dashboard-button" onClick={() => setShowDeleteUser(true)}>
-                Delete User
-              </button>
-              {showDeleteUser && (
-                <DeleteUserForm onClose={() => setShowDeleteUser(false)} onUserDeleted={handleUserDeleted} />
-              )}
-            </div>
-
-            {/* ---- NEW RESET STUDENTS BUTTON ---- */}
-            <div>
-              <div>
-                <button
-                  className="dashboard-button"
-                  onClick={handleResetStudents}
-                  disabled={isResetting}
-                  style={{
-                    backgroundColor: "#dc3545",
-                    color: "#fff",
-                    opacity: isResetting ? 0.6 : 1,
-                    cursor: isResetting ? "not-allowed" : "pointer",
-                  }}
-                >
-                  {isResetting ? "Resetting..." : "Reset Students"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- AI TUTOR PDF UPLOAD --- */}
-        {activeTab === "AI_tutor" && (
-          <div className="tab-panel">
-            <PdfUploader />
-          </div>
-        )}
+        {/* --- SET TERM --- */}
+        {activeTab === "set_term" && (
+        <div className="set-term-panel">
+          <SetTerm />
+        </div>
+      )}
 
         {/* --- GENERIC CHATBOT SETTINGS --- */}
         {activeTab === "Generic_chatbot" && (

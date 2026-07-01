@@ -8,11 +8,13 @@ import {
 } from "react-router-dom";
 
 // --- Components ---
+
 import AdminPanel from "./components/AdminPage";
-import AddDoctor from "./components/AddDoctorPage";
-import EditDoctor from "./components/EditDoctorPage";
-import ViewDoctors from "./components/ViewDoctors";
-import DeleteDoctor from "./components/DeleteDoctor";
+
+//import AddDoctor from "./components/AddDoctorPage";
+//import EditDoctor from "./components/EditDoctorPage";
+//import ViewDoctors from "./components/ViewDoctors";
+//import DeleteDoctor from "./components/DeleteDoctor";
 import DemoChatbot from "./components/DemoChatbot";
 import UsageDashboard from "./components/UsageDashboard";
 import ChatbotSettings from "./components/ChatbotSettings";
@@ -27,6 +29,12 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [error, setError] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+
+  // NEW
+  const [loginMethod, setLoginMethod] = useState("otp");
+  const [studentId, setStudentId] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
   const server =
@@ -43,7 +51,60 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     }
     return () => clearInterval(interval);
   }, [otpSent, timer]);
+  const handleIdLogin = async () => {
+  if (isLoggingIn) return;
 
+  if (!studentId.trim()) {
+    setError("Enter Student ID");
+    return;
+  }
+
+  if (!password.trim()) {
+    setError("Enter Password");
+    return;
+  }
+
+  setIsLoggingIn(true);
+  setError(null);
+
+  try {
+    const res = await fetch(`${server}/login-GemKidsAcademyChatbot`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: studentId.trim(),
+        password: password.trim(),
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.detail || "Login failed");
+      setIsLoggingIn(false);
+      return;
+    }
+
+    setDoctorData(data.user);
+    setIsLoggedIn(true);
+    setSessionToken(null);
+
+    const role = (data.user.role || "").toUpperCase();
+
+    if (role.includes("ADMIN")) {
+      navigate("/AdminPanel");
+    } else {
+      navigate("/ChatBot");
+    }
+
+  } catch (err) {
+    console.error(err);
+    setError("Login failed");
+    setIsLoggingIn(false);
+  }
+};
   // ---------- Generate OTP ----------
   const generateOtp = async () => {
     if (!email.trim()) return setError("Enter email");
@@ -74,41 +135,65 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
   // ---------- Handle OTP Login ----------
   const handleLogin = async (e) => {
-    if (isLoggingIn) return;
-      setIsLoggingIn(true);
   e.preventDefault();
 
+  if (isLoggingIn) return;
+  setIsLoggingIn(true);
+  setError(null);
+
   if (!otpSent) {
-    generateOtp(); // 👈 Enter triggers OTP generation
+    await generateOtp();
+    setIsLoggingIn(false);
     return;
   }
 
   if (!otp.trim()) {
     setError("Enter OTP");
+    setIsLoggingIn(false);
     return;
   }
 
   try {
     const res = await fetch(`${server}/verify-otp`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.trim(), otp: otp.trim() }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+        otp: otp.trim(),
+      }),
     });
 
     const data = await res.json();
 
-    if (res.ok && data.user?.name) {
-      setDoctorData(data.user);
-      setIsLoggedIn(true);
-      setSessionToken(null);
-
-      if (data.user.name === "Admin") navigate("/AdminPanel");
-      else navigate("/ChatBot");
-    } else {
-      setError(data.detail || "Invalid OTP or missing user data");
+    if (!res.ok) {
+      setError(data.detail || "Invalid OTP");
       setIsLoggingIn(false);
+      return;
     }
+
+    if (!data.user) {
+      setError("Missing user data");
+      setIsLoggingIn(false);
+      return;
+    }
+
+    setDoctorData(data.user);
+    setIsLoggedIn(true);
+    setSessionToken(null);
+
+    // Check whether the user is an admin
+    const role = (data.user.role || "").toUpperCase();
+
+    if (role.includes("ADMIN")) {
+      navigate("/AdminPanel");
+    } else {
+      navigate("/ChatBot");
+    }
+
   } catch (err) {
+    console.error(err);
     setError("Login failed. Try again.");
     setIsLoggingIn(false);
   }
@@ -127,69 +212,147 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       style={{ width: "180px", marginBottom: "20px" }}
     />
 
-    <form style={styles.loginBox} onSubmit={handleLogin}>
-      <h2>Login with OTP</h2>
+    <form
+      style={styles.loginBox}
+      onSubmit={loginMethod === "otp" ? handleLogin : (e) => e.preventDefault()}
+    >
 
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={styles.input}
-        disabled={otpSent}
-      />
-
-      {!otpSent && (
+      <div style={styles.tabContainer}>
         <button
           type="button"
-          onClick={generateOtp}
-          style={{ ...styles.button, ...styles.gButton }}
+          onClick={() => setLoginMethod("otp")}
+          style={{
+            ...styles.tab,
+            ...(loginMethod === "otp" ? styles.activeTab : {})
+          }}
         >
-          Generate OTP
+          OTP Login
         </button>
-      )}
 
-      {otpSent && timer === 0 && (
         <button
           type="button"
-          onClick={generateOtp}
-          style={{ ...styles.button, background: "#ffc107" }}
+          disabled={isLoggingIn}
+          onClick={() => setLoginMethod("id")}
+          style={{
+            ...styles.tab,
+            ...(loginMethod === "id" ? styles.activeTab : {})
+          }}
         >
-          Resend OTP
+          ID Login
         </button>
+      </div>
 
-      )}
+      <h2>
+        {loginMethod === "otp"
+          ? "Login with OTP"
+          : "Login with  ID"}
+      </h2>
 
-      {otpSent && (
-        <>
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            style={styles.input}
-          />
-          {timer > 0 && (
-            <p style={{ textAlign: "center" }}>
-              Resend OTP in {Math.floor(timer / 60).toString().padStart(2, "0")}:
-              {(timer % 60).toString().padStart(2, "0")}
-            </p>
-          )}
-        </>
-      )}
+      {loginMethod === "otp" && (
+  <>
+    <input
+      type="email"
+      placeholder="Email Address"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      style={styles.input}
+      disabled={otpSent}
+    />
 
+    {!otpSent && (
       <button
-        type="submit"
-        disabled={otp.trim().length !== 6 || isLoggingIn}
-        style={{
-          ...styles.button,
-          ...styles.eButton,
-          opacity: otp.trim().length === 6 && !isLoggingIn ? 1 : 0.5,
-          cursor: otp.trim().length === 6 && !isLoggingIn ? "pointer" : "not-allowed",
-        }}
+        type="button"
+        onClick={generateOtp}
+        style={{ ...styles.button, ...styles.gButton }}
       >
-        {isLoggingIn ? "Logging in..." : "Login"}
+        Generate OTP
       </button>
+    )}
+
+    {otpSent && timer === 0 && (
+      <button
+        type="button"
+        onClick={generateOtp}
+        style={{ ...styles.button, background: "#ffc107" }}
+      >
+        Resend OTP
+      </button>
+    )}
+
+    {otpSent && (
+      <>
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          style={styles.input}
+        />
+
+        {timer > 0 && (
+          <p style={{ textAlign: "center" }}>
+            Resend OTP in{" "}
+            {Math.floor(timer / 60)
+              .toString()
+              .padStart(2, "0")}
+            :
+            {(timer % 60)
+              .toString()
+              .padStart(2, "0")}
+          </p>
+        )}
+      </>
+    )}
+  </>
+)}
+{loginMethod === "id" && (
+  <>
+    <input
+      type="text"
+      placeholder="Student ID"
+      value={studentId}
+      onChange={(e) => setStudentId(e.target.value)}
+      style={styles.input}
+    />
+
+    <input
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      style={styles.input}
+    />
+
+    <button
+      type="button"
+      style={{ ...styles.button, ...styles.eButton }}
+      onClick={handleIdLogin}
+    >
+      {isLoggingIn ? "Logging in..." : "Login"}
+    </button>
+  </>
+)}
+
+      
+      {loginMethod === "otp" && (
+  <button
+    type="submit"
+    disabled={otp.trim().length !== 6 || isLoggingIn}
+    style={{
+      ...styles.button,
+      ...styles.eButton,
+      opacity:
+        otp.trim().length === 6 && !isLoggingIn ? 1 : 0.5,
+      cursor:
+        otp.trim().length === 6 && !isLoggingIn
+          ? "pointer"
+          : "not-allowed",
+    }}
+  >
+    {isLoggingIn ? "Logging in..." : "Login"}
+  </button>
+)}
+      
 
 
       <button
@@ -203,6 +366,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       >
         Continue As Guest
       </button>
+    
 
       {error && <p style={styles.error}>{error}</p>}
     </form>
@@ -236,11 +400,13 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/AdminPanel" element={<PrivateRoute isLoggedIn={isLoggedIn}><AdminPanel /></PrivateRoute>} />
+
+        {/*
         <Route path="/add-doctor" element={<PrivateRoute isLoggedIn={isLoggedIn}><AddDoctor /></PrivateRoute>} />
         <Route path="/edit-doctor" element={<PrivateRoute isLoggedIn={isLoggedIn}><EditDoctor /></PrivateRoute>} />
         <Route path="/view-doctors" element={<PrivateRoute isLoggedIn={isLoggedIn}><ViewDoctors /></PrivateRoute>} />
         <Route path="/delete-doctor" element={<PrivateRoute isLoggedIn={isLoggedIn}><DeleteDoctor /></PrivateRoute>} />
-
+        */}
         {/* Chatbot Routes */}
         <Route path="/ChatBot" element={<DemoChatbot doctorData={doctorData} />} />
         <Route path="/usage-dashboard" element={<PrivateRoute isLoggedIn={isLoggedIn}><UsageDashboard /></PrivateRoute>} />
@@ -300,6 +466,25 @@ const styles = {
   },
   mButton: {
     backgroundColor: "rgb(242, 152, 52)",  // m (orange)
+  },
+
+  tabContainer: {
+    display: "flex",
+    marginBottom: "20px",
+  },
+
+  tab: {
+    flex: 1,
+    padding: "12px",
+    cursor: "pointer",
+    border: "1px solid #ddd",
+    background: "#f5f5f5",
+    fontWeight: "bold",
+  },
+
+  activeTab: {
+    background: "rgb(0,140,200)",
+    color: "#fff",
   },
 
   error: {
