@@ -51,24 +51,35 @@ const UploadVectorStores = () => {
 
   // Step 3: Initialize Faiss Memory
   const handleInitializeFaiss = async () => {
-    setMessage("Initializing Faiss memory...");
-    try {
-      const response = await fetch(
-        `${server}/admin/initialize_faiss`,
-        { method: "POST" }
-      );
-      const data = await response.json();
+  console.log("Initialize button clicked");
+  setMessage("Initializing Faiss memory...");
 
-      if (response.ok) {
-        setMessage(data.message || "✅ Faiss memory initialized successfully!");
-      } else {
-        setMessage(data.message || "❌ Initialization failed. Please try again.");
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage("⚠️ An error occurred during Faiss memory initialization.");
+  try {
+    const url = `${server}/admin/initialize_faiss`;
+    console.log("Calling:", url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("Response object:", response);
+
+    const data = await response.json();
+    console.log("Response data:", data);
+
+    if (response.ok) {
+      setMessage(data.message || "✅ Faiss memory initialized successfully!");
+    } else {
+      setMessage(data.message || "❌ Initialization failed. Please try again.");
     }
-  };
+  } catch (error) {
+    console.error("initialize_faiss error:", error);
+    setMessage(`⚠️ ${error.message}`);
+  }
+};
 
   return (
     <div className="space-y-4 max-w-sm">
