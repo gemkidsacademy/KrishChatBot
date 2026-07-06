@@ -22,6 +22,7 @@ export default function StudentPdfViewer() {
       : "https://krishbackend-production-9603.up.railway.app";
 
   const [currentPage, setCurrentPage] = useState(initialPage);
+  const [hasSearched, setHasSearched] = useState(false);
   const [totalPages, setTotalPages] = useState(null);
   const [pageInput, setPageInput] = useState(String(initialPage));
 
@@ -94,6 +95,7 @@ export default function StudentPdfViewer() {
   const q = searchTerm.trim();
   if (!q) return;
 
+  setHasSearched(true);
   setIsSearching(true);
   setSearchError("");
   setSearchResults([]);
@@ -196,9 +198,11 @@ const goToNextSearchResult = () => {
   style={{
     display: "flex",
     alignItems: "center",
-    gap: "12px",
-    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: "16px",
+    flexWrap: "nowrap",
     marginBottom: "16px",
+    width: "100%",
   }}
 >
   <button
@@ -238,14 +242,15 @@ const goToNextSearchResult = () => {
   </button>
 
   <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      marginLeft: "auto",
-      flexWrap: "wrap",
-    }}
-  >
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    marginLeft: "auto",
+    flexWrap: "nowrap",
+    whiteSpace: "nowrap",
+  }}
+>
     <label htmlFor="pageInput">
       <b>Go to page:</b>
     </label>
@@ -313,8 +318,13 @@ const goToNextSearchResult = () => {
     >
       {isSearching ? "Searching..." : "Search"}
     </button>
+    
 
-    {currentSearchResult && (
+
+    
+  </div>
+</div>
+{currentSearchResult && (
   <div
     style={{
       marginBottom: "16px",
@@ -405,8 +415,6 @@ const goToNextSearchResult = () => {
     </div>
   </div>
 )}
-  </div>
-</div>
 {searchError && (
   <div style={{ color: "#dc2626", marginBottom: "12px" }}>
     {searchError}
@@ -415,8 +423,8 @@ const goToNextSearchResult = () => {
 
 
 
-{searchResults.length === 0 &&
-  searchTerm.trim() &&
+{hasSearched &&
+  searchResults.length === 0 &&
   !isSearching &&
   !searchError && (
     <div style={{ color: "#6b7280", marginBottom: "16px" }}>
