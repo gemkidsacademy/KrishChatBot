@@ -12,6 +12,7 @@ import UsageDashboard from "./UsageDashboard";
 import AddUsersBulkForm from "./AddUsersBulkForm";
 import UploadVectorStores from "./UploadVectorStores";
 import SetTerm from "./SetTerm";
+import ChatbotLoginSettings from "./ChatbotLoginSettings";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("set_term");
@@ -30,13 +31,12 @@ const AdminPanel = () => {
   const [isResetting, setIsResetting] = useState(false);
 
   const tabs = [
-    { id: "set_term", label: "Set Term" },
-    
-    { id: "upload_vector_stores", label: "Upload Vector Stores" },
-    { id: "openai", label: "View OpenAI Usage (not functional)" },
-    { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
-    
-  ];
+  { id: "set_term", label: "Set Term" },
+  { id: "chatbot_login_settings", label: "Chatbot Login Settings" },
+  { id: "upload_vector_stores", label: "Upload Vector Stores" },
+  { id: "openai", label: "View OpenAI Usage (not functional)" },
+  { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
+];
 
   // --- Reset Students backend call ---
   const handleResetStudents = async () => {
@@ -113,6 +113,11 @@ const AdminPanel = () => {
         {activeTab === "set_term" && (
         <div className="set-term-panel">
           <SetTerm />
+        </div>
+      )}
+      {activeTab === "chatbot_login_settings" && (
+        <div className="tab-panel" style={{ height: "100vh", overflowY: "auto" }}>
+          <ChatbotLoginSettings />
         </div>
       )}
 

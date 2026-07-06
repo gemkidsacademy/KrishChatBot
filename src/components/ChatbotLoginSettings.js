@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-function SetTerm() {
-  const [termName, setTermName] = useState("");
-  
+function ChatbotLoginSettings() {
+  const [loginMode, setLoginMode] = useState("otp_only");
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   const API_BASE =
     window.location.hostname === "localhost"
@@ -11,62 +11,59 @@ function SetTerm() {
       : "https://krishbackend-production-9603.up.railway.app";
 
   useEffect(() => {
-  const fetchCurrentTerm = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/chatbot-current-term`);
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/chatbot-login-settings`);
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch current term");
+        if (!res.ok) {
+          throw new Error("Failed to fetch chatbot login settings");
+        }
+
+        const data = await res.json();
+        setLoginMode(data.login_mode || "otp_only");
+      } catch (err) {
+        console.error(err);
+        alert("Unable to load chatbot login settings.");
+      } finally {
+        setFetching(false);
       }
+    };
 
-      const data = await res.json();
+    fetchSettings();
+  }, []);
 
-      setTermName(data.term_name);
-    } catch (err) {
-      console.error(err);
-      alert("Unable to load current term.");
-    }
-  };
-
-  fetchCurrentTerm();
-}, []);
-
-  // -----------------------------
-  // Save term
-  // -----------------------------
   const handleSave = async () => {
-    if (!termName) {
-      alert("Please select a term.");
-      return;
-    }
-
     try {
       setLoading(true);
 
-      const res = await fetch(`${API_BASE}/chatbot-current-term`, {
+      const res = await fetch(`${API_BASE}/chatbot-login-settings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          term_name: termName,
+          login_mode: loginMode,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.detail || "Unable to update term");
+        throw new Error(data.detail || "Failed to update login settings");
       }
 
-      alert("Current term updated successfully.");
+      alert("Chatbot login settings updated successfully.");
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      alert(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
+
+  if (fetching) {
+    return <div style={{ padding: "20px" }}>Loading login settings...</div>;
+  }
 
   return (
     <div
@@ -86,18 +83,16 @@ function SetTerm() {
           marginBottom: "25px",
         }}
       >
-        Set Current Term
+        Chatbot Login Settings
       </h2>
 
       <div style={{ marginTop: "20px" }}>
-        <label htmlFor="termName">Current Term Name:</label>
+        <label htmlFor="loginMode">Login Mode:</label>
 
-        <input
-          id="termName"
-          type="text"
-          value={termName}
-          onChange={(e) => setTermName(e.target.value)}
-          placeholder="Enter current term name"
+        <select
+          id="loginMode"
+          value={loginMode}
+          onChange={(e) => setLoginMode(e.target.value)}
           style={{
             width: "100%",
             marginTop: "10px",
@@ -109,7 +104,11 @@ function SetTerm() {
             color: "#333",
             boxSizing: "border-box",
           }}
-        />
+        >
+          <option value="otp_only">OTP Login Only</option>
+          <option value="id_only">ID Login Only</option>
+          <option value="both">Both OTP and ID Login</option>
+        </select>
       </div>
 
       <button
@@ -126,8 +125,9 @@ function SetTerm() {
           cursor: "pointer",
         }}
       >
-        {loading ? "Updating..." : "Update"}
+        {loading ? "Saving..." : "Save Settings"}
       </button>
+
       <p
         style={{
           marginTop: "10px",
@@ -140,12 +140,10 @@ function SetTerm() {
           fontSize: "14px",
         }}
       >
-        <strong>Note:</strong> The term name must exactly match the corresponding
-        term folder name on Google Drive for each Class Year (including spaces,
-        capitalization, and spelling).
+        <strong>Note:</strong> This controls which login options are shown on the chatbot login screen.
       </p>
     </div>
   );
 }
 
-export default SetTerm;
+export default ChatbotLoginSettings;

@@ -19,6 +19,8 @@ import DemoChatbot from "./components/DemoChatbot";
 import UsageDashboard from "./components/UsageDashboard";
 import ChatbotSettings from "./components/ChatbotSettings";
 import GuestChatbot from "./components/GuestChatbot";
+import StudentPdfViewer from "./components/StudentPdfViewer";
+
 
 // ----------------- Login Page -----------------
 function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
@@ -27,8 +29,12 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
   const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(0); // seconds left
   const [error, setError] = useState(null);
-  const [isDisabled, setIsDisabled] = useState(true);
+  
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginMode, setLoginMode] = useState("otp_only"); 
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  const allowOtpLogin = loginMode === "otp_only" || loginMode === "both";
+  const allowIdLogin = loginMode === "id_only" || loginMode === "both";
 
 
   // NEW
@@ -41,6 +47,21 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     process.env.NODE_ENV === "development"
       ? "http://localhost:8000"
       : "https://krishbackend-production-9603.up.railway.app";
+      useEffect(() => {
+  setError(null);
+
+  if (loginMethod === "otp") {
+    setStudentId("");
+    setPassword("");
+  }
+
+  if (loginMethod === "id") {
+    setEmail("");
+    setOtp("");
+    setOtpSent(false);
+    setTimer(0);
+  }
+}, [loginMethod]);
   // ---------- OTP Timer ----------
   useEffect(() => {
     let interval = null;
@@ -105,6 +126,40 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
     setIsLoggingIn(false);
   }
 };
+useEffect(() => {
+  const fetchLoginSettings = async () => {
+    try {
+      const res = await fetch(`${server}/chatbot-login-settings`);
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch chatbot login settings");
+      }
+
+      const data = await res.json();
+
+      const mode = data.login_mode || "otp_only";
+      setLoginMode(mode);
+
+      // Set default selected tab based on what is enabled
+      if (mode === "otp_only") {
+        setLoginMethod("otp");
+      } else if (mode === "id_only") {
+        setLoginMethod("id");
+      } else {
+        setLoginMethod("otp"); // default when both are enabled
+      }
+    } catch (err) {
+      console.error(err);
+      // fallback so login page still works
+      setLoginMode("otp_only");
+      setLoginMethod("otp");
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
+
+  fetchLoginSettings();
+}, []);
   // ---------- Generate OTP ----------
   const generateOtp = async () => {
     if (!email.trim()) return setError("Enter email");
@@ -123,7 +178,7 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       if (res.ok) {
         setOtpSent(true);
         setError(null);
-        setIsDisabled(false);
+        
         setTimer(300); // 5 minutes countdown
       } else {
         setError(data.detail || "Failed to generate OTP");
@@ -217,13 +272,20 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
       onSubmit={loginMethod === "otp" ? handleLogin : (e) => e.preventDefault()}
     >
 
+      {settingsLoading ? (
+  <p style={{ textAlign: "center", marginBottom: "20px" }}>
+    Loading login options...
+  </p>
+) : (
+  <>
+    {allowOtpLogin && allowIdLogin && (
       <div style={styles.tabContainer}>
         <button
           type="button"
           onClick={() => setLoginMethod("otp")}
           style={{
             ...styles.tab,
-            ...(loginMethod === "otp" ? styles.activeTab : {})
+            ...(loginMethod === "otp" ? styles.activeTab : {}),
           }}
         >
           OTP Login
@@ -235,77 +297,97 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
           onClick={() => setLoginMethod("id")}
           style={{
             ...styles.tab,
-            ...(loginMethod === "id" ? styles.activeTab : {})
+            ...(loginMethod === "id" ? styles.activeTab : {}),
           }}
         >
           ID Login
         </button>
       </div>
-
-      <h2>
-        {loginMethod === "otp"
-          ? "Login with OTP"
-          : "Login with  ID"}
-      </h2>
-
-      {loginMethod === "otp" && (
-  <>
-    <input
-      type="email"
-      placeholder="Email Address"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      style={styles.input}
-      disabled={otpSent}
-    />
-
-    {!otpSent && (
-      <button
-        type="button"
-        onClick={generateOtp}
-        style={{ ...styles.button, ...styles.gButton }}
-      >
-        Generate OTP
-      </button>
-    )}
-
-    {otpSent && timer === 0 && (
-      <button
-        type="button"
-        onClick={generateOtp}
-        style={{ ...styles.button, background: "#ffc107" }}
-      >
-        Resend OTP
-      </button>
-    )}
-
-    {otpSent && (
-      <>
-        <input
-          type="text"
-          placeholder="Enter OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          style={styles.input}
-        />
-
-        {timer > 0 && (
-          <p style={{ textAlign: "center" }}>
-            Resend OTP in{" "}
-            {Math.floor(timer / 60)
-              .toString()
-              .padStart(2, "0")}
-            :
-            {(timer % 60)
-              .toString()
-              .padStart(2, "0")}
-          </p>
-        )}
-      </>
     )}
   </>
 )}
-{loginMethod === "id" && (
+
+      <h2>
+        {!allowOtpLogin && !allowIdLogin
+          ? "Login Unavailable"
+          : loginMethod === "otp"
+          ? "Login with OTP"
+          : "Login with ID"}
+      </h2>
+        {!settingsLoading && !allowOtpLogin && !allowIdLogin && (
+          <div
+            style={{
+              marginBottom: "20px",
+              padding: "12px",
+              borderRadius: "6px",
+              background: "#fff3cd",
+              color: "#856404",
+              border: "1px solid #ffeeba",
+              textAlign: "center",
+            }}
+          >
+            No login method is currently enabled. Please contact admin.
+          </div>
+        )}
+
+      {loginMethod === "otp" && allowOtpLogin && (
+        <>
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={styles.input}
+            disabled={otpSent}
+          />
+
+          {!otpSent && (
+            <button
+              type="button"
+              onClick={generateOtp}
+              style={{ ...styles.button, ...styles.gButton }}
+            >
+              Generate OTP
+            </button>
+          )}
+
+          {otpSent && timer === 0 && (
+            <button
+              type="button"
+              onClick={generateOtp}
+              style={{ ...styles.button, background: "#ffc107" }}
+            >
+              Resend OTP
+            </button>
+          )}
+
+          {otpSent && (
+            <>
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                style={styles.input}
+              />
+
+              {timer > 0 && (
+                <p style={{ textAlign: "center" }}>
+                  Resend OTP in{" "}
+                  {Math.floor(timer / 60)
+                    .toString()
+                    .padStart(2, "0")}
+                  :
+                  {(timer % 60)
+                    .toString()
+                    .padStart(2, "0")}
+                </p>
+              )}
+            </>
+          )}
+        </>
+      )}
+{loginMethod === "id" && allowIdLogin && (
   <>
     <input
       type="text"
@@ -325,7 +407,13 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 
     <button
       type="button"
-      style={{ ...styles.button, ...styles.eButton }}
+      disabled={isLoggingIn}
+      style={{
+        ...styles.button,
+        ...styles.eButton,
+        opacity: isLoggingIn ? 0.7 : 1,
+        cursor: isLoggingIn ? "not-allowed" : "pointer",
+      }}
       onClick={handleIdLogin}
     >
       {isLoggingIn ? "Logging in..." : "Login"}
@@ -334,24 +422,24 @@ function LoginPage({ setIsLoggedIn, setDoctorData, setSessionToken }) {
 )}
 
       
-      {loginMethod === "otp" && (
-  <button
-    type="submit"
-    disabled={otp.trim().length !== 6 || isLoggingIn}
-    style={{
-      ...styles.button,
-      ...styles.eButton,
-      opacity:
-        otp.trim().length === 6 && !isLoggingIn ? 1 : 0.5,
-      cursor:
-        otp.trim().length === 6 && !isLoggingIn
-          ? "pointer"
-          : "not-allowed",
-    }}
-  >
-    {isLoggingIn ? "Logging in..." : "Login"}
-  </button>
-)}
+      {loginMethod === "otp" && allowOtpLogin && otpSent && (
+      <button
+        type="submit"
+        disabled={otp.trim().length !== 6 || isLoggingIn}
+        style={{
+          ...styles.button,
+          ...styles.eButton,
+          opacity:
+            otp.trim().length === 6 && !isLoggingIn ? 1 : 0.5,
+          cursor:
+            otp.trim().length === 6 && !isLoggingIn
+              ? "pointer"
+              : "not-allowed",
+        }}
+      >
+        {isLoggingIn ? "Logging in..." : "Login"}
+      </button>
+    )}
       
 
 
@@ -400,6 +488,7 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/AdminPanel" element={<PrivateRoute isLoggedIn={isLoggedIn}><AdminPanel /></PrivateRoute>} />
+        <Route path="/pdf-viewer" element={<StudentPdfViewer />} />
 
         {/*
         <Route path="/add-doctor" element={<PrivateRoute isLoggedIn={isLoggedIn}><AddDoctor /></PrivateRoute>} />
