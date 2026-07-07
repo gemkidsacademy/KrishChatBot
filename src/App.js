@@ -269,7 +269,14 @@ useEffect(() => {
 
     <form
       style={styles.loginBox}
-      onSubmit={loginMethod === "otp" ? handleLogin : (e) => e.preventDefault()}
+      onSubmit={(e) => {
+        if (loginMethod === "otp") {
+          handleLogin(e);
+        } else if (loginMethod === "id") {
+          e.preventDefault();
+          handleIdLogin();
+        }
+      }}
     >
 
       {settingsLoading ? (
@@ -406,7 +413,7 @@ useEffect(() => {
     />
 
     <button
-      type="button"
+      type="submit"
       disabled={isLoggingIn}
       style={{
         ...styles.button,
@@ -414,7 +421,6 @@ useEffect(() => {
         opacity: isLoggingIn ? 0.7 : 1,
         cursor: isLoggingIn ? "not-allowed" : "pointer",
       }}
-      onClick={handleIdLogin}
     >
       {isLoggingIn ? "Logging in..." : "Login"}
     </button>

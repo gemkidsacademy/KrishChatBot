@@ -5,6 +5,7 @@ import "./DemoChatbot.css";
 export default function DemoChatbot({ doctorData }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [conversationUuid, setConversationUuid] = useState(() => crypto.randomUUID());
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   const [isWaiting, setIsWaiting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(3600); // adjust as needed
@@ -91,57 +92,53 @@ export default function DemoChatbot({ doctorData }) {
   };
 
   // ------------------ Handle submit ------------------
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isTimeUp) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!input.trim() || isTimeUp) return;
 
-    const userInput = input;
-    setMessages(prev => [...prev, { sender: "user", text: userInput }]);
-    setInput("");
-    setIsWaiting(true);
+  const userInput = input.trim();
 
-    try {
-      const url = `${server}/search?query=${encodeURIComponent(
-        userInput
-      )}&reasoning=${encodeURIComponent(
-        reasoningLevel
-      )}&user_id=${encodeURIComponent(
-        doctorData.name
-      )}&class_name=${encodeURIComponent(
-        doctorData.class_name
-      )}`;
+  setMessages((prev) => [
+    ...prev,
+    { sender: "user", text: userInput }
+  ]);
+  setInput("");
+  setIsWaiting(true);
 
-      const response = await fetch(url);
+  try {
+    const url = `${server}/search?query=${encodeURIComponent(userInput)}&reasoning=${encodeURIComponent(reasoningLevel)}&user_id=${encodeURIComponent(doctorData.name)}&conversation_uuid=${encodeURIComponent(conversationUuid)}&class_name=${encodeURIComponent(doctorData.class_name)}`;
 
-      if (!response.ok) {
-        throw new Error(`Backend returned status ${response.status}`);
-      }
+    const response = await fetch(url);
 
-      const data = await response.json();
-
-      const processedMessages = data.map((item) => ({
-        sender: "bot",
-        text: item.snippet,
-        name: item.name,
-        links: Array.isArray(item.links) ? item.links : [],
-      }));
-
-      setMessages((prev) => [...prev, ...processedMessages]);
-    } catch (error) {
-      console.error(error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: "Sorry, something went wrong while fetching results.",
-          links: [],
-        },
-      ]);
-    } finally {
-      setIsWaiting(false);
+    if (!response.ok) {
+      throw new Error(`Backend returned status ${response.status}`);
     }
-  };
 
+    const data = await response.json();
+
+    const processedMessages = data.map((item) => ({
+      sender: "bot",
+      text: item.snippet,
+      name: item.name,
+      links: Array.isArray(item.links) ? item.links : [],
+    }));
+
+    setMessages((prev) => [...prev, ...processedMessages]);
+  } catch (error) {
+    console.error("Chatbot fetch error:", error);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: "Sorry, something went wrong while fetching results.",
+        links: [],
+      },
+    ]);
+  } finally {
+    setIsWaiting(false);
+  }
+};
   // ------------------ Render ------------------
   return (
     <div className="chat-container">

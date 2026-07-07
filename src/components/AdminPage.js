@@ -8,6 +8,7 @@ import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm";
 import ViewUserModal from "./ViewUserModal";
 import DeleteUserForm from "./DeleteUserForm";
+import ChatbotConversationsAdmin from "./ChatbotConversationsAdmin";
 import UsageDashboard from "./UsageDashboard";
 import AddUsersBulkForm from "./AddUsersBulkForm";
 import UploadVectorStores from "./UploadVectorStores";
@@ -33,6 +34,7 @@ const AdminPanel = () => {
   const tabs = [
   { id: "set_term", label: "Set Term" },
   { id: "chatbot_login_settings", label: "Chatbot Login Settings" },
+  { id: "chatbot_conversations", label: "Chatbot Conversations" },
   { id: "upload_vector_stores", label: "Upload Vector Stores" },
   { id: "openai", label: "View OpenAI Usage (not functional)" },
   { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
@@ -120,6 +122,11 @@ const AdminPanel = () => {
           <ChatbotLoginSettings />
         </div>
       )}
+      {activeTab === "chatbot_conversations" && (
+  <div className="tab-panel" style={{ height: "100vh", overflowY: "auto", padding: "1rem" }}>
+    <ChatbotConversationsAdmin />
+  </div>
+)}
 
         {/* --- GENERIC CHATBOT SETTINGS --- */}
         {activeTab === "Generic_chatbot" && (
