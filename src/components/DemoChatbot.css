@@ -3,14 +3,17 @@
 /* Base container */
 .chat-container {
   width: 100%;
-  height: 100dvh;
+  min-height: 100dvh;
   display: flex;
-  justify-content: center; /* centers chat box horizontally */
+  justify-content: stretch;
   align-items: stretch;
   position: relative;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
   background-color: #ffe3d4;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* Background image divs */
@@ -32,14 +35,15 @@
 /* Chat box */
 .chat-box {
   width: 100%;
-  max-width: 800px;
   height: 100dvh;
-  background-color: rgba(255, 255, 255, 0.95); /* slight transparency to show images */
+  background-color: rgba(255, 255, 255, 0.95);
   display: flex;
   flex-direction: column;
   position: relative;
-  z-index: 1; /* above background images */
-  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  z-index: 1;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Header */
@@ -63,14 +67,16 @@
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.85rem;
   background-color: #f9fafb;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   scrollbar-width: thin;
   scrollbar-color: #bbb #f9fafb;
   -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -100,12 +106,16 @@
   animation: slideInRight 0.3s ease;
 }
 
-.message.bot {
+ .message.bot {
+  width: 100%;
+  max-width: 100%;
   background: linear-gradient(to right, #fff2ec, #ffe6d9);
   color: #1f1f1f;
-  align-self: flex-start;
+  align-self: stretch;
   border-bottom-left-radius: 0.25rem;
   animation: slideInLeft 0.3s ease;
+  box-sizing: border-box;
+  padding: 0.9rem 1rem;
 }
 
 /* Input Section */
@@ -205,4 +215,168 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: linear-gradient(to bottom right, #ffe3d4, #ffd1c0);
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to right, #EC5125, #f97316);
+  position: relative;
+  z-index: 2;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-logo-wrap {
+  background-color: #fff;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+.chat-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.chat-title {
+  color: #fff;
+  font-weight: bold;
+}
+
+.chat-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-timer {
+  color: #fff;
+  font-weight: bold;
+}
+
+.quick-tips-btn {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.quick-tips-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.chat-box {
+  position: relative;
+}
+
+/* overlay */
+.quick-tips-overlay {
+  position: absolute;
+  top: 72px;
+  right: 18px;
+  z-index: 30;
+}
+
+/* card */
+.quick-tips-card {
+  width: 340px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 26px 22px 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.16);
+  border: 1px solid #f3f4f6;
+  position: relative;
+}
+
+/* close button */
+.quick-tips-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #9ca3af;
+}
+
+.quick-tips-close:hover {
+  color: #374151;
+}
+
+/* each tip row */
+.quick-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.quick-tip-item + .quick-tip-item {
+  margin-top: 28px;
+}
+
+.quick-tip-icon {
+  min-width: 52px;
+  min-height: 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff3ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.quick-tip-text {
+  flex: 1;
+}
+
+.quick-tip-heading {
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+.quick-tip-subtext {
+  font-size: 19px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* optional: smaller on narrower screens */
+@media (max-width: 768px) {
+  .quick-tips-card {
+    width: min(92vw, 320px);
+    padding: 22px 18px 18px;
+  }
+
+  .quick-tip-heading {
+    font-size: 18px;
+  }
+
+  .quick-tip-subtext {
+    font-size: 15px;
+  }
+
+  .quick-tip-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    font-size: 20px;
+  }
 }
