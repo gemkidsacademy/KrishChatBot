@@ -5,14 +5,14 @@
   width: 100%;
   min-height: 100dvh;
   display: flex;
-  justify-content: stretch;
-  align-items: stretch;
+  justify-content: center;
+  align-items: center;
   position: relative;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
   background-color: #ffe3d4;
   margin: 0;
-  padding: 0;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -34,16 +34,20 @@
 
 /* Chat box */
 .chat-box {
-  width: 100%;
-  height: 100dvh;
-  background-color: rgba(255, 255, 255, 0.95);
+  width: min(95%, 1600px);   /* increase/decrease 1600px as desired */
+  height: calc(100dvh - 40px);
+  margin: 0 auto;
+
+  background-color: rgba(255,255,255,0.95);
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 1;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
   overflow: hidden;
+  box-sizing: border-box;
+
+  border-radius: 18px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
 /* Header */
@@ -281,33 +285,46 @@ html, body {
 /* overlay */
 .quick-tips-overlay {
   position: absolute;
-  top: 72px;
-  right: 18px;
-  z-index: 30;
+  top: 64px;
+  right: 16px;
+  z-index: 1000;
 }
 
 /* card */
 .quick-tips-card {
-  width: 340px;
+  width: 310px;
   background: #fff;
-  border-radius: 22px;
-  padding: 26px 22px 22px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.16);
-  border: 1px solid #f3f4f6;
-  position: relative;
+  border-radius: 14px;
+  border: 1px solid #ececec;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,.15);
 }
+.quick-tips-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 16px 18px;
+
+  border-bottom: 1px solid #ececec;
+}
+.quick-tips-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+}
+.quick-tips-body {
+  padding: 20px;
+}
+
 
 /* close button */
 .quick-tips-close {
-  position: absolute;
-  top: 10px;
-  right: 14px;
   border: none;
-  background: transparent;
-  font-size: 24px;
-  line-height: 1;
+  background: none;
+  font-size: 22px;
+  color: #888;
   cursor: pointer;
-  color: #9ca3af;
 }
 
 .quick-tips-close:hover {
@@ -318,25 +335,26 @@ html, body {
 .quick-tip-item {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 14px;
 }
 
 .quick-tip-item + .quick-tip-item {
-  margin-top: 28px;
+  margin-top: 22px;
 }
 
 .quick-tip-icon {
-  min-width: 52px;
-  min-height: 52px;
-  width: 52px;
-  height: 52px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
   border-radius: 50%;
   background: #fff3ed;
+
   display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 24px;
-  flex-shrink: 0;
+  align-items: center;
+
+  font-size: 18px;
 }
 
 .quick-tip-text {
@@ -344,39 +362,54 @@ html, body {
 }
 
 .quick-tip-heading {
-  font-size: 24px;
-  line-height: 1.25;
+  font-size: 16px;
   font-weight: 700;
-  color: #222;
-  margin-bottom: 8px;
+  color: #333;
+  line-height: 1.45;
 }
 
 .quick-tip-subtext {
-  font-size: 19px;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #666;
   line-height: 1.5;
-  color: #555;
+}
+.usage-notice {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #ececec;
+}
+
+.usage-notice-title {
+    color: #d97706;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.usage-notice-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
 }
 
 /* optional: smaller on narrower screens */
 @media (max-width: 768px) {
+
+  .quick-tips-overlay {
+      right: 10px;
+      top: 60px;
+  }
+
   .quick-tips-card {
-    width: min(92vw, 320px);
-    padding: 22px 18px 18px;
+      width: min(94vw,300px);
   }
 
   .quick-tip-heading {
-    font-size: 18px;
+      font-size:15px;
   }
 
   .quick-tip-subtext {
-    font-size: 15px;
-  }
-
-  .quick-tip-icon {
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
-    min-height: 46px;
-    font-size: 20px;
+      font-size:13px;
   }
 }

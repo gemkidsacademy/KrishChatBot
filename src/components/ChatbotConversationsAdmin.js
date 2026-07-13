@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function ChatbotConversationsAdmin() {
+export default function ChatbotConversationsAdmin({ centerCode }) {
   const [conversations, setConversations] = useState([]);
   const [studentOptions, setStudentOptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,9 @@ export default function ChatbotConversationsAdmin() {
       const activeFilters = overrideFilters || filters;
       const params = new URLSearchParams();
 
+      if (centerCode) {
+          params.append("center_code", centerCode);
+      }
       if (activeFilters.date) {
         params.append("date", activeFilters.date);
       }
@@ -64,7 +67,7 @@ export default function ChatbotConversationsAdmin() {
 
     try {
       const response = await fetch(
-        `${server}/admin/chatbot/conversation-students?date=${encodeURIComponent(selectedDate)}`
+        `${server}/admin/chatbot/conversation-students?date=${encodeURIComponent(selectedDate)}&center_code=${encodeURIComponent(centerCode)}`
       );
 
       if (!response.ok) {
@@ -81,8 +84,10 @@ export default function ChatbotConversationsAdmin() {
 
   // ------------------ Load all conversations on first render ------------------
   useEffect(() => {
+    if (!centerCode) return;
+
     fetchConversations();
-  }, []);
+  }, [centerCode]);
 
   // ------------------ Handle filter changes ------------------
   const handleFilterChange = async (e) => {
@@ -131,7 +136,7 @@ export default function ChatbotConversationsAdmin() {
       setShowConversationModal(true);
 
       const response = await fetch(
-        `${server}/admin/chatbot/conversations/${conversationId}/messages`
+        `${server}/admin/chatbot/conversations/${conversationId}/messages?center_code=${encodeURIComponent(centerCode)}`
       );
 
       if (!response.ok) {

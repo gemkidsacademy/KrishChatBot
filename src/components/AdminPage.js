@@ -15,7 +15,11 @@ import UploadVectorStores from "./UploadVectorStores";
 import SetTerm from "./SetTerm";
 import ChatbotLoginSettings from "./ChatbotLoginSettings";
 
-const AdminPanel = () => {
+const AdminPanel = ({ doctorData }) => {
+  const centerCode = doctorData?.center_code;
+
+  console.log("Logged in user:", doctorData);
+  console.log("Center Code:", centerCode);
   const [activeTab, setActiveTab] = useState("set_term");
   const navigate = useNavigate();
   const server =
@@ -123,10 +127,13 @@ const AdminPanel = () => {
         </div>
       )}
       {activeTab === "chatbot_conversations" && (
-  <div className="tab-panel" style={{ height: "100vh", overflowY: "auto", padding: "1rem" }}>
-    <ChatbotConversationsAdmin />
-  </div>
-)}
+        <div
+          className="tab-panel"
+          style={{ height: "100vh", overflowY: "auto", padding: "1rem" }}
+        >
+          <ChatbotConversationsAdmin centerCode={centerCode} />
+        </div>
+      )}
 
         {/* --- GENERIC CHATBOT SETTINGS --- */}
         {activeTab === "Generic_chatbot" && (

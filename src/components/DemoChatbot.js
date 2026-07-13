@@ -7,10 +7,11 @@ import remarkGfm from "remark-gfm";
 export default function DemoChatbot({ doctorData }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [isWaiting, setIsWaiting] = useState(false);
   const [conversationUuid, setConversationUuid] = useState(() => crypto.randomUUID());
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   
-  const [isWaiting, setIsWaiting] = useState(false);
+  const [isLoadingQuote, setIsLoadingQuote] = useState(true);
   const [timeLeft, setTimeLeft] = useState(3600);
   const [showQuickTips, setShowQuickTips] = useState(false);
 
@@ -37,16 +38,69 @@ export default function DemoChatbot({ doctorData }) {
 
   // ------------------ Welcome message ------------------
   useEffect(() => {
-    if (doctorData?.name) {
-      setMessages([
-        {
-          sender: "bot",
-          text: `Welcome, Dear ${doctorData.name}! How can I assist you today?`,
-          links: [],
-        },
-      ]);
+  if (!doctorData?.name) return;
+
+  const fetchWelcomeQuote = async () => {
+    // Show welcome card immediately
+    setMessages([
+      {
+        sender: "bot",
+        type: "welcome",
+        welcomeText: `Welcome, Dear ${doctorData.name}!`,
+        quote: null,
+        author: "",
+        footer: "How can I assist you today?",
+      },
+    ]);
+
+    setIsLoadingQuote(true);
+
+    try {
+      const response = await fetch(`${server}/welcome-quote`, {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        const quoteData = await response.json();
+
+        setMessages((prev) => {
+          const updated = prev.map((msg) =>
+            msg.type === "welcome"
+              ? {
+                  ...msg,
+                  quote: quoteData.quote,
+                  author: quoteData.author,
+                }
+              : msg
+          );
+
+          const alreadyExists = updated.some(
+            (msg) =>
+              msg.sender === "bot" &&
+              msg.text === "How can I assist you today?"
+          );
+
+          if (!alreadyExists) {
+            updated.push({
+              sender: "bot",
+              text: "How can I assist you today?",
+              name: "Gem AI",
+              links: [],
+            });
+          }
+
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingQuote(false);
     }
-  }, [doctorData?.name]);
+  };
+
+  fetchWelcomeQuote();
+}, [doctorData?.name, server]);
 
   // ------------------ Timer effect ------------------
   useEffect(() => {
@@ -185,7 +239,14 @@ export default function DemoChatbot({ doctorData }) {
       <div className="bg-img bg-img-3"></div>
       <div className="bg-img bg-img-4"></div>
 
-      <div className="chat-box">
+      <div
+        className="chat-box"
+        style={{
+          width: "82%",
+          maxWidth: "1500px",
+          margin: "20px auto",
+        }}
+      >
         {/* Header */}
         <div className="chat-header">
           <div className="chat-header-left">
@@ -205,47 +266,81 @@ export default function DemoChatbot({ doctorData }) {
               className="quick-tips-btn"
               onClick={() => setShowQuickTips((prev) => !prev)}
             >
-              Quick Tips
+              💡 Quick Tips
             </button>
             <span className="chat-timer">{formatTime(timeLeft)}</span>
           </div>
         </div>
 
         {/* Quick Tips Overlay */}
+        {/* Quick Tips Overlay */}
         {showQuickTips && (
           <div className="quick-tips-overlay">
             <div className="quick-tips-card">
-              <button
-                className="quick-tips-close"
-                onClick={() => setShowQuickTips(false)}
-                aria-label="Close Quick Tips"
-              >
-                ×
-              </button>
 
-              <div className="quick-tip-item">
-                <div className="quick-tip-icon">💬</div>
-                <div className="quick-tip-text">
-                  <div className="quick-tip-heading">
-                    1. Chatbot doesn’t remember what is discussed above.
-                  </div>
-                  <div className="quick-tip-subtext">
-                    Always provide context in every chat.
-                  </div>
+              <div className="quick-tips-header">
+                <div className="quick-tips-title">
+                  💡 Quick Tips
                 </div>
+
+                <button
+                  className="quick-tips-close"
+                  onClick={() => setShowQuickTips(false)}
+                  aria-label="Close Quick Tips"
+                >
+                  ×
+                </button>
               </div>
 
-              <div className="quick-tip-item">
-                <div className="quick-tip-icon">⚙️</div>
-                <div className="quick-tip-text">
-                  <div className="quick-tip-heading">
-                    2. If you need elaborate response,
+              <div className="quick-tips-body">
+
+                <div className="quick-tip-item">
+                  <div className="quick-tip-icon">
+                    💬
                   </div>
-                  <div className="quick-tip-subtext">
-                    please use Reasoning dropdown on bottom right.
+
+                  <div className="quick-tip-text">
+                    <div className="quick-tip-heading">
+                      1. Chatbot doesn't remember what is discussed above.
+                    </div>
+
+                    <div className="quick-tip-subtext">
+                      Always provide context in every chat.
+                    </div>
                   </div>
                 </div>
+
+                <div className="quick-tip-item">
+                  <div className="quick-tip-icon">
+                    ⚙️
+                  </div>
+
+                  <div className="quick-tip-text">
+                    <div className="quick-tip-heading">
+                      2. If you need elaborate response,
+                    </div>
+
+                    <div className="quick-tip-subtext">
+                      please use the Reasoning dropdown on the bottom right.
+                    </div>
+                  </div>
+                </div>
+                <div className="usage-notice">
+
+                  <div className="usage-notice-title">
+                    ⚠️ Usage Notice
+                  </div>
+
+                  <div className="usage-notice-text">
+                    Use <strong>Gem AI</strong> responsibly. Chats are monitored by
+                    Gem Kids Academy administrators. Inappropriate use or abusive
+                    language may lead to restricted access and escalation to parents.
+                  </div>
+
+                </div>
+
               </div>
+
             </div>
           </div>
         )}
@@ -255,32 +350,144 @@ export default function DemoChatbot({ doctorData }) {
             <div key={idx} className={`message ${msg.sender}`}>
               {msg.sender === "bot" ? (
                   <>
-                    {msg.name && <div className="bot-label">{msg.name}</div>}
+  {msg.type === "welcome" ? (
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: "18px",
+        padding: "28px",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+        border: "1px solid #ececec",
+        marginBottom: "15px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "24px",
+          fontWeight: "700",
+          color: "#222",
+          marginBottom: "22px",
+        }}
+      >
+        {msg.welcomeText}
+      </div>
 
-                    <div className="bot-markdown">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {msg.text}
-                      </ReactMarkdown>
-                    </div>
+      <div
+        style={{
+          color: "#f97316",
+          fontWeight: "700",
+          textTransform: "uppercase",
+          letterSpacing: "1.5px",
+          fontSize: "13px",
+          marginBottom: "18px",
+        }}
+      >
+        Quote of the Day
+      </div>
 
-                    {msg.links.length > 0 && (
-                      <div className="pdf-links">
-                        <a
-                          href={msg.links[0]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="pdf-link"
-                        >
-                          Open PDF
-                        </a>
-                      </div>
-                    )}
-                  </>
+      {msg.quote ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: "18px",
+          }}
+        >
+          <div
+            style={{
+              width: "5px",
+              background: "#f97316",
+              borderRadius: "6px",
+              alignSelf: "stretch",
+            }}
+          />
+
+          <div style={{ flex: 1 }}>
+            <div
+              style={{
+                fontSize: "22px",
+                fontStyle: "italic",
+                color: "#374151",
+                lineHeight: "1.6",
+              }}
+            >
+              “{msg.quote}”
+            </div>
+
+            <div
+              style={{
+                textAlign: "right",
+                marginTop: "16px",
+                color: "#6b7280",
+                fontWeight: "500",
+                fontSize: "18px",
+              }}
+            >
+              — {msg.author}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "18px 0",
+          }}
+        >
+          <div className="spinner"></div>
+
+          <span
+            style={{
+              color: "#6b7280",
+              fontStyle: "italic",
+              fontSize: "18px",
+            }}
+          >
+            Loading today's inspirational quote...
+          </span>
+        </div>
+      )}
+
+      
+    </div>
+  ) : (
+    <>
+          {msg.name && <div className="bot-label">{msg.name}</div>}
+
+          <div className="bot-markdown">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {msg.text}
+            </ReactMarkdown>
+          </div>
+
+          {msg.links.length > 0 && (
+            <div className="pdf-links">
+              <a
+                href={msg.links[0]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pdf-link"
+              >
+                Open PDF
+              </a>
+            </div>
+          )}
+        </>
+      )}
+    </>
                 ) : (
                   <div>{msg.text}</div>
                 )}
             </div>
           ))}
+          {isLoadingQuote && (
+            <div className="message bot waiting">
+              <div className="spinner"></div>
+              <span>Preparing today's quote...</span>
+            </div>
+          )}
 
           {isWaiting && (
             <div className="message bot waiting">

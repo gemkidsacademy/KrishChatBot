@@ -493,7 +493,14 @@ function App() {
         />
 
         {/* Admin Routes */}
-        <Route path="/AdminPanel" element={<PrivateRoute isLoggedIn={isLoggedIn}><AdminPanel /></PrivateRoute>} />
+        <Route
+          path="/AdminPanel"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <AdminPanel doctorData={doctorData} />
+            </PrivateRoute>
+          }
+        />
         <Route path="/pdf-viewer" element={<StudentPdfViewer />} />
 
         {/*
