@@ -549,7 +549,7 @@ const styles = {
   },
 
   button: {
-    width: "100%",
+    width: "99%",
     padding: "10px",
     marginTop: "10px",
     borderRadius: "4px",
