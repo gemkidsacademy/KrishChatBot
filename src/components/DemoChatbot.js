@@ -212,6 +212,7 @@ export default function DemoChatbot({ doctorData }) {
           ),
           name: data.source_name || "Gem AI",
           links: Array.isArray(data.links) ? data.links : [],
+          pdfs: Array.isArray(data.pdfs) ? data.pdfs : [],
         };
       }
 
@@ -462,18 +463,54 @@ export default function DemoChatbot({ doctorData }) {
             </ReactMarkdown>
           </div>
 
-          {msg.links.length > 0 && (
-            <div className="pdf-links">
-              <a
-                href={msg.links[0]}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pdf-link"
-              >
-                Open PDF
-              </a>
-            </div>
-          )}
+          {msg.pdfs && msg.pdfs.length > 0 ? (
+              <div className="pdf-links">
+                {msg.pdfs.map((pdf, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      marginTop: "10px",
+                      padding: "10px",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "8px",
+                      background: "#f9fafb",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        marginBottom: "6px",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      📄 {pdf.name}
+                    </div>
+
+                    <a
+                      href={pdf.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pdf-link"
+                    >
+                      Open PDF
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              msg.links.length > 0 && (
+                <div className="pdf-links">
+                  <a
+                    href={msg.links[0]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pdf-link"
+                  >
+                    Open PDF
+                  </a>
+                </div>
+              )
+            )}
         </>
       )}
     </>
