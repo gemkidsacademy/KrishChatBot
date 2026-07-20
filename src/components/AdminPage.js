@@ -21,6 +21,8 @@ const AdminPanel = ({ doctorData }) => {
   console.log("Logged in user:", doctorData);
   console.log("Center Code:", centerCode);
   const [activeTab, setActiveTab] = useState("set_term");
+  const role = (doctorData?.role || "").toUpperCase();
+  const isSuperAdmin = role === "SUPER_ADMIN";
   const navigate = useNavigate();
   const server =
   process.env.NODE_ENV === "development"
@@ -39,9 +41,16 @@ const AdminPanel = ({ doctorData }) => {
   { id: "set_term", label: "Set Term" },
   { id: "chatbot_login_settings", label: "Chatbot Login Settings" },
   { id: "chatbot_conversations", label: "Chatbot Conversations" },
-  { id: "upload_vector_stores", label: "Upload Vector Stores" },
+
+  ...(isSuperAdmin
+    ? [{ id: "upload_vector_stores", label: "Upload Vector Stores" }]
+    : []),
+
   { id: "openai", label: "View OpenAI Usage (not functional)" },
-  { id: "Generic_chatbot", label: "Generic Chatbot Settings" },
+
+  ...(isSuperAdmin
+    ? [{ id: "Generic_chatbot", label: "Generic Chatbot Settings" }]
+    : []),
 ];
 
   // --- Reset Students backend call ---
@@ -136,16 +145,21 @@ const AdminPanel = ({ doctorData }) => {
       )}
 
         {/* --- GENERIC CHATBOT SETTINGS --- */}
-        {activeTab === "Generic_chatbot" && (
+        {isSuperAdmin && activeTab === "Generic_chatbot" && (
           <div className="tab-panel" style={{ height: "100vh", overflowY: "auto" }}>
             <ChatbotSettings />
           </div>
         )}
 
         {/* --- UPLOAD VECTOR STORES --- */}
-        {activeTab === "upload_vector_stores" && (
-          <div className="tab-panel" style={{ height: "100vh", overflowY: "auto", padding: "1rem" }}>
-            <h2 className="text-xl font-semibold mb-4">Upload Vector Stores</h2>
+        {isSuperAdmin && activeTab === "upload_vector_stores" && (
+          <div
+            className="tab-panel"
+            style={{ height: "100vh", overflowY: "auto", padding: "1rem" }}
+          >
+            <h2 className="text-xl font-semibold mb-4">
+              Upload Vector Stores
+            </h2>
             <UploadVectorStores />
           </div>
         )}

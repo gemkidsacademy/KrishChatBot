@@ -233,6 +233,8 @@ useEffect(() => {
       setIsLoggingIn(false);
       return;
     }
+    console.log("Doctor Data:", data.user);
+    console.log("Doctor Data (JSON):", JSON.stringify(data.user, null, 2));
 
     setDoctorData(data.user);
     setIsLoggedIn(true);
