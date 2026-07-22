@@ -20,16 +20,22 @@ import UsageDashboard from "./components/UsageDashboard";
 import ChatbotSettings from "./components/ChatbotSettings";
 import GuestChatbot from "./components/GuestChatbot";
 import StudentPdfViewer from "./components/StudentPdfViewer";
+import TeacherLoginPage from "./TeacherLoginPage";
+
+
 
 
 // ----------------- Login Page -----------------
 function LoginPage({
-    mode,
     setIsLoggedIn,
     setDoctorData,
     setSessionToken
 }) {
   const [email, setEmail] = useState("");
+
+  const [loginMode, setLoginMode] = useState("otp_only");
+  const [loginMethod, setLoginMethod] = useState("otp");
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(0); // seconds left
@@ -49,20 +55,49 @@ function LoginPage({
     process.env.NODE_ENV === "development"
       ? "http://localhost:8000"
       : "https://krishbackend-production-9603.up.railway.app";
-  const isTeacher = mode === "teacher";
-    useEffect(() => {
-      setError(null);
+  
 
-      if (isTeacher) {
-        setEmail("");
-        setOtp("");
-        setOtpSent(false);
-        setTimer(0);
-      } else {
-        setStudentId("");
-        setPassword("");
-      }
-    }, [isTeacher]);
+  const showOtp =
+    loginMode === "otp_only" ||
+    (loginMode === "both" && loginMethod === "otp");
+
+  const showId =
+    loginMode === "id_only" ||
+    (loginMode === "both" && loginMethod === "id");
+    useEffect(() => {
+  setError(null);
+
+  if (showId && !showOtp) {
+    setEmail("");
+    setOtp("");
+    setOtpSent(false);
+    setTimer(0);
+  } else {
+    setStudentId("");
+    setPassword("");
+  }
+}, [showId, showOtp]);
+    useEffect(() => {
+  const fetchLoginSettings = async () => {
+    try {
+      const res = await fetch(`${server}/chatbot-login-settings`);
+      const data = await res.json();
+      console.log("Chatbot Settings:", data);
+
+      setLoginMode(data.login_mode);
+    } catch (err) {
+      console.error(err);
+
+      // fallback
+      setLoginMode("otp_only");
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
+
+  fetchLoginSettings();
+}, []);
+
   // ---------- OTP Timer ----------
   useEffect(() => {
     let interval = null;
@@ -73,6 +108,13 @@ function LoginPage({
     }
     return () => clearInterval(interval);
   }, [otpSent, timer]);
+  if (loadingSettings) {
+  return (
+    <div style={styles.container}>
+      Loading...
+    </div>
+  );
+}
   const handleTeacherLogin = async () => {
   if (isLoggingIn) return;
 
@@ -223,6 +265,7 @@ function LoginPage({
     setIsLoggingIn(false);
   }
 };
+console.log("loginMode =", loginMode);
 
   return (
   <div style={{ 
@@ -238,25 +281,50 @@ function LoginPage({
     />
 
     <form
-        style={styles.loginBox}
-        onSubmit={(e) => {
-            if (isTeacher) {
-                e.preventDefault();
-                handleTeacherLogin();
-            } else {
-                handleLogin(e);
-            }
+  style={styles.loginBox}
+  onSubmit={(e) => {
+    if (showId) {
+      e.preventDefault();
+      handleTeacherLogin();
+    } else {
+      handleLogin(e);
+    }
+  }}
+>
+
+  <h2>Student Login</h2>
+
+  {loginMode === "both" && (
+    <div style={styles.tabContainer}>
+      <button
+        type="button"
+        style={{
+          ...styles.tab,
+          ...(loginMethod === "otp" ? styles.activeTab : {}),
         }}
-    >
+        onClick={() => setLoginMethod("otp")}
+      >
+        OTP Login
+      </button>
 
-      
+      <button
+        type="button"
+        style={{
+          ...styles.tab,
+          ...(loginMethod === "id" ? styles.activeTab : {}),
+        }}
+        onClick={() => setLoginMethod("id")}
+      >
+        ID Login
+      </button>
+    </div>
+  )}
 
-      <h2>
-        {isTeacher ? "Teacher Login" : "Student Login"}
-      </h2>
-        
+  <h3 style={{ marginTop: 20 }}>
+    {showOtp ? "Login with OTP" : "Login with ID"}
+  </h3>
 
-      {!isTeacher && (
+  {showOtp && (
         <>
           <input
             type="email"
@@ -313,11 +381,11 @@ function LoginPage({
           )}
         </>
       )}
-{isTeacher && (
+{showId && (
   <>
     <input
       type="text"
-      placeholder="Teacher ID"
+      placeholder="Student ID"
       value={studentId}
       onChange={(e) => setStudentId(e.target.value)}
       style={styles.input}
@@ -347,7 +415,7 @@ function LoginPage({
 )}
 
       
-      {!isTeacher && otpSent && (
+      {showOtp && otpSent && (
       <button
         type="submit"
         disabled={otp.trim().length !== 6 || isLoggingIn}
@@ -410,7 +478,6 @@ function App() {
         path="/"
         element={
           <LoginPage
-            mode="student"
             setIsLoggedIn={setIsLoggedIn}
             setDoctorData={setDoctorData}
             setSessionToken={setSessionToken}
@@ -421,8 +488,7 @@ function App() {
       <Route
         path="/teacher"
         element={
-          <LoginPage
-            mode="teacher"
+          <TeacherLoginPage
             setIsLoggedIn={setIsLoggedIn}
             setDoctorData={setDoctorData}
             setSessionToken={setSessionToken}
