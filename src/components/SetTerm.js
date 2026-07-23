@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function SetTerm() {
+function SetTerm({ centerCode }) {
   const [termName, setTermName] = useState("");
   
   const [loading, setLoading] = useState(false);
@@ -12,21 +12,23 @@ function SetTerm() {
 
   useEffect(() => {
   const fetchCurrentTerm = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/chatbot-current-term`);
+  try {
+    const res = await fetch(
+      `${API_BASE}/chatbot-current-term?center_code=${encodeURIComponent(centerCode)}`
+    );
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch current term");
-      }
-
-      const data = await res.json();
-
-      setTermName(data.term_name);
-    } catch (err) {
-      console.error(err);
-      alert("Unable to load current term.");
+    if (!res.ok) {
+      throw new Error("Failed to fetch current term");
     }
-  };
+
+    const data = await res.json();
+
+    setTermName(data.term_name);
+  } catch (err) {
+    console.error(err);
+    alert("Unable to load current term.");
+  }
+};
 
   fetchCurrentTerm();
 }, []);
@@ -35,38 +37,39 @@ function SetTerm() {
   // Save term
   // -----------------------------
   const handleSave = async () => {
-    if (!termName) {
-      alert("Please select a term.");
-      return;
+  if (!termName) {
+    alert("Please select a term.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await fetch(`${API_BASE}/chatbot-current-term`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        center_code: centerCode,
+        term_name: termName,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Unable to update term");
     }
 
-    try {
-      setLoading(true);
-
-      const res = await fetch(`${API_BASE}/chatbot-current-term`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          term_name: termName,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.detail || "Unable to update term");
-      }
-
-      alert("Current term updated successfully.");
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert("Current term updated successfully.");
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div
@@ -88,6 +91,25 @@ function SetTerm() {
       >
         Set Current Term
       </h2>
+      <div
+        style={{
+          backgroundColor: "#fff3cd",
+          color: "#856404",
+          border: "1px solid #ffeeba",
+          borderRadius: "6px",
+          padding: "12px",
+          marginBottom: "20px",
+          fontSize: "14px",
+          lineHeight: "1.5",
+        }}
+      >
+        <strong>Important:</strong> The current term name entered here must exactly
+        match the corresponding term folder name in Google Drive for each Class Year.
+        Gem AI uses this name to locate and retrieve chatbot learning resources. Any
+        mismatch in spelling, capitalization, or spacing may prevent files from being
+        accessed correctly.
+      </div>
+
 
       <div style={{ marginTop: "20px" }}>
         <label htmlFor="termName">Current Term Name:</label>
@@ -128,22 +150,7 @@ function SetTerm() {
       >
         {loading ? "Updating..." : "Update"}
       </button>
-      <p
-        style={{
-          marginTop: "10px",
-          marginBottom: "20px",
-          padding: "12px",
-          backgroundColor: "#fff8e1",
-          border: "1px solid #f0c36d",
-          borderRadius: "6px",
-          color: "#8a6d3b",
-          fontSize: "14px",
-        }}
-      >
-        <strong>Note:</strong> The term name must exactly match the corresponding
-        term folder name on Google Drive for each Class Year (including spaces,
-        capitalization, and spelling).
-      </p>
+      
     </div>
   );
 }

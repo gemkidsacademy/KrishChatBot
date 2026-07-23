@@ -38,7 +38,7 @@ const AdminPanel = ({ doctorData }) => {
   const [isResetting, setIsResetting] = useState(false);
 
   const tabs = [
-  { id: "set_term", label: "Set Term" },
+  { id: "set_term", label: "Manage Term" },
   { id: "chatbot_login_settings", label: "Chatbot Login Settings" },
   { id: "chatbot_conversations", label: "Chatbot Conversations" },
 
@@ -126,10 +126,10 @@ const AdminPanel = ({ doctorData }) => {
 
         {/* --- SET TERM --- */}
         {activeTab === "set_term" && (
-        <div className="set-term-panel">
-          <SetTerm />
-        </div>
-      )}
+          <div className="set-term-panel">
+            <SetTerm centerCode={centerCode} />
+          </div>
+        )}
       {activeTab === "chatbot_login_settings" && (
         <div className="tab-panel" style={{ height: "100vh", overflowY: "auto" }}>
           <ChatbotLoginSettings />
