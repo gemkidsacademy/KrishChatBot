@@ -125,7 +125,8 @@
 /* Input Section */
 .chat-input {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   padding: 0.75rem 1rem;
   background-color: #ffffff;
   border-top: 1px solid #e5e7eb;
@@ -158,6 +159,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
+
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .chat-input button:hover {
@@ -202,14 +206,55 @@
 }
 
 /* Responsive */
-@media (max-width: 600px) {
-  .chat-box { height: 100dvh; flex-direction: column; }
-  .chat-header { font-size: 1rem; padding: 0.75rem; }
-  .chat-messages { padding: 0.5rem; }
-  .message { font-size: 0.9rem; max-width: 85%; }
-  .chat-input { padding: 0.5rem; gap: 6px; }
-  .chat-input input { font-size: 0.9rem; padding: 0.5rem 0.75rem; }
-  .chat-input button { padding: 0.5rem 0.75rem; }
+@media (max-width: 768px) {
+
+  .chat-container{
+      padding:0;
+  }
+
+  .chat-box{
+      width:100%;
+      height:100dvh;
+      border-radius:0;
+      margin:0;
+  }
+
+  .chat-header{
+      padding:12px;
+      font-size:15px;
+  }
+
+  .chat-title{
+      font-size:15px;
+  }
+
+  .chat-logo{
+      width:20px;
+      height:20px;
+  }
+
+  .chat-header-right{
+      gap:8px;
+  }
+
+  .quick-tips-btn{
+      padding:5px 10px;
+      font-size:12px;
+  }
+
+  .chat-timer{
+      font-size:13px;
+  }
+
+  .chat-messages{
+      padding:10px;
+  }
+
+  .message{
+      font-size:14px;
+      max-width:90%;
+  }
+
 }
 
 /* Prevent mobile scroll bounce */
@@ -412,4 +457,46 @@ html, body {
   .quick-tip-subtext {
       font-size:13px;
   }
+  .chat-input{
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.reasoning-container{
+    width:100%;
+    order:1;
+    justify-content:space-between;
+}
+
+.reasoning-container select{
+    width:160px;
+}
+
+.chat-input input{
+    order:2;
+    flex:1;
+    min-width:0;
+}
+
+.chat-input button{
+    order:3;
+    width:60px;
+    min-width:60px;
+}
+
+.bg-img{
+    display:none;
+}
+
+}
+.reasoning-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reasoning-container select {
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    padding: 8px 12px;
 }
