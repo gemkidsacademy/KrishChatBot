@@ -12,8 +12,9 @@ import ChatbotConversationsAdmin from "./ChatbotConversationsAdmin";
 import UsageDashboard from "./UsageDashboard";
 import AddUsersBulkForm from "./AddUsersBulkForm";
 import UploadVectorStores from "./UploadVectorStores";
-import SetTerm from "./SetTerm";
+//import SetTerm from "./SetTerm";
 import ChatbotLoginSettings from "./ChatbotLoginSettings";
+import ManageTerm from "./ManageTerm";
 
 const AdminPanel = ({ doctorData }) => {
   const centerCode = doctorData?.center_code;
@@ -38,7 +39,8 @@ const AdminPanel = ({ doctorData }) => {
   const [isResetting, setIsResetting] = useState(false);
 
   const tabs = [
-  { id: "set_term", label: "Manage Term" },
+  { id: "manage_term", label: "Manage Term" },
+  
   { id: "chatbot_login_settings", label: "Chatbot Login Settings" },
   { id: "chatbot_conversations", label: "Chatbot Conversations" },
 
@@ -122,14 +124,23 @@ const AdminPanel = ({ doctorData }) => {
 
       {/* -------------------- Tab Content Wrapper (fixed) -------------------- */}
       <div className="tab-content">
+
+        {/* --- MANAGE CURRENT TERM --- */}
+        {activeTab === "manage_term" && (
+          <div className="tab-panel" style={{ height: "100vh", overflowY: "auto" }}>
+            <ManageTerm centerCode={centerCode} />
+          </div>
+        )}
         
 
-        {/* --- SET TERM --- */}
+        {/* 
+        --- SET TERM --- 
         {activeTab === "set_term" && (
           <div className="set-term-panel">
             <SetTerm centerCode={centerCode} />
           </div>
         )}
+          */}
       {activeTab === "chatbot_login_settings" && (
         <div className="tab-panel" style={{ height: "100vh", overflowY: "auto" }}>
           <ChatbotLoginSettings />
