@@ -18,7 +18,7 @@ export default function DemoChatbot({ doctorData }) {
 
   const audioCache = useRef({});
   const [loadingAudioId, setLoadingAudioId] = useState(null);
-  const [currentAudioUrl, setCurrentAudioUrl] = useState(null);
+  
   const [timeLeft, setTimeLeft] = useState(3600);
   const [showQuickTips, setShowQuickTips] = useState(false);
 
@@ -198,6 +198,12 @@ export default function DemoChatbot({ doctorData }) {
     }
 
     const data = await response.json();
+    console.log("========== RAW BACKEND RESPONSE ==========");
+    console.log(data);
+    console.log("========== answer_markdown ==========");
+    console.log(data.answer_markdown);
+    console.log("========== JSON STRING ==========");
+    console.log(JSON.stringify(data.answer_markdown));
 
     let botMessage;
 
@@ -551,10 +557,77 @@ export default function DemoChatbot({ doctorData }) {
           {msg.name && <div className="bot-label">{msg.name}</div>}
 
           <div className="bot-markdown">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {msg.text}
-            </ReactMarkdown>
-          </div>
+            <div
+                style={{
+                    lineHeight: 1.45,
+                    fontSize: "15px",
+                }}
+            >
+                {(() => {
+                    console.log("========== RAW msg.text ==========");
+                    console.log(msg.text);
+
+                    console.log("========== JSON ==========");
+                    console.log(JSON.stringify(msg.text));
+
+                    console.log("========== LINES ==========");
+                    console.log(msg.text.length);
+                    msg.text.split("\n").forEach((line, index) => {
+                        console.log(index + ":", JSON.stringify(line));
+                    });
+
+                    return null;
+                })()}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                      h1: ({node, ...props}) => (
+                          <h1 {...props} style={{ margin: "8px 0 6px", lineHeight: 1.3 }} />
+                      ),
+                      h2: ({node, ...props}) => (
+                          <h2 {...props} style={{ margin: "8px 0 6px", lineHeight: 1.3 }} />
+                      ),
+                      h3: ({node, ...props}) => (
+                          <h3 {...props} style={{ margin: "8px 0 6px", lineHeight: 1.3 }} />
+                      ),
+                      p: ({node, ...props}) => (
+                          <p {...props} style={{ margin: "6px 0" }} />
+                      ),
+                      ul: ({node, ...props}) => (
+                          <ul
+                              {...props}
+                              style={{
+                                  margin: "6px 0",
+                                  paddingLeft: "20px",
+                              }}
+                          />
+                      ),
+                      ol: ({node, ...props}) => (
+                          <ol
+                              {...props}
+                              style={{
+                                  margin: "6px 0",
+                                  paddingLeft: "20px",
+                              }}
+                          />
+                      ),
+                      li: ({node, ...props}) => (
+                          <li
+                              {...props}
+                              style={{
+                                  margin: "2px 0",
+                              }}
+                          />
+                      ),
+                  }}
+              >
+                  {msg.text}
+              </ReactMarkdown>
+              <div style={{ display: "none" }}>
+                  {console.log(msg.text)}
+              </div>
+            </div>
+        </div>
           {msg.messageId && (
             <div style={{ marginTop: "10px" }}>
               <button

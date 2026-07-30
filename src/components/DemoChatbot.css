@@ -500,3 +500,29 @@ html, body {
     border-radius: 20px;
     padding: 8px 12px;
 }
+.bot-markdown h1,
+.bot-markdown h2,
+.bot-markdown h3,
+.bot-markdown h4,
+.bot-markdown h5,
+.bot-markdown h6 {
+    margin: 0.8em 0 0.4em;
+}
+
+.bot-markdown p {
+    margin: 0.5em 0;
+}
+
+.bot-markdown ul,
+.bot-markdown ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+.bot-markdown li {
+    margin: 0.2em 0;
+}
+
+.bot-markdown {
+    line-height: 1.6;
+}
