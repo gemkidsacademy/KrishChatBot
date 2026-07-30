@@ -11,7 +11,14 @@ export default function DemoChatbot({ doctorData }) {
   const [conversationUuid, setConversationUuid] = useState(() => crypto.randomUUID());
   const [reasoningLevel, setReasoningLevel] = useState("simple");
   
+  
   const [isLoadingQuote, setIsLoadingQuote] = useState(true);
+  
+  const [playingAudioId, setPlayingAudioId] = useState(null);
+
+  const audioCache = useRef({});
+  const [loadingAudioId, setLoadingAudioId] = useState(null);
+  const [currentAudioUrl, setCurrentAudioUrl] = useState(null);
   const [timeLeft, setTimeLeft] = useState(3600);
   const [showQuickTips, setShowQuickTips] = useState(false);
 
@@ -162,76 +169,162 @@ export default function DemoChatbot({ doctorData }) {
 
   // ------------------ Handle submit ------------------
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isTimeUp) return;
+  e.preventDefault();
 
-    const userInput = input.trim();
+  if (!input.trim() || isTimeUp) return;
 
-    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
-    setInput("");
-    setIsWaiting(true);
+  const userInput = input.trim();
 
-    try {
-      const url = `${server}/search?query=${encodeURIComponent(
-        userInput
-      )}&reasoning=${encodeURIComponent(
-        reasoningLevel
-      )}&user_id=${encodeURIComponent(
-        doctorData.name
-      )}&conversation_uuid=${encodeURIComponent(
-        conversationUuid
-      )}&class_name=${encodeURIComponent(doctorData.class_name)}`;
+  setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
 
-      const response = await fetch(url);
+  setInput("");
+  setIsWaiting(true);
 
-      if (!response.ok) {
-        throw new Error(`Backend returned status ${response.status}`);
-      }
+  try {
+    const url = `${server}/search?query=${encodeURIComponent(
+      userInput
+    )}&reasoning=${encodeURIComponent(
+      reasoningLevel
+    )}&user_id=${encodeURIComponent(
+      doctorData.name
+    )}&conversation_uuid=${encodeURIComponent(
+      conversationUuid
+    )}&class_name=${encodeURIComponent(doctorData.class_name)}`;
 
-      
+    const response = await fetch(url);
 
-      const data = await response.json();
-
-      let botMessage;
-
-      if (Array.isArray(data)) {
-        const firstItem = data[0] || {};
-        botMessage = {
-          sender: "bot",
-          text: cleanMarkdownSpacing(
-            firstItem.snippet || "Sorry, I couldn't generate a response."
-          ),
-          name: firstItem.name ? firstItem.name.replace(/\*\*/g, "") : "Gem AI",
-          links: Array.isArray(firstItem.links) ? firstItem.links : [],
-        };
-      } else {
-        botMessage = {
-          sender: "bot",
-          text: cleanMarkdownSpacing(
-            data.answer_markdown || "Sorry, I couldn't generate a response."
-          ),
-          name: data.source_name || "Gem AI",
-          links: Array.isArray(data.links) ? data.links : [],
-          pdfs: Array.isArray(data.pdfs) ? data.pdfs : [],
-        };
-      }
-
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Chatbot fetch error:", error);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: "Sorry, something went wrong while fetching results.",
-          links: [],
-        },
-      ]);
-    } finally {
-      setIsWaiting(false);
+    if (!response.ok) {
+      throw new Error(`Backend returned status ${response.status}`);
     }
-  };
+
+    const data = await response.json();
+
+    let botMessage;
+
+    if (Array.isArray(data)) {
+      const firstItem = data[0] || {};
+
+      botMessage = {
+        sender: "bot",
+        text: cleanMarkdownSpacing(
+          firstItem.snippet || "Sorry, I couldn't generate a response."
+        ),
+        name: firstItem.name
+          ? firstItem.name.replace(/\*\*/g, "")
+          : "Gem AI",
+        links: Array.isArray(firstItem.links) ? firstItem.links : [],
+      };
+    } else {
+      botMessage = {
+        sender: "bot",
+        text: cleanMarkdownSpacing(
+          data.answer_markdown || "Sorry, I couldn't generate a response."
+        ),
+        name: data.source_name || "Gem AI",
+        links: Array.isArray(data.links) ? data.links : [],
+        pdfs: Array.isArray(data.pdfs) ? data.pdfs : [],
+
+        // NEW
+        messageId: data.message_id,
+      };
+    }
+
+    setMessages((prev) => [...prev, botMessage]);
+  } catch (error) {
+    console.error("Chatbot fetch error:", error);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: "Sorry, something went wrong while fetching results.",
+        links: [],
+      },
+    ]);
+  } finally {
+    setIsWaiting(false);
+  }
+};
+
+  const playAudio = async (messageId) => {
+  try {
+    const cachedAudio = audioCache.current[messageId];
+
+    // ---------------------------------------
+    // Audio already exists in cache
+    // ---------------------------------------
+    if (cachedAudio) {
+      if (!cachedAudio.paused) {
+        // Pause current audio
+        cachedAudio.pause();
+        setPlayingAudioId(null);
+      } else {
+        // Resume current audio
+        await cachedAudio.play();
+        setPlayingAudioId(messageId);
+      }
+      return;
+    }
+
+    // ---------------------------------------
+    // Pause any other audio that is playing
+    // ---------------------------------------
+    Object.entries(audioCache.current).forEach(([id, audio]) => {
+      if (Number(id) !== messageId && !audio.paused) {
+        audio.pause();
+      }
+    });
+
+    setLoadingAudioId(messageId);
+
+    // ---------------------------------------
+    // Generate audio from backend
+    // ---------------------------------------
+    const response = await fetch(`${server}/chatbot/audio`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message_id: messageId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to generate audio.");
+    }
+
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    const audio = new Audio(audioUrl);
+
+    // Save in cache
+    audioCache.current[messageId] = audio;
+
+    setPlayingAudioId(messageId);
+
+    audio.onended = () => {
+      URL.revokeObjectURL(audioUrl);
+      delete audioCache.current[messageId];
+      setPlayingAudioId(null);
+    };
+
+    audio.onerror = () => {
+      URL.revokeObjectURL(audioUrl);
+      delete audioCache.current[messageId];
+      setPlayingAudioId(null);
+    };
+
+    await audio.play();
+
+  } catch (err) {
+    console.error(err);
+    alert("Unable to play audio.");
+  } finally {
+    setLoadingAudioId(null);
+  }
+};
 
   return (
     <div className="chat-container">
@@ -462,6 +555,29 @@ export default function DemoChatbot({ doctorData }) {
               {msg.text}
             </ReactMarkdown>
           </div>
+          {msg.messageId && (
+            <div style={{ marginTop: "10px" }}>
+              <button
+                onClick={() => playAudio(msg.messageId)}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "#2563eb",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                {
+                    loadingAudioId === msg.messageId
+                        ? "⏳ Generating..."
+                        : playingAudioId === msg.messageId
+                            ? "⏸ Pause"
+                            : "▶ Play Audio"
+                }
+              </button>
+            </div>
+          )}
 
           {msg.pdfs && msg.pdfs.length > 0 ? (
               <div className="pdf-links">
