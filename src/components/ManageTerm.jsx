@@ -27,9 +27,16 @@ export default function ManageTerm({ centerCode }) {
   }
 
   return (
-    <div className="manage-term-home">
+      <div className="manage-term-home">
 
-      <div className="term-card">
+        <div className="term-warning">
+          <strong>Important:</strong> The term names entered here must exactly
+          match the corresponding folder names created in Google Drive. Gem AI
+          uses these names to locate and retrieve chatbot learning resources.
+          Any mismatch in naming may prevent files from being accessed correctly.
+        </div>
+
+        <div className="term-card">
         <FaPlus className="term-icon" />
 
         <h2>Add Term</h2>
